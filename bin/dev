@@ -10,6 +10,10 @@ export PORT="${PORT:-3000}"
 
 # Let the debug gem allow remote connections,
 # but avoid loading until `debugger` is called
+#
+export MONEYGUN_DATABASE_USERNAME="username"
+export MONEYGUN_DATABASE_PASSWORD="password"
+export MONEYGUN_DATABASE_HOST="localhost"
 export RUBY_DEBUG_OPEN="true"
 export RUBY_DEBUG_LAZY="true"
 

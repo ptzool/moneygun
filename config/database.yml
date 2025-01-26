@@ -15,10 +15,12 @@
 default: &default
   adapter: postgresql
   encoding: unicode
+  username: <%= ENV["MONEYGUN_DATABASE_USERNAME"] %>
+  password: <%= ENV["MONEYGUN_DATABASE_PASSWORD"] %>
+  host: <%= ENV["MONEYGUN_DATABASE_HOST"] %>
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-
 
 development:
   <<: *default
