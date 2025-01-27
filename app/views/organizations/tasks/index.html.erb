@@ -1,0 +1,17 @@
+<div class="w-full">
+  <% content_for :title, "Tasks" %>
+
+  <div class="flex justify-between items-center">
+    <h1 class="font-bold text-lx lg:text-3xll">Tasks</h1>
+    <%= link_to "New project", new_organization_task_path(@organization), class: "rounded-lg py-3 px-5 bg-blue-600 text-white block font-medium" %>
+  </div>
+
+  <div id="inboxes" class="min-w-full">
+    <% @tasks.each do |task| %>
+      <%= render task %>
+      <p>
+        <%= link_to "Show this task", [ @organization, task ], class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+      </p>
+    <% end %>
+  </div>
+</div>

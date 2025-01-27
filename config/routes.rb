@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-
   devise_for :users, controllers: { registrations: "users/registrations", sessions: "users/sessions" }
 
   resources :organizations do
@@ -7,6 +6,7 @@ Rails.application.routes.draw do
     resource :transfer, module: :organizations, only: %i[show update]
     resources :inboxes, module: :organizations
     resources :projects, module: :organizations
+    resources :tasks, module: :organizations
   end
 
   get "pricing", to: "static#pricing"

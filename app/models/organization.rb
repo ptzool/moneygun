@@ -7,6 +7,7 @@ class Organization < ApplicationRecord
 
   has_many :inboxes, dependent: :destroy
   has_many :projects, dependent: :destroy
+  has_many :tasks, dependent: :destroy
 
   validates :name, presence: true
 
