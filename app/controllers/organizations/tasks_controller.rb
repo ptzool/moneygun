@@ -63,9 +63,6 @@ class Organizations::TasksController < Organizations::BaseController
   end
 
   def task_params
-    params.require(:task).permit(:organization_id, :project_id, :name, :description)
-
-    # Uncomment to use Pundit permitted attributes
-    # params.require(:task).permit(policy(@task).permitted_attributes)
+    params.require(:task).permit(:organization_id, :project_id, :name, :description, :planned_start_date, :planned_end_date, :priority)
   end
 end
