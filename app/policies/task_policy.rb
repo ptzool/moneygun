@@ -1,10 +1,10 @@
 class TaskPolicy < Organization::BasePolicy
   def index?
-    membership.admin?
+    membership.admin? || membership.member?
   end
 
   def show?
-    membership.admin?
+    membership.admin? || membership.member?
   end
 
   def new?
@@ -12,7 +12,7 @@ class TaskPolicy < Organization::BasePolicy
   end
 
   def create?
-    membership.admin?
+    membership.admin? || membership.member?
   end
 
   def edit?
@@ -20,10 +20,10 @@ class TaskPolicy < Organization::BasePolicy
   end
 
   def update?
-    membership.admin?
+    membership.admin? || membership.member?
   end
 
   def destroy?
-    membership.admin?
+    membership.admin? || membership.member?
   end
 end
