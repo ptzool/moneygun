@@ -6,7 +6,9 @@ Rails.application.routes.draw do
     resource :transfer, module: :organizations, only: %i[show update]
     resources :inboxes, module: :organizations
     resources :projects, module: :organizations
-    resources :tasks, module: :organizations
+    resources :tasks, module: :organizations do
+      resources :comments, module: :tasks
+    end
   end
 
   get "pricing", to: "static#pricing"

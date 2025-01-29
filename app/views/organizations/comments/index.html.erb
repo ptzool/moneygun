@@ -1,0 +1,16 @@
+<% content_for :title, "Comments" %>
+
+<%= render PageComponent.new(title: "Comments") do |component| %>
+  <% component.with_action_list do %>
+    <%= link_to "New comment", new_comment_path, class: "btn btn-primary" %>
+  <% end %>
+
+  <div id="comments" class="space-y-4">
+    <% @comments.each do |comment| %>
+      <%= render comment %>
+      <p>
+        <%= link_to "Show this comment", comment, class: "btn btn-secondary" %>
+      </p>
+    <% end %>
+  </div>
+<% end %>

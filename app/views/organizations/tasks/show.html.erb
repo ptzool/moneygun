@@ -12,3 +12,20 @@
     <% end %>
   </div>
 </div>
+<% content_for :title, "Comments" %>
+<%= render PageComponent.new(title: "Comments") do |component| %>
+  <div id="comments" class="space-y-4">
+    <% @task.comments.each do |comment| %>
+      <div id="<%= dom_id comment %>">
+        <p>
+          <strong>Membership:</strong>
+          <%= comment.membership_id %>
+        </p>
+        <p>
+          <strong>Body:</strong>
+          <%= comment.body %>
+        </p>
+      </div>
+    <% end %>
+  </div>
+<% end %>

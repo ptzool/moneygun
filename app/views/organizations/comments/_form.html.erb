@@ -1,0 +1,10 @@
+<%= form_with(model: comment, class: "contents space-y-4") do |form| %>
+  <%= render "shared/errors", object: form.object %>
+  <div>
+    <%= form.label :body, style: "display: block" %>
+    <%= form.textarea :body, class: "form-input" %>
+  </div>
+  <div class="inline">
+    <%= form.submit class: "btn btn-primary" %>
+  </div>
+<% end %>

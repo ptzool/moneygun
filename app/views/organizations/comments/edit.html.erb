@@ -1,0 +1,4 @@
+<%= render PageComponent.new(title: "Editing comment", content_container: true, full_width: false) do |component| %>
+  <%= render "form", comment: @comment %>
+  <%= link_to "Cancel", @comment, class: "btn btn-secondary" %>
+<% end %>
