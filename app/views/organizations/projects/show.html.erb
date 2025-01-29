@@ -1,11 +1,50 @@
 <div class="mx-auto md:w-2/3 w-full flex">
   <div class="mx-auto">
     <%= render @project %>
-
     <%= link_to "Edit this project", [ :edit, @organization, @project ], class: "mt-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
     <%= link_to "Back to projects", [ @organization, :projects ], class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
     <div class="inline-block ml-2">
       <%= button_to "Destroy this project", [ @organization, @project ], method: :delete, class: "mt-2 rounded-lg py-3 px-5 bg-gray-100 font-medium" %>
     </div>
+  </div>
+</div>
+<div class="w-full">
+  <% content_for :title, "Tasks" %>
+  <div class="flex justify-between items-center">
+    <h1 class="font-bold text-lx lg:text-3xll">Tasks</h1>
+    <%= link_to "New task", new_organization_task_path(@organization), class: "rounded-lg py-3 px-5 bg-blue-600 text-white block font-medium" %>
+  </div>
+  <div id="inboxes" class="min-w-full">
+    <% @project.tasks.each do |task| %>
+      <div id="<%= dom_id task %>">
+        <p>
+          <strong>Organization:</strong>
+          <%= task.organization_id %>
+        </p>
+        <p>
+          <strong>Project:</strong>
+          <%= task.project.name %>
+        </p>
+        <p>
+          <strong>Name:</strong>
+          <%= task.name %>
+        </p>
+        <p>
+          <strong>Description:</strong>
+          <%= task.description %>
+        </p>
+        <p>
+          <strong>Planned start date:</strong>
+          <%= task.planned_start_date %>
+        </p>
+        <p>
+          <strong>Planned end date:</strong>
+          <%= task.planned_end_date %>
+        </p>
+      </div>
+      <p>
+        <%= link_to "Show this task", [ @organization, task ], class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+      </p>
+    <% end %>
   </div>
 </div>

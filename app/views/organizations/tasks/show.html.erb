@@ -18,14 +18,18 @@
     <% @task.comments.each do |comment| %>
       <div id="<%= dom_id comment %>">
         <p>
-          <strong>Membership:</strong>
-          <%= comment.membership_id %>
+          <strong>User:</strong>
+          <%= comment.membership.user.first_name %>
+          <%= comment.membership.user.last_name %>
         </p>
         <p>
-          <strong>Body:</strong>
-          <%= comment.body %>
-        </p>
-      </div>
-    <% end %>
-  </div>
-<% end %>
+          <strong>Created at:</strong>
+          <%= comment.created_at %>
+          <p>
+            <strong>Body:</strong>
+            <%= comment.body %>
+          </p>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
