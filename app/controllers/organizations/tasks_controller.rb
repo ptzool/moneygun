@@ -4,7 +4,7 @@ class Organizations::TasksController < Organizations::BaseController
   # GET /tasks
   def index
     authorize Task
-    @tasks = @organization.tasks
+    @tasks = @organization.tasks.page(params[:page])
   end
 
   # GET /tasks/1 or /tasks/1.json

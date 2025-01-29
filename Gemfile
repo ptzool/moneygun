@@ -57,6 +57,7 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
+  gem "solargraph"
 end
 
 group :test do
@@ -76,4 +77,5 @@ gem "inline_svg", "~> 1.9"
 gem "active_link_to", "~> 1.0"
 
 gem "nested_scaffold", github: "yshmarov/nested_scaffold"
-gem 'solargraph', group: :development
+
+gem "kaminari"

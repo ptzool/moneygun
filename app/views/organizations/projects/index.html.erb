@@ -1,11 +1,9 @@
 <div class="w-full">
   <% content_for :title, "Projects" %>
-
   <div class="flex justify-between items-center">
     <h1 class="font-bold text-lx lg:text-3xll">Projects</h1>
     <%= link_to "New project", new_organization_project_path(@organization), class: "rounded-lg py-3 px-5 bg-blue-600 text-white block font-medium" %>
   </div>
-
   <div id="inboxes" class="min-w-full">
     <% @projects.each do |project| %>
       <%= render project %>
@@ -14,4 +12,7 @@
       </p>
     <% end %>
   </div>
+</div>
+<div style="font-size: 2rem;">
+  <%= paginate @projects %>
 </div>

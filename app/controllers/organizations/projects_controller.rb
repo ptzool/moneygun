@@ -1,10 +1,10 @@
 class Organizations::ProjectsController < Organizations::BaseController
-  before_action :set_project, only: [:show, :edit, :update, :destroy]
+  before_action :set_project, only: [ :show, :edit, :update, :destroy ]
 
   # GET /organizations/1//projects
   def index
     authorize Project
-    @projects = @organization.projects
+    @projects = @organization.projects.page(params[:page])
   end
 
   # GET /organizations/1/projects/1 or /organizations/1/projects/1.json
