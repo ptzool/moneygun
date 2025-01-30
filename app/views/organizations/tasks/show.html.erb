@@ -18,7 +18,7 @@
   <div id="comments" class="space-y-4">
     <% @task.comments.each do |comment| %>
       <div>
-        <p>Membership: <%= comment.membership_id %></p>
+        <p>Membership: <%= comment.membership.user.full_name %></p>
         <p>Comment: <%= comment.body %></p>
         <p>Created At: <%= comment.created_at %></p>
       </div>
