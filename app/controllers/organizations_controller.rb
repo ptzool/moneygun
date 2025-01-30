@@ -57,6 +57,6 @@ class OrganizationsController < ApplicationController
   end
 
   def organization_params
-    params.require(:organization).permit(:name, :logo)
+    params.require(:organization).permit(:name, :logo, :address, :email, :registration_number, :tax_number, :iban)
   end
 end
