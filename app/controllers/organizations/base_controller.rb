@@ -16,6 +16,12 @@ class Organizations::BaseController < ApplicationController
   #   raise Pundit::NotAuthorizedError unless @current_membership.admin?
   # end
 
+  before_action :set_paper_trail_whodunnit
+
+  def user_for_paper_trail
+    @current_membership.id
+  end
+
   def authorize_organization_owner!
     redirect_to organization_path(@organization), alert: "You are not authorized to perform this action." unless @organization.owner?(current_user)
   end
