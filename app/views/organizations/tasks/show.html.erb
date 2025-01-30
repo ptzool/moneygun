@@ -12,24 +12,16 @@
     <% end %>
   </div>
 </div>
+<%= render partial: 'organizations/comments/form' %>
 <% content_for :title, "Comments" %>
 <%= render PageComponent.new(title: "Comments") do |component| %>
   <div id="comments" class="space-y-4">
     <% @task.comments.each do |comment| %>
-      <div id="<%= dom_id comment %>">
-        <p>
-          <strong>User:</strong>
-          <%= comment.membership.user.first_name %>
-          <%= comment.membership.user.last_name %>
-        </p>
-        <p>
-          <strong>Created at:</strong>
-          <%= comment.created_at %>
-          <p>
-            <strong>Body:</strong>
-            <%= comment.body %>
-          </p>
-        </div>
-      <% end %>
-    </div>
-  <% end %>
+      <div>
+        <p>Membership: <%= comment.membership_id %></p>
+        <p>Comment: <%= comment.body %></p>
+        <p>Created At: <%= comment.created_at %></p>
+      </div>
+    <% end %>
+  </div>
+<% end %>

@@ -7,7 +7,7 @@ Rails.application.routes.draw do
     resources :inboxes, module: :organizations
     resources :projects, module: :organizations
     resources :tasks, module: :organizations do
-      resources :comments, module: :tasks
+      resources :comments, only: %i[create]
     end
   end
 

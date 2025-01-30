@@ -9,6 +9,7 @@ class Organizations::TasksController < Organizations::BaseController
 
   # GET /tasks/1 or /tasks/1.json
   def show
+    @comment = Comment.new
   end
 
   # GET /tasks/new
@@ -55,11 +56,11 @@ class Organizations::TasksController < Organizations::BaseController
   private
 
   def set_task
-    @task = Task.find(params[:id])
+    @task = @organization.tasks.find(params[:id])
     authorize @task
 
   rescue ActiveRecord::RecordNotFound
-    redirect_to tasks_path
+    redirect_to organization_tasks_path()
   end
 
   def task_params
