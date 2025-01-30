@@ -26,3 +26,40 @@
     <% end %>
   </div>
 <% end %>
+</br>
+
+<h1>Változtatások története</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Időpont</th>
+      <th>Esemény</th>
+      <th>Felhasználó</th>
+      <th>Változtatások</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @task.versions.each do |version| %>
+      <tr>
+        <td><%= version.created_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
+        <td><%= version.event %></td>
+        <td><%= version.whodunnit || 'Ismeretlen' %></td>
+        <td>
+          <% if version.changeset.present? %>
+            <ul>
+              <% version.changeset.each do |attribute, changes| %>
+                <li>
+                  <strong><%= attribute %>:</strong>
+                  <%= changes[0] %> → <%= changes[1] %>
+                </li>
+              <% end %>
+            </ul>
+          <% else %>
+            Nincs részletes változás információ
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
