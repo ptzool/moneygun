@@ -1,36 +1,29 @@
 class CommentPolicy < Organization::BasePolicy
-  # def index?
-  #   membership.admin?
-  # end
+  def index?
+    membership.admin? || membership.member?
+  end
 
-  # def show?
-  #   membership.admin?
-  # end
+  def show?
+    membership.admin? || membership.member?
+  end
 
-  # def create?
-  #   membership.admin?
-  # end
+  def new?
+    create?
+  end
 
-  # def update?
-  #   membership.admin?
-  # end
+  def create?
+    membership.admin? || membership.member?
+  end
 
-  # def destroy?
-  #   membership.admin?
-  # end
+  def edit?
+    update?
+  end
 
-  # https://github.com/varvet/pundit#strong-parameters
-  # def permitted_attributes
-  #   if membership.admin?
-  #     [:name, :description]
-  #   else
-  #     [:name]
-  #   end
-  # end
+  def update?
+    membership.admin?
+  end
 
-  class Scope < Scope
-    def resolve
-      scope.all
-    end
+  def destroy?
+    membership.admin?
   end
 end

@@ -1,10 +1,9 @@
 class Organizations::CommentsController < Organizations::BaseController
   before_action :set_task, only: [ :create ]
 
-  # POST /comments or /comments.json
   def create
     @comment = Comment.new(comment_params)
-    # authorize @comment
+    authorize @comment
 
     if @comment.save
       redirect_to organization_task_url(@organization, @task), notice: "Task was successfully created."
