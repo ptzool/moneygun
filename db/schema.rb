@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_31_081202) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_31_094331) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -105,8 +105,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_31_081202) do
     t.integer "priority"
     t.date "planned_start_date"
     t.date "planned_end_date"
+    t.bigint "assignee_id", null: false
+    t.bigint "reporter_id", null: false
+    t.index ["assignee_id"], name: "index_tasks_on_assignee_id"
     t.index ["organization_id"], name: "index_tasks_on_organization_id"
     t.index ["project_id"], name: "index_tasks_on_project_id"
+    t.index ["reporter_id"], name: "index_tasks_on_reporter_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -154,6 +158,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_31_081202) do
   add_foreign_key "organizations", "users", column: "owner_id"
   add_foreign_key "projects", "memberships", column: "project_manager_id"
   add_foreign_key "projects", "organizations"
+  add_foreign_key "tasks", "memberships", column: "assignee_id"
+  add_foreign_key "tasks", "memberships", column: "reporter_id"
   add_foreign_key "tasks", "organizations"
   add_foreign_key "tasks", "projects"
 end

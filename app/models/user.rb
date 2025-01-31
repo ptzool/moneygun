@@ -7,8 +7,8 @@ class User < ApplicationRecord
   has_many :organizations, through: :memberships
   has_many :owned_organizations, class_name: "Organization", foreign_key: :owner_id, inverse_of: :owner, dependent: :destroy
 
-  validates :first_name, presence: true
-  validates :last_name, presence: true
+  validates :first_name, presence: false
+  validates :last_name, presence: false
 
   def full_name
     "#{first_name} #{last_name}".strip

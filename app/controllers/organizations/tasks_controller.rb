@@ -16,6 +16,8 @@ class Organizations::TasksController < Organizations::BaseController
   def new
     @task = @organization.tasks.new
     @projects = @organization.projects
+    @assignees = @organization.memberships
+    @reporters = @organization.memberships
 
     authorize @task
   end
@@ -23,6 +25,8 @@ class Organizations::TasksController < Organizations::BaseController
   # GET /tasks/1/edit
   def edit
     @projects = @organization.projects
+    @assignees = @organization.memberships
+    @reporters = @organization.memberships
   end
 
   # POST /organizations/1/tasks or /organizations/1/tasks.json
@@ -64,6 +68,15 @@ class Organizations::TasksController < Organizations::BaseController
   end
 
   def task_params
-    params.require(:task).permit(:organization_id, :project_id, :name, :description, :planned_start_date, :planned_end_date, :priority)
+    params.require(:task).permit(
+      :organization_id,
+      :project_id,
+      :name,
+      :description,
+      :planned_start_date,
+      :planned_end_date,
+      :priority,
+      :assignee_id,
+      :reporter_id)
   end
 end

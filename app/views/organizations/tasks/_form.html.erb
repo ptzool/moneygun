@@ -35,11 +35,19 @@
 
 
   <div class="">
+      <%= form.label "Project" %>
       <%= form.select :project_id, @projects.map { |c| [c.name, c.id] }, { prompt: "Válassz kategóriát" }, { class: "form-control" } %>
   </div>
 
+  <div class="">
+      <%= form.label "Assignee" %>
+      <%= form.select :assignee_id, @assignees.map { |a| [a.user.full_name, a.id] }, { prompt: "Válassz assigneet" }, { class: "form-control" } %>
+  </div>
 
-
+  <div class="">
+      <%= form.label "Reported" %>
+      <%= form.select :reporter_id, @reporters.map { |r| [r.user.full_name, r.id] }, { prompt: "Válassz reporter" }, { class: "form-control" } %>
+  </div>
 
   <div class="inline">
     <%= form.submit class: "rounded-lg py-3 px-5 bg-blue-600 text-white inline-block font-medium cursor-pointer" %>

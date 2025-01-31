@@ -20,7 +20,7 @@
 
 
   <div class="">
-      <%= form.select :project_manager_id, @project_manager.map { |c| [c.user.full_name, c.id] }, { prompt: "Válassz project managert" }, { class: "form-control" } %>
+      <%= form.select :project_manager_id, @project_managers.map { |c| [c.user.full_name, c.id] }, { prompt: "Válassz project managert" }, { class: "form-control" } %>
   </div>
 
 

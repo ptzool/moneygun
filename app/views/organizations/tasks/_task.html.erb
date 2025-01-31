@@ -23,4 +23,12 @@
     <strong>Planned end date:</strong>
     <%= task.planned_end_date %>
   </p>
+  <p>
+    <strong>Assignee:</strong>
+    <%= task.assignee.user.full_name %>
+  </p>
+  <p>
+    <strong>Reporter:</strong>
+    <%= task.reporter.user.full_name %>
+  </p>
 </div>

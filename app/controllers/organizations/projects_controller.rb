@@ -14,13 +14,14 @@ class Organizations::ProjectsController < Organizations::BaseController
   # GET /organizations/1/projects/new
   def new
     @project = @organization.projects.new
-    @project_manager = @organization.memberships
+    @project_managers = @organization.memberships
 
     authorize @project
   end
 
   # GET /organizations/1/projects/1/edit
   def edit
+    @project_managers = @organization.memberships
   end
 
   # POST /organizations/1/projects or /organizations/1/projects.json
