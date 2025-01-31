@@ -29,7 +29,11 @@ class Organizations::BaseController < ApplicationController
   private
 
   def set_organization
-    @organization = current_user.organizations.find(params[:organization_id])
+    begin
+      @organization = current_user.organizations.find(params[:organization_id])
+    rescue ActiveRecord::RecordNotFound
+      redirect_to organizations_path, alert: "Organization not found."
+    end
   end
 
   def set_current_membership

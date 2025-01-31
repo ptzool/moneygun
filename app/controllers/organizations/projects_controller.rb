@@ -14,6 +14,8 @@ class Organizations::ProjectsController < Organizations::BaseController
   # GET /organizations/1/projects/new
   def new
     @project = @organization.projects.new
+    @project_manager = @organization.memberships
+
     authorize @project
   end
 
@@ -60,6 +62,6 @@ class Organizations::ProjectsController < Organizations::BaseController
   end
 
   def project_params
-    params.require(:project).permit(:organization_id, :name, :description)
+    params.require(:project).permit(:organization_id, :name, :description, :project_manager_id)
   end
 end
