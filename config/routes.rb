@@ -7,6 +7,9 @@ Rails.application.routes.draw do
     resources :inboxes, module: :organizations
     resources :projects, module: :organizations
     resources :tasks, module: :organizations do
+      member do
+        delete 'destroy_attachment/:attachment_id', action: :destroy_attachment, as: :destroy_attachment
+      end
       resources :comments, only: %i[create]
     end
   end

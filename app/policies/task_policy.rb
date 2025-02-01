@@ -26,4 +26,9 @@ class TaskPolicy < Organization::BasePolicy
   def destroy?
     membership.admin? || membership.member?
   end
+
+  def destroy_attachment?
+    membership.admin? || membership.member?
+  end
+
 end

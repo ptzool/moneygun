@@ -1,5 +1,5 @@
 class Organizations::TasksController < Organizations::BaseController
-  before_action :set_task, only: [ :show, :edit, :update, :destroy ]
+  before_action :set_task, only: [ :show, :edit, :update, :destroy, :destroy_attachment]
 
   def index
     authorize Task
@@ -48,6 +48,12 @@ class Organizations::TasksController < Organizations::BaseController
     @task.destroy!
 
     redirect_to organization_tasks_url(@organization), notice: "Task was successfully destroyed."
+  end
+
+  def destroy_attachment
+    @task_attachment = @task.task_attachments.find(params[:attachment_id])
+    @task_attachment.purge
+    redirect_to organization_task_url(@organization, @task), notice: "Task attachment was successfully deleted.", status: 303
   end
 
   private
