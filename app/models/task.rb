@@ -5,6 +5,7 @@ class Task < ApplicationRecord
   belongs_to :reporter, class_name: "Membership", optional: true
 
   has_many :comments, dependent: :destroy
+  has_many_attached :task_attachments
 
   has_paper_trail
 end

@@ -49,6 +49,14 @@
       <%= form.select :reporter_id, @reporters.map { |r| [r.user.full_name, r.id] }, { prompt: "Válassz reporter" }, { class: "form-control" } %>
   </div>
 
+  <div class="">
+    <% @task.task_attachments.each do |attachment| %>
+        <%= form.hidden_field :task_attachments, multiple: true, value: attachment.signed_id %>
+    <% end %>
+    <%= form.label :task_attachments %>
+    <%= form.file_field :task_attachments, multiple: true %>
+  </div>
+
   <div class="inline">
     <%= form.submit class: "rounded-lg py-3 px-5 bg-blue-600 text-white inline-block font-medium cursor-pointer" %>
   </div>

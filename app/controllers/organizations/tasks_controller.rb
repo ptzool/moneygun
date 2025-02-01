@@ -70,6 +70,7 @@ class Organizations::TasksController < Organizations::BaseController
       :planned_end_date,
       :priority,
       :assignee_id,
-      :reporter_id)
+      :reporter_id,
+      task_attachments: [])
   end
 end
