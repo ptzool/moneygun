@@ -6,7 +6,7 @@ class Membership < ApplicationRecord
   has_many :tasks, dependent: :destroy
   has_many :projects, dependent: :destroy
 
-  enum :role, { member: "member", admin: "admin", accuontant: "accountant" }
+  enum :role, { member: "member", admin: "admin", accuontant: "accountant", employee: "employee" }
 
   validates_uniqueness_of :user_id, scope: :organization_id
   validates_uniqueness_of :organization_id, scope: :user_id
