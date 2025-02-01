@@ -1,27 +1,22 @@
 class Organizations::InboxesController < Organizations::BaseController
   before_action :set_inbox, only: %i[ show edit update destroy ]
 
-  # GET /organizations/1/inboxes
   def index
     authorize Inbox
     @inboxes = @organization.inboxes
   end
 
-  # GET /organizations/1/inboxes/1
   def show
   end
 
-  # GET /organizations/1/inboxes/new
   def new
     @inbox = @organization.inboxes.new
     authorize @inbox
   end
 
-  # GET /organizations/1/inboxes/1/edit
   def edit
   end
 
-  # POST /organizations/1/inboxes
   def create
     @inbox = @organization.inboxes.new(inbox_params)
     authorize @inbox
@@ -33,7 +28,6 @@ class Organizations::InboxesController < Organizations::BaseController
     end
   end
 
-  # PATCH/PUT /organizations/1/inboxes/1
   def update
     if @inbox.update(inbox_params)
       redirect_to organization_inbox_url(@organization, @inbox), notice: "Inbox was successfully updated."
@@ -42,7 +36,6 @@ class Organizations::InboxesController < Organizations::BaseController
     end
   end
 
-  # DELETE /organizations/1/inboxes/1
   def destroy
     @inbox.destroy!
 
