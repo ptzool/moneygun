@@ -1,5 +1,12 @@
 <div id="<%= dom_id project %>">
   <p>
+      <% if @project %>
+        <%= image_tag @project.project_logo if @project.project_logo.attached? %>
+      <% else %>
+        <p>A projekt nem létezik</p>
+      <% end %>
+  </p>
+  <p>
     <strong>ID:</strong>
     <%= project.id %>
   </p>

@@ -56,6 +56,6 @@ class Organizations::ProjectsController < Organizations::BaseController
   end
 
   def project_params
-    params.require(:project).permit(:organization_id, :name, :description, :project_manager_id)
+    params.require(:project).permit(:organization_id, :name, :description, :project_manager_id, :project_logo)
   end
 end

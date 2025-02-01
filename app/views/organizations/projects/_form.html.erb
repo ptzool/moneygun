@@ -20,6 +20,10 @@
 
 
   <div class="">
+       <%= form.file_field :project_logo %>
+    </div>
+
+  <div class="">
       <%= form.select :project_manager_id, @project_managers.map { |c| [c.user.full_name, c.id] }, { prompt: "Válassz project managert" }, { class: "form-control" } %>
   </div>
 
