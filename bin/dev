@@ -16,5 +16,8 @@ export MONEYGUN_DATABASE_PASSWORD="password"
 export MONEYGUN_DATABASE_HOST="localhost"
 export RUBY_DEBUG_OPEN="true"
 export RUBY_DEBUG_LAZY="true"
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+export LANGUAGE=en_US.UTF-8
 
 exec foreman start -f Procfile.dev "$@"

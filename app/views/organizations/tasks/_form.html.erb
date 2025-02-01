@@ -57,6 +57,16 @@
     <%= form.file_field :task_attachments, multiple: true %>
   </div>
 
+  <div class="">
+      <%= form.label "Priority" %>
+      <%= form.select :priority, Task.priorities.keys.map { |priority| [priority.humanize, priority] }, { prompt: "Válassz prioritást" }, { class: "form-control" } %>
+  </div>
+
+    <div class="">
+        <%= form.label "Status" %>
+        <%= form.select :status, Task.statuses.keys.map { |status| [status.humanize, status] }, { prompt: "Válassz státuszt" }, { class: "form-control" } %>
+    </div>
+
   <div class="inline">
     <%= form.submit class: "rounded-lg py-3 px-5 bg-blue-600 text-white inline-block font-medium cursor-pointer" %>
   </div>
