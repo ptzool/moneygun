@@ -1,5 +1,6 @@
 class Organizations::ProjectsController < Organizations::BaseController
   before_action :set_project, only: [ :show, :edit, :update, :destroy ]
+  before_action :set_select_collections, only: [ :new, :create, :edit, :update ]
 
   def index
     authorize Project
@@ -10,14 +11,11 @@ class Organizations::ProjectsController < Organizations::BaseController
   end
 
   def new
-    @project = @organization.projects.new
-    @project_managers = @organization.memberships
-
+    @project = @organization.projects.new(reporter_id: @organization.memberships.find_by(user_id: current_user.id))
     authorize @project
   end
 
   def edit
-    @project_managers = @organization.memberships
   end
 
   def create
@@ -53,6 +51,10 @@ class Organizations::ProjectsController < Organizations::BaseController
 
   rescue ActiveRecord::RecordNotFound
     redirect_to projects_path
+  end
+
+  def set_select_collections
+    @project_managers = @organization.memberships
   end
 
   def project_params

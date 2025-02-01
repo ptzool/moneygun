@@ -1,11 +1,9 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-one:
-  organization: one
-  user: one
+membership_one:
+  organization: organization_one
+  user: user_one
   role: admin
 
-two:
-  organization: two
-  user: two
+membership_two:
+  organization: organization_two
+  user: user_two
   role: member

@@ -46,8 +46,12 @@
 
   <div class="">
       <%= form.label "Reported" %>
-      <%= form.select :reporter_id, @reporters.map { |r| [r.user.full_name, r.id] }, { prompt: "Válassz reporter" }, { class: "form-control" } %>
-  </div>
+      <%= form.label "Reported" %>
+      <%= form.select :reporter_id,
+                      @reporters.map { |pm|
+                        [pm.user.full_name, pm.id, { selected: pm.id == @current_membership.id}]
+                      },
+                      class: 'form-control' %>  </div>
 
   <div class="">
     <% @task.task_attachments.each do |attachment| %>

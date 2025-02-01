@@ -1,9 +1,4 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-one:
-  membership: one
-  body: MyText
-
-two:
-  membership: two
-  body: MyText
+valid_comment:
+  body: "Teszt komment"
+  task: task_one
+  membership: membership_one

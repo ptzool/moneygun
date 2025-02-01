@@ -1,11 +1,5 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-one:
-  organization: one
+project_one:
+  organization: organization_one
   name: MyString
   description: MyText
-
-two:
-  organization: two
-  name: MyString
-  description: MyText
+  project_manager: membership_one

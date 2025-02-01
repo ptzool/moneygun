@@ -1,5 +1,6 @@
 class Organizations::TasksController < Organizations::BaseController
-  before_action :set_task, only: [ :show, :edit, :update, :destroy, :destroy_attachment]
+  before_action :set_task, only: [ :show, :edit, :update, :destroy, :destroy_attachment ]
+  before_action :set_select_collections, only: [ :new, :create, :edit, :update ]
 
   def index
     authorize Task
@@ -12,17 +13,11 @@ class Organizations::TasksController < Organizations::BaseController
 
   def new
     @task = @organization.tasks.new
-    @projects = @organization.projects
-    @assignees = @organization.memberships
-    @reporters = @organization.memberships
 
     authorize @task
   end
 
   def edit
-    @projects = @organization.projects
-    @assignees = @organization.memberships
-    @reporters = @organization.memberships
   end
 
   def create
@@ -64,6 +59,12 @@ class Organizations::TasksController < Organizations::BaseController
 
   rescue ActiveRecord::RecordNotFound
     redirect_to organization_tasks_path()
+  end
+
+  def set_select_collections
+    @projects = @organization.projects
+    @assignees = @organization.memberships
+    @reporters = @organization.memberships
   end
 
   def task_params
