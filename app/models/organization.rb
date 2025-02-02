@@ -8,7 +8,6 @@ class Organization < ApplicationRecord
   has_many :inboxes, dependent: :destroy
   has_many :projects, dependent: :destroy
   has_many :tasks, dependent: :destroy
-  has_many :employees, dependent: :destroy
 
   validates :name, presence: true
 

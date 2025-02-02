@@ -12,7 +12,6 @@ Rails.application.routes.draw do
       end
       resources :comments, only: %i[create]
     end
-    resources :employees, module: :organizations
   end
 
   get "pricing", to: "static#pricing"
