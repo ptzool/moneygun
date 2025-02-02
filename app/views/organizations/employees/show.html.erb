@@ -1,0 +1,17 @@
+<%= render PageComponent.new(title: "Employee") do |component| %>
+  <% component.with_action_list do %>
+    <div class="inline-block">
+      <%= button_to "Destroy", [ @organization, @employee ], method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "btn btn-danger" if policy(@employee).destroy? %>
+    </div>
+  <% end %>
+<% end %>
+<div class="card shadow">
+  <div class="card-body">
+    <b>Organization:</b>
+    <%= @employee.organization.name %>
+    <br>
+    <b>Membership:</b>
+    <%= @employee.membership.user.full_name %>
+    <br>
+  </div>
+</div>
