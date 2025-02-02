@@ -1,0 +1,14 @@
+<% content_for :title, "Employee documents" %>
+<%= render PageComponent.new(title: "Employee documents") do |component| %>
+  <% component.with_action_list do %>
+    <%= link_to "New employee document", new_organization_employee_employee_document_path(@organization, @employee), class: "btn btn-primary" %>
+  <% end %>
+  <div id="employee_documents" class="space-y-4">
+    <% @employee_documents.each do |employee_document| %>
+      <%= render employee_document %>
+      <p>
+        <%= link_to "Show this employee document", organization_employee_employee_documents_path(@organization, @employee), class: "btn btn-secondary" %>
+      </p>
+    <% end %>
+  </div>
+<% end %>

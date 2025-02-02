@@ -1,0 +1,22 @@
+<%= render PageComponent.new(title: "Employee document") do |component| %>
+  <% component.with_action_list do %>
+    <%= link_to "Edit", edit_employee_document_path(@employee_document), class: "btn btn-secondary" if policy(@employee_document).edit? %>
+    <div class="inline-block">
+      <%= button_to "Destroy", @employee_document, method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "btn btn-danger" if policy(@employee_document).destroy? %>
+    </div>
+  <% end %>
+<% end %>
+
+<div class="card shadow">
+  <div class="card-body">
+  
+    <b>Organization:</b>
+    <%= @employee_document.organization %>
+    <br>
+  
+    <b>Employee:</b>
+    <%= @employee_document.employee %>
+    <br>
+  
+  </div>
+</div>

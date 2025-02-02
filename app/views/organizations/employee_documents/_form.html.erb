@@ -1,0 +1,10 @@
+<%= form_with(model: [ @organization, @employee, @employee_document ], class: "contents space-y-4") do |form| %>
+  <%= render "shared/errors", object: form.object %>
+  <div class="">
+    <%= form.label :employee_document %>
+    <%= form.file_field :employee_document %>
+  </div>
+  <div class="inline">
+    <%= form.submit class: "btn btn-primary" %>
+  </div>
+<% end %>

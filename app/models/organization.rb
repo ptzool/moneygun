@@ -9,6 +9,7 @@ class Organization < ApplicationRecord
   has_many :projects, dependent: :destroy
   has_many :tasks, dependent: :destroy
   has_many :employees, dependent: :destroy
+  has_many :employee_documents, through: :employees
 
   validates :name, presence: true
 

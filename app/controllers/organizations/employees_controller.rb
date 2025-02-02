@@ -16,7 +16,7 @@ class Organizations::EmployeesController < Organizations::BaseController
       @employee = @organization.employees.new
 
       authorize @employee
-    end
+  end
 
   # GET /employees/1/edit
   def edit
