@@ -8,7 +8,7 @@ class Membership < ApplicationRecord
   has_many :assigned_tasks, class_name: 'Task', foreign_key: 'assignee_id'
   has_many :reported_tasks, class_name: 'Task', foreign_key: 'reporter_id'
 
-  enum :role, { member: "member", admin: "admin", accuontant: "accountant", employee: "employee" }
+  enum :role, { admin: "admin", accuontant: "accountant", employee: "employee" }
 
   validates_uniqueness_of :user_id, scope: :organization_id
   validates_uniqueness_of :organization_id, scope: :user_id

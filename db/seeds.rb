@@ -14,6 +14,8 @@ require 'faker'
 # Normál felhasználók létrehozása
 5.times do |i|
   user = User.create!(
+    first_name: Faker::Name.first_name,
+    last_name: Faker::Name.last_name,
     email: "user#{i+1}@example.com",
     password: 'password123',
     password_confirmation: 'password123'
@@ -23,7 +25,7 @@ end
 
 5.times do |i|
   org = Organization.create!(
-    name: "Org#{i+1}",
+    name: Faker::Company.name,
     owner_id: 1
   )
   puts "Szervezet létrehozva: #{org.name}"
@@ -43,7 +45,7 @@ end
     membership = Membership.create!(
       user_id: 2+i,
       organization_id: j+1,
-      role: "member"
+      role: "employee"
     )
     puts "Tagfelvétel létrehozva: #{membership.user_id} - #{membership.organization_id}"
   end
@@ -52,6 +54,7 @@ end
 5.times do |i|
   project = Project.create!(
     name: "Projekt#{i+1}",
+    description: Faker::Markdown.emphasis,
     organization_id: 1,
     project_manager_id: i+1
   )
@@ -60,12 +63,12 @@ end
 
 500.times do |i|
   task = Task.create!(
-    name: "Feladat#{i+1}",
+    name: Faker::Lorem.sentence,
     organization_id: 1,
     project_id: rand(1..5),
     assignee_id: rand(1..5),
     reporter_id: rand(1..5),
-    description: Faker::Lorem.sentences(number: 5),
+    description: Faker::Markdown.emphasis,
     priority: ["low", "medium", "high"].sample,
     status: ["open", "closed"].sample
   )

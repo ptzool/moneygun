@@ -8,7 +8,7 @@ class Organizations::MembershipsController < Organizations::BaseController
 
   def new
     authorize @organization.memberships.new
-    @form = MembershipInvitation.new(organization: @organization, role: Membership.roles[:member])
+    @form = MembershipInvitation.new(organization: @organization, role: Membership.roles[:employee])
   end
 
   def create
