@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  resources :employee_document_types
   devise_for :users, controllers: { registrations: "users/registrations", sessions: "users/sessions" }
 
   resources :organizations do
@@ -13,9 +12,7 @@ Rails.application.routes.draw do
       end
       resources :comments, only: %i[create]
     end
-    resources :employees, module: :organizations do
-      resources :employee_documents
-    end
+    resources :employees, module: :organizations
   end
 
   get "pricing", to: "static#pricing"

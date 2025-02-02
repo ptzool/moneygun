@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_02_204521) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_02_185225) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -50,21 +50,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_02_204521) do
     t.bigint "task_id", null: false
     t.index ["membership_id"], name: "index_comments_on_membership_id"
     t.index ["task_id"], name: "index_comments_on_task_id"
-  end
-
-  create_table "employee_document_types", force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "employee_documents", force: :cascade do |t|
-    t.bigint "organization_id", null: false
-    t.bigint "employee_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["employee_id"], name: "index_employee_documents_on_employee_id"
-    t.index ["organization_id"], name: "index_employee_documents_on_organization_id"
   end
 
   create_table "employees", force: :cascade do |t|
@@ -177,8 +162,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_02_204521) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "comments", "memberships"
   add_foreign_key "comments", "tasks"
-  add_foreign_key "employee_documents", "employees"
-  add_foreign_key "employee_documents", "organizations"
   add_foreign_key "employees", "memberships"
   add_foreign_key "employees", "organizations"
   add_foreign_key "inboxes", "organizations"
