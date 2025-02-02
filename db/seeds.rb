@@ -7,3 +7,67 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+
+require 'faker'
+
+
+# Normál felhasználók létrehozása
+5.times do |i|
+  user = User.create!(
+    email: "user#{i+1}@example.com",
+    password: 'password123',
+    password_confirmation: 'password123'
+  )
+  puts "Normál felhasználó létrehozva: #{user.email}"
+end
+
+5.times do |i|
+  org = Organization.create!(
+    name: "Org#{i+1}",
+    owner_id: 1
+  )
+  puts "Szervezet létrehozva: #{org.name}"
+end
+
+5.times do |i|
+  membership = Membership.create!(
+    user_id: 1,
+    organization_id: i+1,
+    role: "admin"
+  )
+  puts "Tagfelvétel létrehozva: #{membership.user_id} - #{membership.organization_id}"
+end
+
+4.times do |i|
+  5.times do |j|
+    membership = Membership.create!(
+      user_id: 2+i,
+      organization_id: j+1,
+      role: "member"
+    )
+    puts "Tagfelvétel létrehozva: #{membership.user_id} - #{membership.organization_id}"
+  end
+end
+
+5.times do |i|
+  project = Project.create!(
+    name: "Projekt#{i+1}",
+    organization_id: 1,
+    project_manager_id: i+1
+  )
+  puts "Projekt létrehozva: #{project.name}"
+end
+
+500.times do |i|
+  task = Task.create!(
+    name: "Feladat#{i+1}",
+    organization_id: 1,
+    project_id: rand(1..5),
+    assignee_id: rand(1..5),
+    reporter_id: rand(1..5),
+    description: Faker::Lorem.sentences(number: 5),
+    priority: ["low", "medium", "high"].sample,
+    status: ["open", "closed"].sample
+  )
+  puts "Feladat létrehozva: #{task.name}"
+end

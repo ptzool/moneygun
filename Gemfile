@@ -60,6 +60,7 @@ group :development do
   gem "solargraph"
   gem "htmlbeautifier"
   gem "ruby-lsp"
+  gem "faker"
 end
 
 group :test do

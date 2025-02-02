@@ -141,6 +141,8 @@ GEM
       rubocop (>= 1)
       smart_properties
     erubi (1.13.1)
+    faker (3.5.1)
+      i18n (>= 1.8.11, < 2)
     globalid (1.2.1)
       activesupport (>= 6.1)
     htmlbeautifier (1.4.3)
@@ -441,6 +443,7 @@ DEPENDENCIES
   devise (~> 4.9)
   devise_invitable (~> 2.0)
   erb_lint
+  faker
   htmlbeautifier
   importmap-rails
   inline_svg (~> 1.9)
