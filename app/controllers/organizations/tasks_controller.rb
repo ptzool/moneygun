@@ -4,7 +4,8 @@ class Organizations::TasksController < Organizations::BaseController
 
   def index
     authorize Task
-    @tasks = @organization.tasks.page(params[:page])
+    @tasks = policy_scope(Task).page(params[:page])
+
   end
 
   def show

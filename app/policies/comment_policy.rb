@@ -1,10 +1,10 @@
 class CommentPolicy < Organization::BasePolicy
   def index?
-    membership.admin? || membership.member?
+    membership.admin? || membership.employee?
   end
 
   def show?
-    membership.admin? || membership.member?
+    membership.admin? || membership.employee?
   end
 
   def new?
@@ -12,7 +12,7 @@ class CommentPolicy < Organization::BasePolicy
   end
 
   def create?
-    membership.admin? || membership.member?
+    membership.admin? || membership.employee?
   end
 
   def edit?

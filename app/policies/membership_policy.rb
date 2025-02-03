@@ -21,7 +21,7 @@ class MembershipPolicy < ApplicationPolicy
 
   def destroy?
     return true if membership&.admin?  # Admins can remove anyone
-    return true if membership&.member? && record.user_id == membership.user_id  # Members can remove themselves
+    return true if membership&.employee? && record.user_id == membership.user_id  # Members can remove themselves
     false
   end
 
