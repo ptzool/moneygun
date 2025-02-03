@@ -15,7 +15,7 @@
     <%= link_to "New task", new_organization_task_path(@organization), class: "rounded-lg py-3 px-5 bg-blue-600 text-white block font-medium" %>
   </div>
   <div id="inboxes" class="min-w-full">
-    <% @project.tasks.each do |task| %>
+    <% policy_scope(@project.tasks).each do |task| %>
       <div id="<%= dom_id task %>">
         <p>
           <strong>Organization:</strong>
