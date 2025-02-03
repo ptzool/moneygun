@@ -47,6 +47,9 @@ class OrganizationsController < ApplicationController
     @organization = Organization.find(params[:id])
     @current_membership ||= current_user.memberships.find_by(organization: @organization)
     authorize @organization
+
+  rescue ActiveRecord::RecordNotFound
+    redirect_to organizations_path()
   end
 
   def organization_params
