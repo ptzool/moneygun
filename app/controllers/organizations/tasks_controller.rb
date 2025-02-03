@@ -4,8 +4,7 @@ class Organizations::TasksController < Organizations::BaseController
 
   def index
     authorize Task
-    @tasks = policy_scope(Task).page(params[:page])
-
+    @tasks = policy_scope(@organization.tasks).page(params[:page])
   end
 
   def show
@@ -14,7 +13,6 @@ class Organizations::TasksController < Organizations::BaseController
 
   def new
     @task = @organization.tasks.new
-
     authorize @task
   end
 
@@ -55,9 +53,8 @@ class Organizations::TasksController < Organizations::BaseController
   private
 
   def set_task
-    @task = @organization.tasks.find(params[:id])
+    @task = policy_scope(@organization.tasks).find(params[:id])
     authorize @task
-
   rescue ActiveRecord::RecordNotFound
     redirect_to organization_tasks_path()
   end
