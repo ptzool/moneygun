@@ -1,25 +1,89 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <%= render "layouts/head" %>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
   </head>
-
-  <body class="flex h-screen">
-    <%#= render "shared/sidebar" if signed_in? %>
-    <%= render "shared/sidebar_2_cols" if signed_in? %>
-
-    <div class="flex-grow overflow-y-auto flex flex-col">
-      <header class="sticky z-30 top-0">
-        <%= render "shared/navbar" %>
-        <div id="flash" class="absolute flex flex-col z-40 left-1/2 transform -translate-x-1/2">
-          <%= render "shared/flash" %>
+  <body class="bg-gray-50">
+    <div class="flex min-h-screen">
+      <!-- Sidebar -->
+      <aside class="w-64 border-r border-gray-200 bg-white">
+        <!-- Logo section -->
+        <div class="p-4 border-b border-gray-200">
+          <%= link_to root_path, class: "flex items-center" do %>
+            <span class="ml-2 text-xl font-semibold">AccountIO</span>
+          <% end %>
         </div>
-      </header>
-      <main class="flex-grow p-2 lg:p-4">
-        <%= yield %>
+        <!-- Menu section -->
+        <nav class="p-4">
+          <div class="text-xs font-semibold text-gray-400 uppercase mb-4">MENU</div>
+          <ul>
+            <li>
+              <%= link_to organizations_path(), class: "flex items-center py-2 text-gray-600" do %>
+                <i class="far fa-flag mr-3"></i>
+                <span>Organizations</span>
+              <% end %>
+            </li>
+            <% if @current_membership %>
+              <div class="text-xs font-semibold text-gray-400 uppercase mt-6 mb-4"><%= @organization.name %></div>
+              <li>
+                <%= link_to organization_projects_path(@organization), class: "flex items-center py-2 text-gray-600" do %>
+                  <i class="fas fa-lock mr-3"></i>
+                  <span>Projects</span>
+                <% end %>
+              </li>
+              <li>
+                <%= link_to organization_tasks_path(@organization), class: "flex items-center py-2 text-gray-600" do %>
+                  <i class="fas fa-layer-group mr-3"></i>
+                  <span>Tasks</span>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        </nav>
+      </aside>
+      <!-- Main Content -->
+      <main class="flex-1">
+        <!-- Top Navigation -->
+        <header class="h-16 border-b border-gray-200 bg-white">
+          <div class="flex items-center justify-between px-6 h-full">
+            <!-- Left side -->
+            <div class="flex items-center">
+              <button class="mr-4">
+                <i class="fas fa-chevron-left text-gray-400"></i>
+              </button>
+              <div class="relative">
+                <input type="text" placeholder="Search for..."
+                     class="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm">
+                <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
+              </div>
+            </div>
+            <!-- Right side -->
+            <div class="flex items-center space-x-4">
+              <button class="p-2"><i class="fas fa-sun text-gray-600"></i></button>
+              <button class="p-2"><i class="fas fa-shopping-cart text-gray-600"></i></button>
+              <button class="p-2"><i class="fas fa-bell text-gray-600"></i></button>
+              <button class="p-2"><i class="fas fa-cog text-gray-600"></i></button>
+              <img src="avatar.jpg" class="w-8 h-8 rounded-full">
+            </div>
+          </div>
+        </header>
+        <!-- Page Content -->
+        <div class="p-6">
+          <!-- Breadcrumb -->
+          <div class="flex items-center text-sm mb-6">
+            <span class="text-gray-500"><%= render_breadcrumbs %></span>
+          </div>
+          <!-- Main Content Area -->
+          <div>
+            <%= yield %>
+          </div>
+        </div>
       </main>
-      <%= render "shared/footer" %>
-      <%= render "shared/footer_nav" %>
     </div>
   </body>
 </html>

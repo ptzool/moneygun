@@ -1,29 +1,16 @@
-<div id="<%= dom_id project %>">
-  <p>
-      <% if @project %>
-        <%= image_tag @project.project_logo if @project.project_logo.attached? %>
-      <% else %>
-        <p>A projekt logo nem létezik</p>
-      <% end %>
-  </p>
-  <p>
-    <strong>ID:</strong>
-    <%= project.id %>
-  </p>
-  <p>
-    <strong>Organization:</strong>
-    <%= project.organization_id %>
-  </p>
-  <p>
-    <strong>Name:</strong>
-    <%= project.name %>
-  </p>
-  <p>
-    <strong>Description:</strong>
-    <%= project.description %>
-  </p>
-  <p>
-    <strong>Project manager:</strong>
-    <%= project.project_manager.user.full_name %>
-</p>
-</div>
+<!-- Table rows would be generated dynamically -->
+<tr class="hover:bg-gray-50">
+  <td class="w-4 p-4"><input type="checkbox" class="rounded"></td>
+  <td class="px-6 py-4 text-sm text-blue-500"><%= link_to "##{project.id}", [ @organization, project ] %></td>
+  <td class="px-6 py-4">
+    <div class="font-medium"><%= link_to "#{project.name}", [ @organization, project ] %></div>
+  </td>
+  <td class="px-6 py-4 text-sm"><%= project.description %></td>
+  <td class="px-6 py-4 text-sm"><%= project.project_manager.user.full_name %></td>
+  <td class="px-6 py-4">
+    <span class="px-2 py-1 text-sm text-green-600 bg-green-100 rounded-full"><%= project.created_at %></span>
+  </td>
+  <td class="px-6 py-4">
+    <button class="text-gray-500">...</button>
+  </td>
+</tr>

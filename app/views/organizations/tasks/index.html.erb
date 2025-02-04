@@ -1,20 +1,62 @@
-<div class="w-full">
-  <% content_for :title, "Tasks" %>
-  <div class="flex justify-between items-center">
-    <h1 class="font-bold text-lx lg:text-3xll">Tasks</h1>
-    <% if policy(@tasks).new? %>
-      <%= link_to "New task", new_organization_task_path(@organization), class: "rounded-lg py-3 px-5 bg-blue-600 text-white block font-medium" %>
-    <% end %>
+<div class="container">
+  <!-- Users List Container -->
+  <div class="bg-white rounded-lg shadow">
+    <!-- Header with title and add button -->
+    <div class="flex items-center justify-between p-6 border-b border-gray-200">
+      <h2 class="text-lg font-medium">Tasks</h2>
+      <%= button_to new_organization_task_path(@organization), method: :get, class: "flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600" do %>
+        <span class="mr-2">+</span>
+        Add Task
+      <% end %>
+    </div>
+    <!-- Search and filters -->
+    <div class="p-4 border-b border-gray-200">
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex-1">
+          <input type="text"
+                 placeholder="Search for name, email..."
+                 class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div class="flex items-center gap-4">
+          <select class="px-4 py-2 border text-blue-500 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option>Placeholder</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <!-- Table -->
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="w-4 p-4"><input type="checkbox" class="rounded"></th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Projekt</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Priority</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Planned Start</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Planned End</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Assignee</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Reporter</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <% @tasks.each do |task| %>
+            <%= render task %>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <!-- Pagination -->
+    <div class="flex items-center justify-between px-6 py-4 border-t border-gray-200">
+      <div class="text-sm text-gray-500">
+        ...
+      </div>
+      <div class="flex items-center gap-2">
+        <%= paginate @tasks %>
+      </div>
+    </div>
   </div>
-  <div id="inboxes" class="min-w-full">
-    <% @tasks.each do |task| %>
-      <%= render task %>
-      <p>
-        <%= link_to "Show this task", [ @organization, task ], class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-      </p>
-    <% end %>
-  </div>
-</div>
-<div style="font-size: 2rem;">
-  <%= paginate @tasks %>
 </div>

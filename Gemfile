@@ -84,3 +84,4 @@ gem "nested_scaffold", github: "yshmarov/nested_scaffold"
 
 gem "kaminari"
 gem "paper_trail"
+gem "breadcrumbs_on_rails"

@@ -1,14 +1,17 @@
 class OrganizationsController < ApplicationController
   before_action :set_organization, only: %i[show edit update destroy]
+  before_action :set_default_breadcrumbs
 
   def index
     @organizations = current_user.organizations.includes(:users)
   end
 
   def show
+    add_breadcrumb @organization.name, organization_path(@organization), only: %i[show]
   end
 
   def new
+    add_breadcrumb "New Organization", :new_organization_path, only: %i[new create]
     @organization = Organization.new
   end
 
@@ -54,5 +57,10 @@ class OrganizationsController < ApplicationController
 
   def organization_params
     params.require(:organization).permit(:name, :logo, :address, :email, :registration_number, :tax_number, :iban)
+  end
+
+  def set_default_breadcrumbs
+    add_breadcrumb "Home", :root_path
+    add_breadcrumb "Organizations", :organizations_path
   end
 end

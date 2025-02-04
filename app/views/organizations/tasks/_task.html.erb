@@ -1,42 +1,18 @@
-<div id="<%= dom_id task %>">
-  <p>
-    <strong>Organization:</strong>
-    <%= task.organization_id %>
-  </p>
-  <p>
-    <strong>Project:</strong>
-    <%= task.project.name %>
-  </p>
-  <p>
-    <strong>Name:</strong>
-    <%= task.name %>
-  </p>
-  <p>
-    <strong>Description:</strong>
-    <%= task.description %>
-  </p>
-  <p>
-    <strong>Planned start date:</strong>
-    <%= task.planned_start_date %>
-  </p>
-  <p>
-    <strong>Planned end date:</strong>
-    <%= task.planned_end_date %>
-  </p>
-  <p>
-    <strong>Assignee:</strong>
-    <%= task.assignee.user.full_name %>
-  </p>
-  <p>
-    <strong>Reporter:</strong>
-    <%= task.reporter.user.full_name %>
-  </p>
-  <p>
-    <strong>Priority:</strong>
-    <%= task.priority %>
-  </p>
-  <p>
-    <strong>Status:</strong>
-    <%= task.status %>
-  </p>
-</div>
+<!-- Table rows would be generated dynamically -->
+<tr class="hover:bg-gray-50">
+  <td class="w-4 p-4"><input type="checkbox" class="rounded"></td>
+  <td class="px-6 py-4 text-sm text-blue-500"><%= link_to "##{task.id}", [ @organization, task ] %></td>
+  <td class="px-6 py-4">
+    <div class="font-medium"><%= link_to "#{task.name}", [ @organization, task ] %></div>
+  </td>
+  <td class="px-6 py-4 text-sm"><%= task.project.name %></td>
+  <td class="px-6 py-4 text-sm"><%= task.priority %></td>
+  <td class="px-6 py-4 text-sm"><%= task.status %></td>
+  <td class="px-6 py-4 text-sm"><%= task.planned_start_date %></td>
+  <td class="px-6 py-4 text-sm"><%= task.planned_end_date %></td>
+  <td class="px-6 py-4 text-sm"><%= task.assignee.user.full_name %></td>
+  <td class="px-6 py-4 text-sm"><%= task.reporter.user.full_name %></td>
+  <td class="px-6 py-4">
+    <button class="text-gray-500">...</button>
+  </td>
+</tr>

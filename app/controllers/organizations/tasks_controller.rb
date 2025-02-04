@@ -1,6 +1,8 @@
 class Organizations::TasksController < Organizations::BaseController
   before_action :set_task, only: [ :show, :edit, :update, :destroy, :destroy_attachment ]
   before_action :set_select_collections, only: [ :new, :create, :edit, :update ]
+  before_action :set_default_breadcrumbs
+
 
   def index
     authorize Task
@@ -8,6 +10,7 @@ class Organizations::TasksController < Organizations::BaseController
   end
 
   def show
+    add_breadcrumb @task.name, organization_task_path(@organization, @task)
     @comment = Comment.new
   end
 
@@ -77,5 +80,12 @@ class Organizations::TasksController < Organizations::BaseController
       :assignee_id,
       :reporter_id,
       task_attachments: [])
+  end
+
+  def set_default_breadcrumbs
+    add_breadcrumb "Home", :root_path
+    add_breadcrumb "Organizations", :organizations_path
+    add_breadcrumb @organization.name, organization_path(@organization)
+    add_breadcrumb "Tasks", :organization_tasks_path
   end
 end

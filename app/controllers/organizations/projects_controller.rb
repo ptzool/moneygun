@@ -1,6 +1,7 @@
 class Organizations::ProjectsController < Organizations::BaseController
   before_action :set_project, only: [ :show, :edit, :update, :destroy ]
   before_action :set_select_collections, only: [ :new, :create, :edit, :update ]
+  before_action :set_default_breadcrumbs
 
   def index
     authorize Project
@@ -8,10 +9,11 @@ class Organizations::ProjectsController < Organizations::BaseController
   end
 
   def show
+    add_breadcrumb @project.name, organization_project_path(@organization, @project)
   end
 
   def new
-    @project = @organization.projects.new(reporter_id: @organization.memberships.find_by(user_id: current_user.id))
+    @project = @organization.projects.new(project_manager_id: @organization.memberships.find_by(user_id: current_user.id))
     authorize @project
   end
 
@@ -59,5 +61,12 @@ class Organizations::ProjectsController < Organizations::BaseController
 
   def project_params
     params.require(:project).permit(:organization_id, :name, :description, :project_manager_id, :project_logo)
+  end
+
+  def set_default_breadcrumbs
+    add_breadcrumb "Home", :root_path
+    add_breadcrumb "Organizations", :organizations_path
+    add_breadcrumb @organization.name, organization_path(@organization)
+    add_breadcrumb "Projects", :organization_projects_path
   end
 end
