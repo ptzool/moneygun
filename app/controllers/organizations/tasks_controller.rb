@@ -79,6 +79,8 @@ class Organizations::TasksController < Organizations::BaseController
       :priority,
       :assignee_id,
       :reporter_id,
+      :priority,
+      :status,
       task_attachments: [])
   end
 
