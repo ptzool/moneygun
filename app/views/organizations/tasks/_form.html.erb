@@ -1,77 +1,89 @@
-<%= form_with(model: [ @organization, task ], class: "contents") do |form| %>
-  <% if task.errors.any? %>
-    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-lg mt-3">
-      <h2><%= pluralize(task.errors.count, "error") %> prohibited this project from being saved:</h2>
+<div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-sm">
 
-      <ul>
-        <% task.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
+    <h1 class="text-2xl font-semibold text-gray-900 mb-6">Editing task</h1>
+    <% if task.errors.any? %>
+      <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-lg mt-3">
+        <h2><%= pluralize(task.errors.count, "error") %> prohibited this project from being saved:</h2>
 
-  <div class="">
-    <%= form.label :name %>
-    <%= form.text_field :name, class: "block shadow rounded-md border border-gray-400 outline-none px-3 py-2 mt-2 w-full" %>
-  </div>
-
-  <div class="">
-
-    <%= form.label :description %>
-    <%= form.text_area :description, class: "block shadow rounded-md border border-gray-400 outline-none px-3 py-2 mt-2 w-full" %>
-  </div>
-
-
-    <div class="">
-        <%= form.label :planned_start_date %>
-        <%= form.date_field :planned_start_date, class: "block shadow rounded-md border border-gray-400 outline-none px-3 py-2 mt-2 w-full" %>
-    </div>
-
-    <div class="">
-        <%= form.label :planned_end_date %>
-        <%= form.date_field :planned_end_date, class: "block shadow rounded-md border border-gray-400 outline-none px-3 py-2 mt-2 w-full" %>
-    </div>
-
-
-  <div class="">
-      <%= form.label "Project" %>
-      <%= form.select :project_id, @projects.map { |c| [c.name, c.id] }, { prompt: "Válassz kategóriát" }, { class: "form-control" } %>
-  </div>
-
-  <div class="">
-      <%= form.label "Assignee" %>
-      <%= form.select :assignee_id, @assignees.map { |a| [a.user.full_name, a.id] }, { prompt: "Válassz assigneet" }, { class: "form-control" } %>
-  </div>
-
-  <div class="">
-      <%= form.label "Reported" %>
-      <%= form.label "Reported" %>
-      <%= form.select :reporter_id,
-                      @reporters.map { |pm|
-                        [pm.user.full_name, pm.id, { selected: pm.id == @current_membership.id}]
-                      },
-                      class: 'form-control' %>  </div>
-
-  <div class="">
-    <% @task.task_attachments.each do |attachment| %>
-        <%= form.hidden_field :task_attachments, multiple: true, value: attachment.signed_id %>
+        <ul>
+          <% task.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
     <% end %>
-    <%= form.label :task_attachments %>
-    <%= form.file_field :task_attachments, multiple: true %>
-  </div>
 
-  <div class="">
-      <%= form.label "Priority" %>
-      <%= form.select :priority, Task.priorities.keys.map { |priority| [priority.humanize, priority] }, { prompt: "Válassz prioritást" }, { class: "form-control" } %>
-  </div>
+    <%= form_with(model: [ @organization, task ], class: "space-y-6") do |form| %>
+        <!-- Name Field -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"><%= form.label :name %></label>
+            <%= form.text_field :name, class: "w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+        </div>
 
-    <div class="">
-        <%= form.label "Status" %>
-        <%= form.select :status, Task.statuses.keys.map { |status| [status.humanize, status] }, { prompt: "Válassz státuszt" }, { class: "form-control" } %>
-    </div>
+        <!-- Description Field -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"><%= form.label :description %></label>
+            <%= form.text_area :description, class: "w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+        </div>
 
-  <div class="inline">
-    <%= form.submit class: "rounded-lg py-3 px-5 bg-blue-600 text-white inline-block font-medium cursor-pointer" %>
-  </div>
-<% end %>
+        <!-- Dates -->
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2"><%= form.label :planned_start_date %></label>
+                <%= form.date_field :planned_start_date, class: "w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2"><%= form.label :planned_end_date %></label>
+                <%= form.date_field :planned_end_date, class: "w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+            </div>
+        </div>
+
+        <!-- Dropdowns -->
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2"><%= form.label :project %></label>
+                <%= form.select :project_id, @projects.map { |c| [c.name, c.id] }, { prompt: "Válassz kategóriát" }, { class: "w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" } %>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2"><%= form.label :assignee %></label>
+                <%= form.select :assignee_id, @assignees.map { |a| [a.user.full_name, a.id] }, { prompt: "Válassz assigneet" }, { class: "w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" } %>
+            </div>
+        </div>
+
+        <!-- Reporter -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"><%= form.label :reporter %></label>
+            <%= form.select :reporter_id, @reporters.map { |pm| [pm.user.full_name, pm.id, { selected: pm.id == @current_membership.id}]}, class: 'w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent' %>
+        </div>
+
+        <!-- File Upload -->
+        <div>
+            <% @task.task_attachments.each do |attachment| %>
+                <%= form.hidden_field :task_attachments, multiple: true, value: attachment.signed_id %>
+            <% end %>
+            <label class="block text-sm font-medium text-gray-700 mb-2"><%= form.label :task_attachments %></label>
+            <div class="flex items-center space-x-2">
+            <%= form.file_field :task_attachments, multiple: true, class: "px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50" %>
+            </div>
+        </div>
+
+        <!-- Status and Priority -->
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2"><%= form.label :priority %></label>
+                <%= form.select :priority, Task.priorities.keys.map { |priority| [priority.humanize, priority] }, { prompt: "Válassz prioritást" }, { class: "w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" } %>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2"><%= form.label :status %></label>
+                <%= form.select :status, Task.statuses.keys.map { |status| [status.humanize, status] }, { prompt: "Válassz státuszt" }, { class: "w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" } %>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex space-x-4">
+            <%= form.submit class: "px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700" %>
+            <%= link_to "Show this task", [ @organization, @task ], class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+            <%= link_to "Back to tasks", [ @organization, :tasks ], class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+        </div>
+    <% end %>
+</div>

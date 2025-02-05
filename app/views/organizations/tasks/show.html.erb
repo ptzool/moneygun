@@ -1,92 +1,106 @@
-<div class="mx-auto md:w-2/3 w-full flex">
-  <div class="mx-auto">
-    <%= render @task %>
-    <% if policy(@task).destroy? %>
-      <%= link_to "Edit this task", [ :edit, @organization, @task ], class: "mt-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-    <% end %>
-    <%= link_to "Back to tasks", [ @organization, :tasks ], class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-    <% if policy(@task).destroy? %>
-      <div class="inline-block ml-2">
-        <%= button_to "Destroy this task", [ @organization, @task ], method: :delete, class: "mt-2 rounded-lg py-3 px-5 bg-gray-100 font-medium" %>
+<div class="container mx-auto px-6">
+  <!-- Main Content -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Left Column - Main Info -->
+    <div class="lg:col-span-2 space-y-6">
+      <!-- Task Header Card -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex justify-between items-start mb-4">
+          <h1 class="text-xl font-semibold"><%= @task.name %></h1>
+          <div class="flex gap-2">
+            <%= link_to edit_organization_task_path(@organization, @task), class: "px-3 py-2 text-blue-500 border rounded-lg hover:bg-gray-50" do %>
+              <i class="fas fa-edit"></i>
+              Edit
+            <% end %>
+            <%= link_to organization_task_path(@organization, @task), method: :delete, class: "px-3 py-2 text-red-500 border rounded-lg hover:bg-gray-50", data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } do %>
+              <i class="fas fa-trash"></i>
+              Delete
+            <% end %>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <div>
+            <div class="text-sm text-gray-500 mb-1">Description</div>
+            <p class="text-gray-900 bg-gray-50 p-4 rounded-lg"><%= @task.description %></p>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <div class="text-sm text-gray-500 mb-1">Planned Start Date</div>
+              <div class="text-gray-900"><%= @task.planned_start_date %></div>
+            </div>
+            <div>
+              <div class="text-sm text-gray-500 mb-1">Planned End Date</div>
+              <div class="text-gray-900"><%= @task.planned_end_date %></div>
+            </div>
+          </div>
+        </div>
       </div>
-    <% end %>
+      <!-- Attachments Card -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-medium mb-4">Attachments</h2>
+        <div class="space-y-3">
+          <% if @task.task_attachments.attached? %>
+            <% @task.task_attachments.each do |file| %>
+              <div class="flex items-center p-3 border rounded-lg">
+                <i class="fas fa-file-pdf text-red-500 mr-3"></i>
+                <div class="flex-1">
+                  <div class="text-sm font-medium"><%= link_to file.filename, rails_blob_path(file, disposition: :attachment) %></div>
+                  <div class="text-xs text-gray-500"><%= number_to_human_size(file.blob.byte_size) %></div>
+                </div>
+                <button class="text-blue-500 hover:text-blue-600">
+                  <i class="fas fa-download"></i>Download
+                </button>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+    <!-- Right Column - Meta Info -->
+    <div class="space-y-6">
+      <!-- Status Card -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="space-y-4">
+          <div>
+            <div class="text-sm text-gray-500 mb-1">Status</div>
+            <span class="px-3 py-1 text-sm text-blue-600 bg-blue-100 rounded-full"><%= @task.status %></span>
+          </div>
+          <div>
+            <div class="text-sm text-gray-500 mb-1">Priority</div>
+            <span class="px-3 py-1 text-sm text-red-600 bg-red-100 rounded-full"><%= @task.priority %></span>
+          </div>
+          <div>
+            <div class="text-sm text-gray-500 mb-1">Project</div>
+            <div class="text-blue-500"><%= @task.project.name %></div>
+          </div>
+        </div>
+      </div>
+      <!-- People Card -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-medium mb-4">People</h2>
+        <div class="space-y-4">
+          <div>
+            <div class="text-sm text-gray-500 mb-2">Assignee</div>
+            <div class="flex items-center">
+              <!-- <img class="w-8 h-8 rounded-full mr-3" src="avatar.jpg" alt=""> -->
+              <div>
+                <div class="font-medium"><%= @task.assignee.user.full_name %></div>
+                <div class="text-sm text-gray-500">Graphic Designer</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="text-sm text-gray-500 mb-2">Reporter</div>
+            <div class="flex items-center">
+              <!-- <img class="w-8 h-8 rounded-full mr-3" src="avatar.jpg" alt=""> -->
+              <div>
+                <div class="font-medium"><%= @task.reporter.user.full_name %></div>
+                <div class="text-sm text-gray-500">Team Leader</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
-
-<% content_for :title, "Files" %>
-<%= render PageComponent.new(title: "Files") do |component| %>
-
-    <% if @task.task_attachments.attached? %>
-      <ul class="list-group">
-        <% @task.task_attachments.each do |file| %>
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            <%= link_to file.filename, rails_blob_path(file, disposition: :attachment) %>
-
-            <%= link_to 'Törlés',
-              destroy_attachment_organization_task_path(@organization, @task, file),
-              data: {
-                turbo_method: :delete,
-                turbo_confirm: 'Biztosan törölni szeretnéd?'
-              },
-              class: 'btn btn-danger btn-sm'
-            %>
-          </li>
-        <% end %>
-      </ul>
-    <% else %>
-      <p>Nincsenek feltöltött fájlok</p>
-    <% end %>
-<% end %>
-
-<% content_for :title, "Comments" %>
-
-<%= render PageComponent.new(title: "Comments") do |component| %>
-  <%= render partial: 'organizations/comments/form' %>
-  <div id="comments" class="space-y-4">
-    <% @task.comments.each do |comment| %>
-      <div>
-        <p>Membership: <%= comment.membership.id %></p>
-        <p>Membership: <%= comment.membership.user.full_name %></p>
-        <p>Comment: <%= comment.body %></p>
-        <p>Created At: <%= comment.created_at %></p>
-      </div>
-    <% end %>
-  </div>
-<% end %>
-</br>
-
-<h1>Változtatások története</h1>
-
-<table>
-  <thead>
-    <tr>
-      <th>Időpont</th>
-      <th>Esemény</th>
-      <th>Felhasználó</th>
-      <th>Változtatások</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @task.versions.each do |version| %>
-      <tr>
-        <td><%= version.created_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
-        <td><%= version.event %></td>
-        <td><%= version.whodunnit || 'Ismeretlen' %></td>
-        <td>
-          <% if version.changeset.present? %>
-            <ul>
-              <% version.changeset.each do |attribute, changes| %>
-                <li>
-                  <strong><%= attribute %>:</strong>
-                  <%= changes[0] %> → <%= changes[1] %>
-                </li>
-              <% end %>
-            </ul>
-          <% else %>
-            Nincs részletes változás információ
-          <% end %>
-        </td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>

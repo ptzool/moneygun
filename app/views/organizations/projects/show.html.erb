@@ -1,50 +1,124 @@
-<div class="mx-auto md:w-2/3 w-full flex">
-  <div class="mx-auto">
-    <%= render @project %>
-    <%= link_to "Edit this project", [ :edit, @organization, @project ], class: "mt-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-    <%= link_to "Back to projects", [ @organization, :projects ], class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-    <div class="inline-block ml-2">
-      <%= button_to "Destroy this project", [ @organization, @project ], method: :delete, class: "mt-2 rounded-lg py-3 px-5 bg-gray-100 font-medium" %>
-    </div>
-  </div>
-</div>
-<div class="w-full">
-  <% content_for :title, "Tasks" %>
-  <div class="flex justify-between items-center">
-    <h1 class="font-bold text-lx lg:text-3xll">Tasks</h1>
-    <%= link_to "New task", new_organization_task_path(@organization), class: "rounded-lg py-3 px-5 bg-blue-600 text-white block font-medium" %>
-  </div>
-  <div id="inboxes" class="min-w-full">
-    <% policy_scope(@project.tasks).each do |task| %>
-      <div id="<%= dom_id task %>">
-        <p>
-          <strong>Organization:</strong>
-          <%= task.organization_id %>
-        </p>
-        <p>
-          <strong>Project:</strong>
-          <%= task.project.name %>
-        </p>
-        <p>
-          <strong>Name:</strong>
-          <%= task.name %>
-        </p>
-        <p>
-          <strong>Description:</strong>
-          <%= task.description %>
-        </p>
-        <p>
-          <strong>Planned start date:</strong>
-          <%= task.planned_start_date %>
-        </p>
-        <p>
-          <strong>Planned end date:</strong>
-          <%= task.planned_end_date %>
-        </p>
+<div class="container">
+  <!-- Project Details Container -->
+  <div class="bg-white rounded-lg shadow">
+    <!-- Header with title and actions -->
+    <div class="flex items-center justify-between p-6 border-b border-gray-200">
+      <h2 class="text-lg font-medium">Project Details</h2>
+      <div class="flex gap-3">
+        <%= link_to organization_project_path(@organization, @project), class: "px-4 py-2 text-blue-500 border border-gray-200 rounded-lg hover:bg-gray-50" do %>
+          <i class="fas fa-edit mr-2"></i>
+          Edit
+        <% end %>
+        <%= link_to organization_project_path(@organization, @project),
+            class: "px-4 py-2 text-red-500 border border-gray-200 rounded-lg hover:bg-gray-50",
+            data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } do %>
+          <i class="fas fa-trash mr-2"></i>
+          Delete
+        <% end %>
       </div>
-      <p>
-        <%= link_to "Show this task", [ @organization, task ], class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-      </p>
-    <% end %>
+    </div>
+    <!-- Project Information -->
+    <div class="p-6">
+      <div class="grid grid-cols-2 gap-6">
+        <!-- Project ID -->
+        <div class="col-span-1">
+          <div class="text-sm text-gray-500 mb-1">Project ID</div>
+          <div class="text-blue-500 font-medium">#<%= @project.id %></div>
+        </div>
+        <!-- Created At -->
+        <div class="col-span-1">
+          <div class="text-sm text-gray-500 mb-1">Created At</div>
+          <div class="text-gray-900"><%= @project.created_at %></div>
+        </div>
+        <!-- Project Name -->
+        <div class="col-span-2">
+          <div class="text-sm text-gray-500 mb-1">Project Name</div>
+          <div class="text-gray-900 font-medium"><%= @project.name %></div>
+        </div>
+        <!-- Project Manager -->
+        <div class="col-span-2">
+          <div class="text-sm text-gray-500 mb-1">Project Manager</div>
+          <div class="flex items-center">
+            <div>
+              <div class="font-medium text-gray-900"><%= @project.project_manager.user.full_name %></div>
+              <div class="text-sm text-gray-500"><%= @project.project_manager.user.email %></div>
+            </div>
+          </div>
+        </div>
+        <!-- Description -->
+        <div class="col-span-2">
+          <div class="text-sm text-gray-500 mb-1">Description</div>
+          <div class="text-gray-900 bg-gray-50 p-4 rounded-lg">
+            <p><%= @project.description %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Status Section -->
+    <div class="p-6 border-t border-gray-200">
+      <div class="flex items-center gap-4">
+        <span class="px-3 py-1 text-sm text-green-600 bg-green-100 rounded-full">Active</span>
+        <span class="text-sm text-gray-500">Last updated: 2 hours ago</span>
+      </div>
+    </div>
+    <!-- Users List Container -->
+    <div class="bg-white rounded-lg shadow">
+      <!-- Header with title and add button -->
+      <div class="flex items-center justify-between p-6 border-b border-gray-200">
+        <h2 class="text-lg font-medium">Tasks of Projects (<%= policy_scope(@project.tasks).count %>)</h2>
+        <%= button_to new_organization_task_path(@organization), method: :get, class: "flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600" do %>
+          <span class="mr-2">+</span>
+          Add Task
+        <% end %>
+      </div>
+      <!-- Search and filters -->
+      <div class="p-4 border-b border-gray-200">
+        <div class="flex items-center justify-between gap-4">
+          <div class="flex-1">
+            <input type="text"
+                 placeholder="Search for name, email..."
+                 class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div class="flex items-center gap-4">
+            <select class="px-4 py-2 border text-blue-500 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option>Placeholder</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <!-- Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="w-4 p-4"><input type="checkbox" class="rounded"></th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Projekt</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Priority</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Planned Start</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Planned End</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Assignee</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Reporter</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <% policy_scope(@project.tasks).each do |task| %>
+              <%= render task %>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      <!-- Pagination -->
+      <div class="flex items-center justify-between px-6 py-4 border-t border-gray-200">
+        <div class="text-sm text-gray-500">
+          ...
+        </div>
+        <div class="flex items-center gap-2">
+        </div>
+      </div>
+    </div>
   </div>
 </div>
