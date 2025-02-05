@@ -9,12 +9,10 @@
           <h1 class="text-xl font-semibold"><%= @task.name %></h1>
           <div class="flex gap-2">
             <%= link_to edit_organization_task_path(@organization, @task), class: "px-3 py-2 text-blue-500 border rounded-lg hover:bg-gray-50" do %>
-              <i class="fas fa-edit"></i>
-              Edit
+              <%= icon "pencil-square", class: [ "size-4" ] %>
             <% end %>
             <%= link_to organization_task_path(@organization, @task), method: :delete, class: "px-3 py-2 text-red-500 border rounded-lg hover:bg-gray-50", data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } do %>
-              <i class="fas fa-trash"></i>
-              Delete
+              <%= icon "trash", class: [ "size-4" ] %>
             <% end %>
           </div>
         </div>
@@ -30,7 +28,11 @@
             </div>
             <div>
               <div class="text-sm text-gray-500 mb-1">Planned End Date</div>
-              <div class="text-gray-900"><%= @task.planned_end_date %></div>
+              <% if @task.planned_end_date%>
+                <div class="<%= Date.parse(@task.planned_end_date.strftime("%Y-%m-%d")) < Date.today ? 'text-red-400' : 'text-green-400' %>">
+                  <%= @task.planned_end_date.strftime("%Y-%m-%d") %>
+                </div>
+              <% end %>
             </div>
           </div>
         </div>
@@ -45,11 +47,17 @@
                 <i class="fas fa-file-pdf text-red-500 mr-3"></i>
                 <div class="flex-1">
                   <div class="text-sm font-medium"><%= link_to file.filename, rails_blob_path(file, disposition: :attachment) %></div>
+                  <div class="text-xs text-gray-500"><%= file.created_at %></div>
                   <div class="text-xs text-gray-500"><%= number_to_human_size(file.blob.byte_size) %></div>
                 </div>
-                <button class="text-blue-500 hover:text-blue-600">
-                  <i class="fas fa-download"></i>Download
-                </button>
+                <div class="flex gap-2">
+                  <%= link_to edit_organization_task_path(@organization, @task), class: "px-3 py-2 text-blue-500 border rounded-lg hover:bg-gray-50" do %>
+                    <%= icon "arrow-down-tray", class: [ "size-4" ] %>
+                  <% end %>
+                  <%= link_to edit_organization_task_path(@organization, @task), class: "px-3 py-2 text-red-500 border rounded-lg hover:bg-gray-50" do %>
+                    <%= icon "trash", class: [ "size-4" ] %>
+                  <% end %>
+                </div>
               </div>
             <% end %>
           <% end %>
@@ -71,8 +79,11 @@
           </div>
           <div>
             <div class="text-sm text-gray-500 mb-1">Project</div>
-            <div class="text-blue-500"><%= link_to organization_project_path(@organization, @task.project) do %>  <%= @task.project.name %></div>
-            <% end %>
+            <div class="text-blue-500">
+              <%= link_to organization_project_path(@organization, @task.project) do %>
+                <%= @task.project.name %>
+              <% end %>
+            </div>
           </div>
         </div>
       </div>

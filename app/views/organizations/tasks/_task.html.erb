@@ -5,14 +5,34 @@
   <td class="px-6 py-4">
     <div class="font-medium"><%= link_to "#{task.name}", [ @organization, task ] %></div>
   </td>
-  <td class="px-6 py-4 text-sm"><%= task.project.name %></td>
-  <td class="px-6 py-4 text-sm"><%= task.priority %></td>
-  <td class="px-6 py-4 text-sm"><%= task.status %></td>
+  <td class="px-6 py-4 text-sm">
+    <%= link_to organization_project_path(@organization, task.project), class: "text-blue-500" do %>
+      <%= task.project.name %>
+    <% end %>
+  </td>
+  <td class="px-6 py-4 text-sm">
+    <span class="px-3 py-1 text-sm text-blue-600 bg-blue-100 rounded-full">
+      <%= task.priority %>
+    </span>
+  </td>
+  <td class="px-6 py-4 text-sm">
+    <span class="px-3 py-1 text-sm text-red-600 bg-red-100 rounded-full">
+      <%= task.status %>
+    </span>
+  </td>
   <td class="px-6 py-4 text-sm"><%= task.planned_start_date %></td>
   <td class="px-6 py-4 text-sm"><%= task.planned_end_date %></td>
-  <td class="px-6 py-4 text-sm"><%= task.assignee.user.full_name %></td>
-  <td class="px-6 py-4 text-sm"><%= task.reporter.user.full_name %></td>
   <td class="px-6 py-4">
-    <button class="text-gray-500">...</button>
+    <div class="flex gap-2">
+      <%= link_to organization_task_path(@organization, task), class: "px-3 py-2 text-blue-500 border rounded-lg hover:bg-gray-50" do %>
+        <%= icon "eye", class: [ "size-4" ] %>
+      <% end %>
+      <%= link_to edit_organization_task_path(@organization, task), class: "px-3 py-2 text-green-500 border rounded-lg hover:bg-gray-50" do %>
+        <%= icon "pencil-square", class: [ "size-4" ] %>
+      <% end %>
+      <%= link_to organization_task_path(@organization, task), method: :delete, class: "px-3 py-2 text-red-500 border rounded-lg hover:bg-gray-50", data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } do %>
+        <%= icon "trash", class: [ "size-4" ] %>
+      <% end %>
+    </div>
   </td>
 </tr>
