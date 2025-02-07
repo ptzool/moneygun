@@ -1,0 +1,17 @@
+<% content_for :title, "Membership worklogs" %>
+<%= render PageComponent.new(title: "Membership worklogs") do |component| %>
+  <% component.with_action_list do %>
+    <%= link_to "New membership worklog", new_organization_membership_worklog_path(@organization), class: "btn btn-primary" %>
+  <% end %>
+  <div id="membership_worklogs" class="space-y-4">
+    <% @membership_worklogs.each do |membership_worklog| %>
+      <%= render membership_worklog %>
+      <p>
+        <%= link_to "Show this membership worklog", organization_membership_worklog_path(@organization), class: "btn btn-secondary" %>
+      </p>
+    <% end %>
+  </div>
+<% end %>
+<%= month_calendar do |date| %>
+  <%= date %>
+<% end %>

@@ -2,11 +2,11 @@ class Membership < ApplicationRecord
   belongs_to :organization
   belongs_to :user
 
-  has_many :comments, dependent: :destroy
-  has_many :tasks, dependent: :destroy
-  has_many :projects, dependent: :destroy
-  has_many :assigned_tasks, class_name: 'Task', foreign_key: 'assignee_id'
-  has_many :reported_tasks, class_name: 'Task', foreign_key: 'reporter_id'
+  has_many :comments
+  has_many :tasks
+  has_many :projects
+  has_many :assigned_tasks, class_name: "Task", foreign_key: "assignee_id"
+  has_many :reported_tasks, class_name: "Task", foreign_key: "reporter_id"
 
   enum :role, { admin: "admin", accuontant: "accountant", employee: "employee" }
 

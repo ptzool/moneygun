@@ -35,10 +35,14 @@ class Organizations::MembershipsController < Organizations::BaseController
 
   def destroy
     if @membership.try_destroy
-      if @membership.user == current_user
-        redirect_to organizations_path, notice: "You have left that organization"
-      else
-        redirect_to organization_memberships_path(@organization), notice: "User removed from organization"
+      respond_to do |format|
+        if @membership.user == current_user
+          format.turbo_stream { render turbo_stream: turbo_stream.remove(@membership) }
+          format.html { redirect_to organizations_path, notice: "You have left that organization", status: :see_other }
+        else
+          format.turbo_stream { render turbo_stream: turbo_stream.remove(@membership) }
+          format.html { redirect_to organization_memberships_path, notice: "User removed from organization", status: :see_other }
+        end
       end
     else
       redirect_to organization_memberships_path(@organization), alert: "Failed to remove user from organization"

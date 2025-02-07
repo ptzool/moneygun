@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  organization: one
+  membership: one
+  date: 2025-02-06
+  check_in: 2025-02-06 19:17:50
+  check_out: 2025-02-06 19:17:50
+
+two:
+  organization: two
+  membership: two
+  date: 2025-02-06
+  check_in: 2025-02-06 19:17:50
+  check_out: 2025-02-06 19:17:50

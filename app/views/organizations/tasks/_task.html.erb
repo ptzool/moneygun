@@ -3,7 +3,7 @@
   <td class="w-4 p-4"><input type="checkbox" class="rounded"></td>
   <td class="px-6 py-4 text-sm text-blue-500"><%= link_to "##{task.id}", [ @organization, task ] %></td>
   <td class="px-6 py-4">
-    <div class="font-medium"><%= link_to "#{task.name}", [ @organization, task ] %></div>
+    <%= link_to "#{task.name}", [ @organization, task ] %>
   </td>
   <td class="px-6 py-4 text-sm">
     <%= link_to organization_project_path(@organization, task.project), class: "text-blue-500" do %>

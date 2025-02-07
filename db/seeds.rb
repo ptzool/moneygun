@@ -54,7 +54,7 @@ end
 5.times do |i|
   project = Project.create!(
     name: "Projekt#{i+1}",
-    description: Faker::Markdown.emphasis,
+    description: Faker::Lorem.sentence(word_count: 10, random_words_to_add: 3),
     organization_id: 1,
     project_manager_id: i+1
   )
@@ -68,9 +68,11 @@ end
     project_id: rand(1..5),
     assignee_id: rand(1..5),
     reporter_id: rand(1..5),
-    description: Faker::Markdown.emphasis,
-    priority: ["low", "medium", "high"].sample,
-    status: ["open", "closed"].sample
+    description: Faker::Lorem.sentence(word_count: 60, random_words_to_add: 3),
+    planned_start_date: Faker::Date.between(from: 1.year.ago, to: 1.year.from_now),
+    planned_end_date: Faker::Date.between(from: 1.year.ago, to: 1.year.from_now),
+    priority: [ "low", "medium", "high" ].sample,
+    status: [ "open", "closed" ].sample,
   )
   puts "Feladat létrehozva: #{task.name}"
 end

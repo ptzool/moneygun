@@ -20,6 +20,7 @@ class Organizations::TasksController < Organizations::BaseController
   end
 
   def edit
+    add_breadcrumb @task.name, organization_task_path(@organization, @task)
   end
 
   def create

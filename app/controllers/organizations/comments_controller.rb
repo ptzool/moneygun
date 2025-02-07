@@ -6,9 +6,9 @@ class Organizations::CommentsController < Organizations::BaseController
     authorize @comment
 
     if @comment.save
-      redirect_to organization_task_url(@organization, @task), notice: "Task was successfully created."
+      redirect_to organization_task_url(@organization, @task), notice: "Comment was successfully created."
     else
-      render :new, status: :unprocessable_entity
+      redirect_to organization_task_url(@organization, @task), alert: "Comment was not created."
     end
   end
 
@@ -23,8 +23,5 @@ class Organizations::CommentsController < Organizations::BaseController
 
   def comment_params
     params.require(:comment).permit(:membership_id, :body).merge(membership_id: @current_membership.id, task_id: @task.id)
-
-    # Uncomment to use Pundit permitted attributes
-    # params.require(:comment).permit(policy(@comment).permitted_attributes)
   end
 end

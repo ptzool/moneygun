@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_01_180719) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_06_182208) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -59,6 +59,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_01_180719) do
     t.datetime "updated_at", null: false
     t.index ["name", "organization_id"], name: "index_inboxes_on_name_and_organization_id", unique: true
     t.index ["organization_id"], name: "index_inboxes_on_organization_id"
+  end
+
+  create_table "membership_worklogs", force: :cascade do |t|
+    t.bigint "organization_id", null: false
+    t.bigint "membership_id", null: false
+    t.date "date"
+    t.time "check_in"
+    t.time "check_out"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "type"
+    t.index ["membership_id"], name: "index_membership_worklogs_on_membership_id"
+    t.index ["organization_id"], name: "index_membership_worklogs_on_organization_id"
   end
 
   create_table "memberships", force: :cascade do |t|
@@ -154,6 +167,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_01_180719) do
   add_foreign_key "comments", "memberships"
   add_foreign_key "comments", "tasks"
   add_foreign_key "inboxes", "organizations"
+  add_foreign_key "membership_worklogs", "memberships"
+  add_foreign_key "membership_worklogs", "organizations"
   add_foreign_key "memberships", "organizations"
   add_foreign_key "memberships", "users"
   add_foreign_key "organizations", "users", column: "owner_id"

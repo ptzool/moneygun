@@ -42,7 +42,9 @@
         </thead>
         <tbody class="divide-y divide-gray-200">
           <% @tasks.each do |task| %>
-            <%= render task %>
+            <% cache task do %>
+              <%= render task %>
+            <% end %>
           <% end %>
         </tbody>
       </table>

@@ -61,6 +61,7 @@ group :development do
   gem "htmlbeautifier"
   gem "ruby-lsp"
   gem "faker"
+  gem "debugbar"
 end
 
 group :test do
@@ -86,3 +87,4 @@ gem "kaminari"
 gem "paper_trail"
 gem "breadcrumbs_on_rails"
 gem "rails_icons"
+gem "simple_calendar"
