@@ -3,10 +3,15 @@ class Organizations::TasksController < Organizations::BaseController
   before_action :set_select_collections, only: [ :new, :create, :edit, :update ]
   before_action :set_default_breadcrumbs
 
-
   def index
     authorize Task
-    @tasks = policy_scope(@organization.tasks).page(params[:page])
+    @tasks = policy_scope(@organization.tasks)
+      .by_priority(params[:priority])
+      .by_status(params[:status])
+      .by_planned_start_date(params[:planned_start_date])
+      .by_planned_end_date(params[:planned_end_date])
+      .order(created_at: :desc)
+      .page(params[:page]).per(15)
   end
 
   def show

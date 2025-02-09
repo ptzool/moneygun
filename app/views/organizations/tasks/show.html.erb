@@ -71,16 +71,20 @@
         <div class="space-y-4">
           <div>
             <div class="text-sm text-gray-500 mb-1">Status</div>
-            <span class="px-3 py-1 text-sm text-blue-600 bg-blue-100 rounded-full"><%= @task.status %></span>
+            <span class="px-3 py-1 text-sm <%= status_badge_color(@task.status) %> rounded-full">
+              <%= @task.status %>
+            </span>
           </div>
           <div>
             <div class="text-sm text-gray-500 mb-1">Priority</div>
-            <span class="px-3 py-1 text-sm text-red-600 bg-red-100 rounded-full"><%= @task.priority %></span>
+            <span class="px-3 py-1 text-sm <%= priority_badge_color(@task.priority) %> rounded-full">
+              <%= @task.priority %>
+            </span>
           </div>
           <div>
             <div class="text-sm text-gray-500 mb-1">Project</div>
-            <div class="text-blue-500">
-              <%= link_to organization_project_path(@organization, @task.project) do %>
+            <div>
+              <%= link_to organization_project_path(@organization, @task.project), class: "px-2.5 py-0.5 text-xs font-medium inline-block rounded border bg-#{@task.project.color}-500 border-#{@task.project.color}-500 text-#{@task.project.color}-50" do %>
                 <%= @task.project.name %>
               <% end %>
             </div>
@@ -94,7 +98,7 @@
           <div>
             <div class="text-sm text-gray-500 mb-2">Assignee</div>
             <div class="flex items-center">
-              <!-- <img class="w-8 h-8 rounded-full mr-3" src="avatar.jpg" alt=""> -->
+              <%= icon "user-circle", class: [ "size-12 text-gray-400" ] %>
               <div>
                 <div class="font-medium"><%= @task.assignee.user.full_name %></div>
                 <div class="text-sm text-gray-500">Graphic Designer</div>
@@ -104,7 +108,7 @@
           <div>
             <div class="text-sm text-gray-500 mb-2">Reporter</div>
             <div class="flex items-center">
-              <!-- <img class="w-8 h-8 rounded-full mr-3" src="avatar.jpg" alt=""> -->
+              <%= icon "user-circle", class: [ "size-12 text-gray-400" ] %>
               <div>
                 <div class="font-medium"><%= @task.reporter.user.full_name %></div>
                 <div class="text-sm text-gray-500">Team Leader</div>
@@ -128,22 +132,32 @@
         </div>
       <% end %>
       <!-- Comment List -->
-      <div class="space-y-4 p-6">
-        <% @task.comments.each do |comment| %>
-          <div class="flex space-x-4">
-            <div class="flex-shrink-0">
-              <div class="w-10 h-10 rounded-full bg-gray-200"></div>
+      </br>
+      <div class="relative p">
+        <!-- Függőleges vonal -->
+        <div class="absolute left-8 top-0 h-full w-px bg-gray-200"></div>
+
+        <!-- Timeline elemek -->
+        <div class="space-y-8">
+          <!-- Egy timeline elem -->
+          <% @task.comments.each do |comment| %>
+          <div class="relative flex gap-x-4">
+            <!-- Avatar konténer -->
+            <div class="relative z-10">
+                <%= image_tag "avatar-1.png", alt: "Kép leírása", class: "h-16 w-16 rounded-full bg-white ring-1 ring-gray-200" %>
             </div>
-            <div class="flex-grow">
-              <div class="flex items-center mb-1">
-                <span class="font-medium mr-2"><%= comment.membership.user.full_name %></span>
-                <span class="text-sm text-gray-500"><%= comment.created_at %></span>
-              </div>
-              <p class="text-gray-600"><%= comment.body %></p>
+
+            <!-- Tartalom -->
+            <div class="flex flex-col flex-1">
+              <h3 class="text-lg font-semibold text-gray-900"><%= comment.membership.user.full_name %></h3>
+              <p class="text-gray-500"><%= comment.body %></p>
+              <span class="text-sm text-gray-400"><%= comment.created_at %></span>
             </div>
           </div>
-        <% end %>
+          <% end %>
+        </div>
       </div>
+
     </div>
   </div>
 </div>

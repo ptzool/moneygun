@@ -10,6 +10,12 @@ class Organizations::ProjectsController < Organizations::BaseController
 
   def show
     add_breadcrumb @project.name, organization_project_path(@organization, @project)
+
+    @project_tasks = policy_scope(@project.tasks)
+      .by_priority(params[:priority])
+      .by_status(params[:status])
+      .order(created_at: :desc)
+      .page(params[:page]).per(10)
   end
 
   def new

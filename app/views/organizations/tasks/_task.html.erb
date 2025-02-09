@@ -6,17 +6,18 @@
     <%= link_to "#{task.name}", [ @organization, task ] %>
   </td>
   <td class="px-6 py-4 text-sm">
-    <%= link_to organization_project_path(@organization, task.project), class: "text-blue-500" do %>
+    <%= link_to organization_project_path(@organization, task.project),
+        class: "px-2.5 py-0.5 text-xs font-medium inline-block rounded border bg-#{task.project.color}-500 border-#{task.project.color}-500 text-#{task.project.color}-50" do %>
       <%= task.project.name %>
     <% end %>
   </td>
   <td class="px-6 py-4 text-sm">
-    <span class="px-3 py-1 text-sm text-blue-600 bg-blue-100 rounded-full">
+    <span class="px-3 py-1 text-sm <%= priority_badge_color(task.priority) %> rounded-full">
       <%= task.priority %>
     </span>
   </td>
   <td class="px-6 py-4 text-sm">
-    <span class="px-3 py-1 text-sm text-red-600 bg-red-100 rounded-full">
+    <span class="px-3 py-1 text-sm <%= status_badge_color(task.status) %> rounded-full">
       <%= task.status %>
     </span>
   </td>
