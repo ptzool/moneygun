@@ -11,6 +11,7 @@ class Organizations::TasksController < Organizations::BaseController
       .by_planned_start_date(params[:planned_start_date])
       .by_planned_end_date(params[:planned_end_date])
       .order(created_at: :desc)
+      .from_active_projects()
       .page(params[:page]).per(15)
   end
 
@@ -69,7 +70,7 @@ class Organizations::TasksController < Organizations::BaseController
   end
 
   def set_select_collections
-    @projects = @organization.projects
+    @projects = @organization.projects.where(archived: false)
     @assignees = @organization.memberships
     @reporters = @organization.memberships
   end

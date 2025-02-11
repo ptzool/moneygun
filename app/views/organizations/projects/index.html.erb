@@ -12,16 +12,14 @@
     <!-- Search and filters -->
     <div class="p-4 border-b border-gray-200">
       <div class="flex items-center justify-between gap-4">
-        <div class="flex-1">
-          <input type="text"
-                 placeholder="Search for name, email..."
-                 class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-        </div>
-        <div class="flex items-center gap-4">
-          <select class="px-4 py-2 border text-blue-500 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <option>Placeholder</option>
-          </select>
-        </div>
+        <%= form_with method: :get, class: "flex gap-4" do |f| %>
+          <%= f.label :archived, "Archived", class: "text-sm text-gray-500" %>
+          <%= f.select :archived,
+                  options_for_select([ 'true', 'false' ], params[:archived]),
+                  { include_blank: 'Archived' },
+                  class: "px-10 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+          <%= f.submit "Filter", class: "flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600" %>
+        <% end %>
       </div>
     </div>
     <!-- Table -->
@@ -33,6 +31,7 @@
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Project Manager</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Archived</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created At</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
           </tr>

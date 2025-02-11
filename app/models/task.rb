@@ -28,4 +28,6 @@ class Task < ApplicationRecord
       where(status: "open")
     end
   }
+
+  scope :from_active_projects, -> { joins(:project).merge(Project.active) }
 end

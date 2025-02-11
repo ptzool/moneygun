@@ -5,7 +5,11 @@ class Organizations::ProjectsController < Organizations::BaseController
 
   def index
     authorize Project
-    @projects = @organization.projects.page(params[:page])
+    @projects = @organization.projects
+      .order(created_at: :desc)
+      .by_archived(params[:archived])
+      .page(params[:page])
+      .per(25)
   end
 
   def show
@@ -66,7 +70,7 @@ class Organizations::ProjectsController < Organizations::BaseController
   end
 
   def project_params
-    params.require(:project).permit(:organization_id, :name, :description, :project_manager_id, :project_logo)
+    params.require(:project).permit(:organization_id, :name, :description, :project_manager_id, :project_logo, :archived)
   end
 
   def set_default_breadcrumbs
