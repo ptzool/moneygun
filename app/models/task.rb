@@ -8,6 +8,7 @@ class Task < ApplicationRecord
   enum :priority, { low: "low", medium: "medium", high: "high" }
 
   has_many :comments, dependent: :destroy
+  has_many :task_timetrackings, dependent: :destroy
   has_many_attached :task_attachments
 
   validates :name, presence: true

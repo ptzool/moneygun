@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_09_215820) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_13_195814) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -110,6 +110,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_09_215820) do
     t.index ["project_manager_id"], name: "index_projects_on_project_manager_id"
   end
 
+  create_table "task_timetrackings", force: :cascade do |t|
+    t.bigint "task_id", null: false
+    t.bigint "membership_id", null: false
+    t.date "date"
+    t.time "start"
+    t.time "end"
+    t.integer "duration"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["membership_id"], name: "index_task_timetrackings_on_membership_id"
+    t.index ["task_id"], name: "index_task_timetrackings_on_task_id"
+  end
+
   create_table "tasks", force: :cascade do |t|
     t.bigint "organization_id", null: false
     t.bigint "project_id", null: false
@@ -176,6 +189,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_09_215820) do
   add_foreign_key "organizations", "users", column: "owner_id"
   add_foreign_key "projects", "memberships", column: "project_manager_id"
   add_foreign_key "projects", "organizations"
+  add_foreign_key "task_timetrackings", "memberships"
+  add_foreign_key "task_timetrackings", "tasks"
   add_foreign_key "tasks", "memberships", column: "assignee_id"
   add_foreign_key "tasks", "memberships", column: "reporter_id"
   add_foreign_key "tasks", "organizations"

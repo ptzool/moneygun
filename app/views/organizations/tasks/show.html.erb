@@ -38,19 +38,20 @@
         </div>
       </div>
       <!-- Attachments Card -->
+      <% if @task.task_attachments.attached? %>
       <div class="bg-white rounded-lg shadow p-6">
         <h2 class="text-lg font-medium mb-4">Attachments</h2>
         <div class="space-y-3">
           <% if @task.task_attachments.attached? %>
             <% @task.task_attachments.each do |file| %>
-              <div class="flex items-center p-3 border rounded-lg">
+              <div class="flex items-center p-1 border rounded-lg">
                 <i class="fas fa-file-pdf text-red-500 mr-3"></i>
                 <div class="flex-1">
-                  <div class="text-sm font-medium"><%= link_to file.filename, rails_blob_path(file, disposition: :attachment) %></div>
-                  <div class="text-xs text-gray-500"><%= file.created_at %></div>
+                  <div class="text-sm font-small"><%= link_to file.filename, rails_blob_path(file, disposition: :attachment) %></div>
+                  <div class="text-xs text-gray-500"><%= file.created_at.strftime("%Y-%m-%d %H:%M") %></div>
                   <div class="text-xs text-gray-500"><%= number_to_human_size(file.blob.byte_size) %></div>
                 </div>
-                <div class="flex gap-2">
+                <div class="flex gap-2 px-2">
                   <%= link_to edit_organization_task_path(@organization, @task), class: "px-3 py-2 text-blue-500 border rounded-lg hover:bg-gray-50" do %>
                     <%= icon "arrow-down-tray", class: [ "size-4" ] %>
                   <% end %>
@@ -63,6 +64,59 @@
           <% end %>
         </div>
       </div>
+      <% end %>
+      <!-- Time trackings Card -->
+      <% if @task.task_timetrackings.any? %>
+      <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-medium mb-4">Time Trackings</h2>
+        <div class="space-y-3">
+            <% @task.task_timetrackings.each do |time_tracking| %>
+              <div class="flex items-center space-x-2">
+                <%= time_tracking.membership.user.full_name %>
+                <%= time_tracking.date %>
+                <%= time_tracking.duration %>
+              </div>
+            <% end %>
+        </div>
+      </div>
+      <% end %>
+      <!-- Comments Card -->
+      <div class="bg-white rounded-lg shadow p-6">
+          <h2 class="text-lg font-semibold mb-4">Comments</h2>
+          <!-- Comment Form -->
+          <%= form_with(model: [ @organization, @task, @comment ], class: "contents space-y-4") do |form| %>
+            <div class="mb-4">
+              <%= form.textarea :body, class: "w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+              <%= form.submit class: "mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700" %>
+            </div>
+          <% end %>
+          <!-- Comment List -->
+          </br>
+          <div class="relative p">
+            <!-- Függőleges vonal -->
+            <div class="absolute left-8 top-0 h-full w-px bg-gray-200"></div>
+
+            <!-- Timeline elemek -->
+            <div class="space-y-8">
+              <!-- Egy timeline elem -->
+              <% @task.comments.each do |comment| %>
+              <div class="relative flex gap-x-4">
+                <!-- Avatar konténer -->
+                <div class="relative z-10">
+                    <%= image_tag "avatar-1.png", alt: "Kép leírása", class: "h-16 w-16 rounded-full bg-white ring-1 ring-gray-200" %>
+                </div>
+
+                <!-- Tartalom -->
+                <div class="flex flex-col flex-1">
+                  <h3 class="text-lg font-semibold text-gray-900"><%= comment.membership.user.full_name %></h3>
+                  <p class="text-gray-500"><%= comment.body %></p>
+                  <span class="text-sm text-gray-400"><%= comment.created_at %></span>
+                </div>
+              </div>
+              <% end %>
+            </div>
+          </div>
+      </div>
     </div>
     <!-- Right Column - Meta Info -->
     <div class="space-y-6">
@@ -70,20 +124,24 @@
       <div class="bg-white rounded-lg shadow p-6">
         <div class="space-y-4">
           <div>
-            <div class="text-sm text-gray-500 mb-1">Status</div>
-            <span class="px-3 py-1 text-sm <%= status_badge_color(@task.status) %> rounded-full">
-              <%= @task.status %>
-            </span>
+            <div class="text-sm text-gray-500 mb-1">
+                Status:
+                <span class="px-3 py-1 text-sm <%= status_badge_color(@task.status) %> rounded-full">
+                <%= @task.status %>
+                </span>
+            </div>
           </div>
           <div>
-            <div class="text-sm text-gray-500 mb-1">Priority</div>
-            <span class="px-3 py-1 text-sm <%= priority_badge_color(@task.priority) %> rounded-full">
-              <%= @task.priority %>
-            </span>
+            <div class="text-sm text-gray-500 mb-1">
+                Priority:
+                <span class="px-3 py-1 text-sm <%= priority_badge_color(@task.priority) %> rounded-full">
+                <%= @task.priority %>
+                </span>
+            </div>
           </div>
           <div>
-            <div class="text-sm text-gray-500 mb-1">Project</div>
-            <div>
+            <div class="text-sm text-gray-500 mb-1">
+             Project:
               <%= link_to organization_project_path(@organization, @task.project), class: "px-2.5 py-0.5 text-xs font-medium inline-block rounded border bg-#{@task.project.color}-500 border-#{@task.project.color}-500 text-#{@task.project.color}-50" do %>
                 <%= @task.project.name %>
               <% end %>
@@ -93,7 +151,6 @@
       </div>
       <!-- People Card -->
       <div class="bg-white rounded-lg shadow p-6">
-        <h2 class="text-lg font-medium mb-4">People</h2>
         <div class="space-y-4">
           <div>
             <div class="text-sm text-gray-500 mb-2">Assignee</div>
@@ -117,47 +174,41 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
-</div>
-<div class="container mx-auto px-6 p-6"">
-  <div class="grid grid-cols-1">
-    <div class="bg-white rounded-lg shadow p-6">
-      <h2 class="text-lg font-semibold mb-4">Comments</h2>
-      <!-- Comment Form -->
-      <%= form_with(model: [ @organization, @task, @comment ], class: "contents space-y-4") do |form| %>
-        <div class="mb-4">
-          <%= form.textarea :body, class: "w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
-          <%= form.submit class: "mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700" %>
-        </div>
-      <% end %>
-      <!-- Comment List -->
-      </br>
-      <div class="relative p">
-        <!-- Függőleges vonal -->
-        <div class="absolute left-8 top-0 h-full w-px bg-gray-200"></div>
+      <!-- Timetracking Card -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-medium mb-4">Timetracker</h2>
+        <div class="space-y-4">
+          <div>
+              <%= form_with(model: [ @organization, @task, @task_timetracking ], class: "contents space-y-4") do |form| %>
+                <%= render "shared/errors", object: form.object %>
 
-        <!-- Timeline elemek -->
-        <div class="space-y-8">
-          <!-- Egy timeline elem -->
-          <% @task.comments.each do |comment| %>
-          <div class="relative flex gap-x-4">
-            <!-- Avatar konténer -->
-            <div class="relative z-10">
-                <%= image_tag "avatar-1.png", alt: "Kép leírása", class: "h-16 w-16 rounded-full bg-white ring-1 ring-gray-200" %>
-            </div>
+                <div>
+                  <%= form.label :date, class: "block text-sm font-medium text-gray-700 mb-2" %>
+                  <%= form.date_field :date, value: Date.today, class: "w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+                </div>
 
-            <!-- Tartalom -->
-            <div class="flex flex-col flex-1">
-              <h3 class="text-lg font-semibold text-gray-900"><%= comment.membership.user.full_name %></h3>
-              <p class="text-gray-500"><%= comment.body %></p>
-              <span class="text-sm text-gray-400"><%= comment.created_at %></span>
-            </div>
+                <div>
+                  <%= form.label :start, class: "block text-sm font-medium text-gray-700 mb-2" %>
+                  <%= form.time_field :start, value: Time.current.strftime("%H:%M"), class: "w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+                </div>
+
+                <div>
+                  <%= form.label :end, class: "block text-sm font-medium text-gray-700 mb-2" %>
+                  <%= form.time_field :end, value: 1.hour.from_now.strftime("%H:%M"), class: "w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+                </div>
+
+                <div>
+                  <%= form.label :duration, class: "block text-sm font-medium text-gray-700 mb-2" %>
+                  <%= form.number_field :duration, class: "w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+                </div>
+
+                <div class="flex space-x-4">
+                  <%= form.submit class: "px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700" %>
+                </div>
+              <% end %>
           </div>
-          <% end %>
         </div>
       </div>
-
     </div>
   </div>
 </div>

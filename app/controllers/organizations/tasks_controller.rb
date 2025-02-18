@@ -18,6 +18,7 @@ class Organizations::TasksController < Organizations::BaseController
   def show
     add_breadcrumb @task.name, organization_task_path(@organization, @task)
     @comment = Comment.new
+    @task_timetracking = TaskTimetracking.new
   end
 
   def new

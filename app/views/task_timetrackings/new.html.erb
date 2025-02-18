@@ -1,0 +1,4 @@
+<%= render PageComponent.new(title: "New task timetracking", content_container: true, full_width: false) do |component| %>
+  <%= render "form", task_timetracking: @task_timetracking %>
+  <%= link_to "Cancel", task_timetrackings_path, class: "btn btn-secondary" %>
+<% end %>

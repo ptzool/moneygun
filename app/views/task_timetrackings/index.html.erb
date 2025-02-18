@@ -1,0 +1,16 @@
+<% content_for :title, "Task timetrackings" %>
+
+<%= render PageComponent.new(title: "Task timetrackings") do |component| %>
+  <% component.with_action_list do %>
+    <%= link_to "New task timetracking", new_task_timetracking_path, class: "btn btn-primary" %>
+  <% end %>
+
+  <div id="task_timetrackings" class="space-y-4">
+    <% @task_timetrackings.each do |task_timetracking| %>
+      <%= render task_timetracking %>
+      <p>
+        <%= link_to "Show this task timetracking", task_timetracking, class: "btn btn-secondary" %>
+      </p>
+    <% end %>
+  </div>
+<% end %>

@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  task: one
+  membership: one
+  date: 2025-02-13
+  start: 2025-02-13 20:58:14
+  end: 2025-02-13 20:58:14
+  duration: 1
+
+two:
+  task: two
+  membership: two
+  date: 2025-02-13
+  start: 2025-02-13 20:58:14
+  end: 2025-02-13 20:58:14
+  duration: 1

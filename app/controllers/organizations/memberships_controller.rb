@@ -1,5 +1,6 @@
 class Organizations::MembershipsController < Organizations::BaseController
   before_action :set_membership, only: [ :edit, :update, :destroy ]
+  before_action :set_default_breadcrumbs
 
   def index
     authorize Membership
@@ -23,6 +24,7 @@ class Organizations::MembershipsController < Organizations::BaseController
   end
 
   def edit
+    add_breadcrumb @membership.user.full_name
   end
 
   def update
@@ -58,5 +60,12 @@ class Organizations::MembershipsController < Organizations::BaseController
 
   def membership_params
     params.require(:membership).permit(:role)
+  end
+
+  def set_default_breadcrumbs
+    add_breadcrumb "Home", :root_path
+    add_breadcrumb "Organizations", :organizations_path
+    add_breadcrumb @organization.name, organization_path(@organization)
+    add_breadcrumb "Members", :organization_memberships_path
   end
 end
