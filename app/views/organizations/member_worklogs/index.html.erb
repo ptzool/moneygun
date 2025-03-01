@@ -1,0 +1,16 @@
+<% content_for :title, "Member worklogs" %>
+
+<%= render PageComponent.new(title: "Member worklogs") do |component| %>
+  <% component.with_action_list do %>
+    <%= link_to "New member worklog", new_member_worklog_path, class: "btn btn-primary" %>
+  <% end %>
+
+  <div id="member_worklogs" class="space-y-4">
+    <% @member_worklogs.each do |member_worklog| %>
+      <%= render member_worklog %>
+      <p>
+        <%= link_to "Show this member worklog", member_worklog, class: "btn btn-secondary" %>
+      </p>
+    <% end %>
+  </div>
+<% end %>

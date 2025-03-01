@@ -63,9 +63,9 @@ class Organizations::MembershipsController < Organizations::BaseController
   end
 
   def set_default_breadcrumbs
-    add_breadcrumb "Home", :root_path
-    add_breadcrumb "Organizations", :organizations_path
+    add_breadcrumb t("breadcrumbs.home"), :root_path
+    add_breadcrumb t("breadcrumbs.organizations"), :organizations_path
     add_breadcrumb @organization.name, organization_path(@organization)
-    add_breadcrumb "Members", :organization_memberships_path
+    add_breadcrumb t("breadcrumbs.members"), :organization_memberships_path
   end
 end

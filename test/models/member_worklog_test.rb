@@ -1,6 +1,6 @@
 require "test_helper"
 
-class MembershipWorklogTest < ActiveSupport::TestCase
+class MemberWorklogTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

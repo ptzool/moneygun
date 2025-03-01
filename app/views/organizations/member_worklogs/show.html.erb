@@ -1,0 +1,30 @@
+<%= render PageComponent.new(title: "Member worklog") do |component| %>
+  <% component.with_action_list do %>
+    <%= link_to "Edit", edit_member_worklog_path(@member_worklog), class: "btn btn-secondary" if policy(@member_worklog).edit? %>
+    <div class="inline-block">
+      <%= button_to "Destroy", @member_worklog, method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "btn btn-danger" if policy(@member_worklog).destroy? %>
+    </div>
+  <% end %>
+<% end %>
+
+<div class="card shadow">
+  <div class="card-body">
+  
+    <b>Organization:</b>
+    <%= @member_worklog.organization %>
+    <br>
+  
+    <b>Membership:</b>
+    <%= @member_worklog.membership %>
+    <br>
+  
+    <b>Date:</b>
+    <%= @member_worklog.date %>
+    <br>
+  
+    <b>Type:</b>
+    <%= @member_worklog.type %>
+    <br>
+  
+  </div>
+</div>

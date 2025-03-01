@@ -3,13 +3,11 @@
 one:
   organization: one
   membership: one
-  date: 2025-02-06
-  check_in: 2025-02-06 19:17:50
-  check_out: 2025-02-06 19:17:50
+  date: 2025-02-20
+  type: 
 
 two:
   organization: two
   membership: two
-  date: 2025-02-06
-  check_in: 2025-02-06 19:17:50
-  check_out: 2025-02-06 19:17:50
+  date: 2025-02-20
+  type: 

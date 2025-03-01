@@ -11,7 +11,7 @@ class Organizations::TasksController < Organizations::BaseController
       .by_planned_start_date(params[:planned_start_date])
       .by_planned_end_date(params[:planned_end_date])
       .order(created_at: :desc)
-      .from_active_projects()
+      .from_active_projects
       .page(params[:page]).per(15)
   end
 
@@ -35,7 +35,7 @@ class Organizations::TasksController < Organizations::BaseController
     authorize @task
 
     if @task.save
-      redirect_to organization_task_url(@organization, @task), notice: "Task was successfully created."
+      redirect_to organization_task_url(@organization, @task), notice: t("tasks.create.success")
     else
       render :new, status: :unprocessable_entity
     end
@@ -43,7 +43,7 @@ class Organizations::TasksController < Organizations::BaseController
 
   def update
     if @task.update(task_params)
-      redirect_to organization_task_url(@organization, @task), notice: "Task was successfully updated."
+      redirect_to organization_task_url(@organization, @task), notice: t("tasks.update.success")
     else
       render :edit, status: :unprocessable_entity
     end
@@ -51,23 +51,22 @@ class Organizations::TasksController < Organizations::BaseController
 
   def destroy
     @task.destroy!
-
-    redirect_to organization_tasks_url(@organization), notice: "Task was successfully destroyed."
+    redirect_to organization_tasks_url(@organization), notice: t("tasks.destroy.success")
   end
 
   def destroy_attachment
-    @task_attachment = @task.task_attachments.find(params[:attachment_id])
+    @task_attachment = @task.task_attachments.find_by!(id: params[:attachment_id])
     @task_attachment.purge
-    redirect_to organization_task_url(@organization, @task), notice: "Task attachment was successfully deleted.", status: 303
+    redirect_to organization_task_url(@organization, @task), notice: t("tasks.attachments.destroy.success"), status: :see_other
   end
 
   private
 
   def set_task
-    @task = policy_scope(@organization.tasks).find(params[:id])
+    @task = policy_scope(@organization.tasks).find_by!(id: params[:id])
     authorize @task
   rescue ActiveRecord::RecordNotFound
-    redirect_to organization_tasks_path()
+    redirect_to organization_tasks_path, alert: t("tasks.not_found")
   end
 
   def set_select_collections
@@ -78,7 +77,6 @@ class Organizations::TasksController < Organizations::BaseController
 
   def task_params
     params.require(:task).permit(
-      :organization_id,
       :project_id,
       :name,
       :description,
@@ -87,15 +85,15 @@ class Organizations::TasksController < Organizations::BaseController
       :priority,
       :assignee_id,
       :reporter_id,
-      :priority,
       :status,
-      task_attachments: [])
+      task_attachments: []
+    )
   end
 
   def set_default_breadcrumbs
-    add_breadcrumb "Home", :root_path
-    add_breadcrumb "Organizations", :organizations_path
+    add_breadcrumb t("breadcrumbs.home"), :root_path
+    add_breadcrumb t("breadcrumbs.organizations"), :organizations_path
     add_breadcrumb @organization.name, organization_path(@organization)
-    add_breadcrumb "Tasks", :organization_tasks_path
+    add_breadcrumb t("breadcrumbs.tasks"), :organization_tasks_path
   end
 end

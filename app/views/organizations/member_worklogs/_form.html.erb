@@ -1,0 +1,27 @@
+<%= form_with(model: member_worklog, class: "contents space-y-4") do |form| %>
+  <%= render "shared/errors", object: form.object %>
+
+  <div>
+    <%= form.label :organization_id, style: "display: block" %>
+    <%= form.text_field :organization_id, class: "form-input" %>
+  </div>
+
+  <div>
+    <%= form.label :membership_id, style: "display: block" %>
+    <%= form.text_field :membership_id, class: "form-input" %>
+  </div>
+
+  <div>
+    <%= form.label :date, style: "display: block" %>
+    <%= form.date_field :date, class: "form-input" %>
+  </div>
+
+  <div>
+    <%= form.label :type, style: "display: block" %>
+    <%= form.text_field :type, class: "form-input" %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "btn btn-primary" %>
+  </div>
+<% end %>

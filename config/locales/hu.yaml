@@ -1,0 +1,9 @@
+hu:
+  sidebar:
+    dashboard: "Irányítópult"
+    users: "Felhasználók"
+    inboxes: "Beérkező üzenetek"
+    projects: "Projektek"
+    tasks: "Feladatok"
+    task_timetrackings: "Feladat időkövetés"
+    member_worklogs: "Tag munkanaplók"
