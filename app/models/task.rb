@@ -19,9 +19,19 @@ class Task < ApplicationRecord
   has_paper_trail
 
   # Scopes
-  scope :by_priority, ->(priority) { where(priority: priority) if priority.present? }
-  scope :by_planned_start_date, ->(date) { where("planned_start_date >= ?", date) if date.present? }
-  scope :by_planned_end_date, ->(date) { where("planned_end_date >= ?", date) if date.present? }
-  scope :by_status, ->(status = nil) { status.present? ? where(status: status) : where(status: "open") }
-  scope :from_active_projects, -> { joins(:project).merge(Project.active) }
+  scope :filter_by_priority, ->(priority) { where(priority: priority) if priority.present? }
+  scope :filter_by_planned_start_date, ->(date) { where("planned_start_date >= ?", date) if date.present? }
+  scope :filter_by_planned_end_date, ->(date) { where("planned_end_date >= ?", date) if date.present? }
+  scope :filter_by_status, ->(status = nil) { status.present? ? where(status: status) : where(status: "open") }
+  scope :from_active_projects, -> { joins(:project).merge(Project.filter_by_active) }
+  scope :newest_first, -> { order(created_at: :desc) }
+
+
+  def total_time_spent
+    task_timetrackings.sum(:duration)
+  end
+
+  def total_time_spent_by_users
+    task_timetrackings.group(:membership_id).sum(:duration)
+  end
 end

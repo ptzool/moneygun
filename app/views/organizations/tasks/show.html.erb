@@ -65,21 +65,6 @@
         </div>
       </div>
       <% end %>
-      <!-- Time trackings Card -->
-      <% if @task.task_timetrackings.any? %>
-      <div class="bg-white rounded-lg shadow p-6">
-        <h2 class="text-lg font-medium mb-4">Time Trackings</h2>
-        <div class="space-y-3">
-            <% @task.task_timetrackings.each do |time_tracking| %>
-              <div class="flex items-center space-x-2">
-                <%= time_tracking.membership.user.full_name %>
-                <%= time_tracking.date %>
-                <%= time_tracking.duration %>
-              </div>
-            <% end %>
-        </div>
-      </div>
-      <% end %>
       <!-- Comments Card -->
       <div class="bg-white rounded-lg shadow p-6">
           <h2 class="text-lg font-semibold mb-4">Comments</h2>
@@ -174,6 +159,21 @@
           </div>
         </div>
       </div>
+      <!-- Time trackings Card -->
+      <% if @task.task_timetrackings.any? %>
+      <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-medium mb-4">Time Trackings</h2>
+        <div class="space-y-3">
+            <% @task.total_time_spent_by_users.each do |membership_id, duration| %>
+                <div class="flex justify-between items-center px-2">
+                    <% membership = Membership.find(membership_id) %>
+                    <%= membership.user.full_name %>
+                    <p class="text-sm font-semibold text-blue-600"><%= duration %> óra / <%= duration / 8.0 %> nap</p>
+                </div>
+            <% end %>
+        </div>
+      </div>
+      <% end %>
       <!-- Timetracking Card -->
       <div class="bg-white rounded-lg shadow p-6">
         <h2 class="text-lg font-medium mb-4">Timetracker</h2>
@@ -199,7 +199,13 @@
 
                 <div>
                   <%= form.label :duration, class: "block text-sm font-medium text-gray-700 mb-2" %>
-                  <%= form.number_field :duration, class: "w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+                  <%= form.number_field :duration,
+                      min: 1,
+                      max: 12,
+                      required: true,
+                      step: 1,
+                      placeholder: "Enter duration of work",
+                      class: "w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
                 </div>
 
                 <div class="flex space-x-4">

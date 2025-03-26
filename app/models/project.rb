@@ -10,6 +10,7 @@ class Project < ApplicationRecord
   validates :name, presence: true, uniqueness: { scope: :organization_id }
 
   # Scopes
-  scope :active, -> { where(archived: false) }
-  scope :by_archived, ->(archived = false) { where(archived: archived) if archived.present? }
+  scope :filter_by_active, -> { where(archived: false) }
+  scope :filter_by_archived, ->(archived = false) { where(archived: archived) if archived.present? }
+  scope :newest_first, -> { order(created_at: :desc) }
 end
