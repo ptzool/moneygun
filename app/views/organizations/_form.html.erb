@@ -1,34 +1,93 @@
-<%= form_with(model: organization, class: "contents space-y-4") do |form| %>
-  <%= render "shared/errors", object: form.object %>
-  <div class="">
-    <%= form.label :name %>
-    <%= form.text_field :name, class: "form-input", autofocus: true, required: true %>
+<div class="bg-white rounded-lg shadow-sm border border-gray-200">
+  <div class="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
+    <h2 class="text-lg font-medium text-gray-900">
+      <%= organization.new_record? ? "Create Organization" : "Edit Organization" %>
+    </h2>
   </div>
-  <div class="">
-    <%= form.label :logo %>
-    <%= form.file_field :logo, accept: "image/png, image/jpeg, image/gif", class: "form-input" %>
+  
+  <% if organization.errors.any? %>
+    <div id="error_explanation" class="mx-4 sm:mx-6 mt-4 bg-red-50 text-red-600 px-4 py-3 font-medium rounded-md border border-red-100">
+      <h3 class="text-sm font-semibold"><%= pluralize(organization.errors.count, "error") %> prohibited this organization from being saved:</h3>
+      <ul class="mt-2 text-sm list-disc list-inside">
+        <% organization.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  
+  <div class="p-4 sm:p-6">
+    <%= form_with(model: organization, class: "space-y-6") do |form| %>
+      <!-- Main info section -->
+      <div class="grid gap-6 md:grid-cols-2">
+        <div class="md:col-span-2">
+          <%= form.label :name, class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.text_field :name, class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm", placeholder: "Organization name", autofocus: true, required: true %>
+        </div>
+        
+        <div class="md:col-span-2">
+          <%= form.label :email, class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.email_field :email, class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm", placeholder: "contact@example.com" %>
+        </div>
+      </div>
+      
+      <!-- Organization details section -->
+      <div class="bg-gray-50 p-4 rounded-md border border-gray-200">
+        <h3 class="text-sm font-medium text-gray-700 mb-4">Organization details</h3>
+        <div class="grid gap-4 md:grid-cols-2">
+          <div class="md:col-span-2">
+            <%= form.label :address, class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= form.text_area :address, rows: 3, class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm", placeholder: "Street, City, State, Zip" %>
+          </div>
+          
+          <div>
+            <%= form.label :registration_number, class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= form.text_field :registration_number, class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
+          </div>
+          
+          <div>
+            <%= form.label :tax_number, class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= form.text_field :tax_number, class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
+          </div>
+          
+          <div class="md:col-span-2">
+            <%= form.label :iban, class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= form.text_field :iban, class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Organization logo section -->
+      <div class="bg-gray-50 p-4 rounded-md border border-gray-200">
+        <h3 class="text-sm font-medium text-gray-700 mb-4">Organization logo</h3>
+        
+        <div class="mb-4">
+          <% if organization.logo.attached? %>
+            <div class="mb-4">
+              <p class="text-sm text-gray-500 mb-2">Current logo:</p>
+              <%= image_tag organization.logo.variant(resize_to_limit: [150, 150]), class: "h-20 w-20 object-cover rounded-md border border-gray-300" %>
+            </div>
+          <% end %>
+          
+          <%= form.label :logo, class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <div class="flex items-center mt-1">
+            <%= form.file_field :logo, 
+              accept: "image/png, image/jpeg, image/gif",
+              class: "block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" 
+            %>
+          </div>
+          <p class="mt-1 text-xs text-gray-500">PNG, JPG or GIF (max. 2MB)</p>
+        </div>
+      </div>
+      
+      <!-- Action buttons -->
+      <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+        <%= link_to "Cancel", organization.new_record? ? organizations_path : organization_path(organization), 
+          class: "px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" 
+        %>
+        
+        <%= form.submit organization.new_record? ? "Create Organization" : "Update Organization", class: "px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+      </div>
+    <% end %>
   </div>
-  <div class="">
-    <%= form.label :address %>
-    <%= form.text_area :address, class: "form-input", required: false %>
-  </div>
-  <div class="">
-    <%= form.label :email %>
-    <%= form.text_field :email, class: "form-input", required: false %>
-  </div>
-  <div class="">
-    <%= form.label :registration_number %>
-    <%= form.text_field :registration_number, class: "form-input", required: false %>
-  </div>
-  <div class="">
-    <%= form.label :tax_number %>
-    <%= form.text_field :tax_number, class: "form-input", required: false %>
-  </div>
-  <div class="">
-    <%= form.label :iban %>
-    <%= form.text_field :iban, class: "form-input", required: false %>
-  </div>
-  <div class="inline">
-    <%= form.submit class: "btn btn-primary" %>
-  </div>
-<% end %>
+</div>

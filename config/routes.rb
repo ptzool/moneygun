@@ -6,7 +6,12 @@ Rails.application.routes.draw do
     resource :transfer, module: :organizations, only: %i[show update]
     resources :inboxes, module: :organizations
     resources :projects, module: :organizations
-    resources :member_worklogs, module: :organizations
+    resources :member_worklogs, module: :organizations do
+      collection do
+        post :bulk_update
+        post 'bulk_update', to: 'member_worklogs#bulk_update'
+      end
+    end
     resources :tasks, module: :organizations do
       member do
         delete "destroy_attachment/:attachment_id", action: :destroy_attachment, as: :destroy_attachment

@@ -1,0 +1,17 @@
+<% if current_page.first? %>
+  <span class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-gray-100 text-sm font-medium text-gray-400 cursor-not-allowed">
+    <span class="sr-only">First</span>
+    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+      <path fill-rule="evenodd" d="M4.293 15.707a1 1 0 010-1.414L8.586 10 4.293 5.707a1 1 0 011.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z" clip-rule="evenodd" transform="rotate(180, 10, 10)" />
+      <path fill-rule="evenodd" d="M8.293 15.707a1 1 0 010-1.414L12.586 10 8.293 5.707a1 1 0 011.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z" clip-rule="evenodd" transform="rotate(180, 12, 10)" />
+    </svg>
+  </span>
+<% else %>
+  <%= link_to url, rel: 'first', class: 'relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50' do %>
+    <span class="sr-only">First</span>
+    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+      <path fill-rule="evenodd" d="M4.293 15.707a1 1 0 010-1.414L8.586 10 4.293 5.707a1 1 0 011.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z" clip-rule="evenodd" transform="rotate(180, 10, 10)" />
+      <path fill-rule="evenodd" d="M8.293 15.707a1 1 0 010-1.414L12.586 10 8.293 5.707a1 1 0 011.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z" clip-rule="evenodd" transform="rotate(180, 12, 10)" />
+    </svg>
+  <% end %>
+<% end %>

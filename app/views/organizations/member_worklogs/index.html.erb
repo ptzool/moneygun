@@ -1,16 +1,376 @@
-<% content_for :title, "Member worklogs" %>
+<% content_for :title, "My Worklog Calendar" %>
 
-<%= render PageComponent.new(title: "Member worklogs") do |component| %>
+<%= render PageComponent.new(title: "My Worklog Calendar") do |component| %>
   <% component.with_action_list do %>
-    <%= link_to "New member worklog", new_member_worklog_path, class: "btn btn-primary" %>
+    <%= link_to "&laquo; Previous month".html_safe, organization_member_worklogs_path(@organization, date: @date.prev_month), class: "btn btn-secondary" %>
+    <span class="mx-4 text-lg font-semibold"><%= @date.strftime("%B %Y") %></span>
+    <%= link_to "Next month &raquo;".html_safe, organization_member_worklogs_path(@organization, date: @date.next_month), class: "btn btn-secondary" %>
+    <button id="bulk-edit-btn" class="ml-4 btn btn-primary" data-bs-toggle="modal" data-bs-target="#bulk-edit-modal">Bulk Edit</button>
   <% end %>
 
-  <div id="member_worklogs" class="space-y-4">
-    <% @member_worklogs.each do |member_worklog| %>
-      <%= render member_worklog %>
-      <p>
-        <%= link_to "Show this member worklog", member_worklog, class: "btn btn-secondary" %>
-      </p>
-    <% end %>
+  <div id="member_worklogs_calendar" class="mt-6">
+    <div class="grid grid-cols-7 gap-2 text-center font-semibold border-b pb-2 mb-2">
+      <div>Monday</div>
+      <div>Tuesday</div>
+      <div>Wednesday</div>
+      <div>Thursday</div>
+      <div>Friday</div>
+      <div>Saturday</div>
+      <div>Sunday</div>
+    </div>
+
+    <div class="grid grid-cols-7 gap-2">
+      <% @calendar_dates.each do |date| %>
+        <% current_month = date.month == @date.month %>
+        <% worklog = @member_worklogs[date] %>
+        <div class="relative p-2 h-28 border rounded <%= current_month ? 'bg-white' : 'bg-gray-100' %> <%= date == Date.today ? 'border-blue-500 border-2' : '' %> <%= current_month && date.on_weekday? ? 'selectable-day' : '' %>"
+             <%= current_month && date.on_weekday? ? "data-date=\"#{date}\" data-worklog-id=\"#{worklog&.id}\" data-worklog-type=\"#{worklog&.worklog_type}\"" : "" %>
+             <%= current_month && date.on_weekday? ? 'data-bs-toggle="modal" data-bs-target="#worklog-modal"' : '' %>>
+          <div class="text-right <%= current_month ? '' : 'text-gray-400' %>">
+            <%= date.day %>
+            <% if current_month && date.on_weekday? %>
+              <input type="checkbox" class="day-checkbox ml-1" data-date="<%= date %>" style="display: none;">
+            <% end %>
+          </div>
+          
+          <% if worklog %>
+            <div class="mt-2 p-1 text-sm rounded text-white <%= worklog.worklog_type == 'work' ? 'bg-green-500' : (worklog.worklog_type == 'vacation' ? 'bg-blue-500' : 'bg-red-500') %>">
+              <%= worklog.worklog_type.titleize %> Day (8h)
+              <div class="mt-1">
+                <%= link_to edit_organization_member_worklog_path(@organization, worklog), class: "text-white hover:underline", data: { turbo: "false" } do %>
+                    <i class="fas fa-edit"></i>
+                  <% end %>
+                  <%= link_to organization_member_worklog_path(@organization, worklog), 
+                          data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' },
+                          class: "ml-2 text-white hover:underline" do %>
+                    <i class="fas fa-trash"></i>
+                  <% end %>
+              </div>
+            </div>
+          <% elsif current_month && date.on_weekday? %>
+            <div class="absolute bottom-2 right-2">
+              <%= link_to new_organization_member_worklog_path(@organization, date: date), class: "text-blue-500 hover:underline", data: { turbo: "false" } do %>
+                <i class="fas fa-plus-circle"></i>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="mt-6 flex gap-4">
+    <div class="p-2 rounded bg-green-500 text-white">Work Day</div>
+    <div class="p-2 rounded bg-blue-500 text-white">Vacation Day</div>
+    <div class="p-2 rounded bg-red-500 text-white">Sick Day</div>
+  </div>
+
+  <!-- Single Day Modal -->
+  <div class="modal fade" id="worklog-modal" tabindex="-1" aria-labelledby="worklogModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="worklogModalLabel">Edit Worklog</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <%= form_with url: "#", id: "worklog-form", class: "contents space-y-4" do |form| %>
+            <input type="hidden" id="worklog-date" name="member_worklog[date]">
+            <input type="hidden" id="worklog-id" name="worklog_id">
+            
+            <div>
+              <label for="worklog_type">Work Type</label>
+              <select name="member_worklog[type]" id="worklog-type" class="form-select">
+                <option value="">Select a work type</option>
+                <option value="<%= MemberWorklog::WORKLOG_TYPES[:work] %>">Work Day (8h)</option>
+                <option value="<%= MemberWorklog::WORKLOG_TYPES[:vacation] %>">Vacation Day (8h)</option>
+                <option value="<%= MemberWorklog::WORKLOG_TYPES[:sick] %>">Sick Day (8h)</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="delete-worklog">Delete worklog?</label>
+              <input type="checkbox" id="delete-worklog" name="delete_worklog">
+            </div>
+          <% end %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="save-worklog">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bulk Edit Modal -->
+  <div class="modal fade" id="bulk-edit-modal" tabindex="-1" aria-labelledby="bulkEditModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="bulkEditModalLabel">Bulk Edit Worklogs</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Select days on the calendar to apply the same worklog type.</p>
+          
+          <%= form_with url: "#", id: "bulk-edit-form", class: "contents space-y-4" do |form| %>
+            <div>
+              <label for="bulk_worklog_type">Work Type</label>
+              <select name="member_worklog[type]" id="bulk-worklog-type" class="form-select">
+                <option value="">Select a work type</option>
+                <option value="<%= MemberWorklog::WORKLOG_TYPES[:work] %>">Work Day (8h)</option>
+                <option value="<%= MemberWorklog::WORKLOG_TYPES[:vacation] %>">Vacation Day (8h)</option>
+                <option value="<%= MemberWorklog::WORKLOG_TYPES[:sick] %>">Sick Day (8h)</option>
+              </select>
+            </div>
+            
+            <div class="hidden" id="selected-dates-container">
+              <p>Selected dates: <span id="selected-dates-count">0</span></p>
+              <div id="selected-dates-list" class="text-sm max-h-40 overflow-y-auto"></div>
+            </div>
+          <% end %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="exit-selection-mode">Cancel</button>
+          <button type="button" class="btn btn-primary" id="apply-bulk-edit" disabled>Apply to Selected Days</button>
+        </div>
+      </div>
+    </div>
   </div>
 <% end %>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    let selectionMode = false;
+    const selectedDates = new Set();
+    
+    // Single day modal handling
+    document.querySelectorAll('.selectable-day').forEach(day => {
+      day.addEventListener('click', function(e) {
+        if (selectionMode) {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleDateSelection(this);
+          return false;
+        }
+        
+        const date = this.dataset.date;
+        const worklogId = this.dataset.worklogId;
+        const worklogType = this.dataset.worklogType;
+        
+        document.getElementById('worklog-date').value = date;
+        document.getElementById('worklog-id').value = worklogId || '';
+        
+        const worklogTypeSelect = document.getElementById('worklog-type');
+        worklogTypeSelect.value = worklogType || '';
+        
+        const deleteCheckbox = document.getElementById('delete-worklog');
+        deleteCheckbox.checked = false;
+        deleteCheckbox.disabled = !worklogId;
+      });
+    });
+    
+    // Save worklog changes
+    document.getElementById('save-worklog').addEventListener('click', function() {
+    const date = document.getElementById('worklog-date').value;
+    const worklogId = document.getElementById('worklog-id').value;
+    const worklogType = document.getElementById('worklog-type').value;
+    const deleteWorklog = document.getElementById('delete-worklog').checked;
+      
+    if (deleteWorklog && worklogId) {
+      // Delete worklog
+      fetch(`/organizations/<%= @organization.id %>/member_worklogs/${worklogId}`, {
+        method: 'DELETE',
+        headers: {
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        }
+      }).then(response => {
+        if (response.ok) {
+          window.location.reload();
+        }
+      });
+    } else if (worklogType) {
+      if (worklogId && worklogId !== "") {
+        // Update existing worklog
+        fetch(`/organizations/<%= @organization.id %>/member_worklogs/${worklogId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+          },
+          body: JSON.stringify({
+            'member_worklog': { type: worklogType }
+          })
+        }).then(response => {
+          if (response.ok) {
+            window.location.reload();
+          }
+        });
+      } else {
+        // Create new worklog
+        fetch(`/organizations/<%= @organization.id %>/member_worklogs`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+          },
+          body: JSON.stringify({
+            member_worklog: { date: date, type: worklogType }
+          })
+        }).then(response => {
+          if (response.ok) {
+            window.location.reload();
+          }
+        });
+      }
+    }
+      
+      const modal = bootstrap.Modal.getInstance(document.getElementById('worklog-modal'));
+      modal.hide();
+    });
+    
+    // Bulk edit functionality
+    document.getElementById('bulk-edit-btn').addEventListener('click', function() {
+      selectionMode = true;
+      selectedDates.clear();
+      updateSelectedDatesUI();
+      
+      document.querySelectorAll('.day-checkbox').forEach(checkbox => {
+        checkbox.style.display = 'inline';
+      });
+      
+      document.querySelectorAll('.selectable-day').forEach(day => {
+        day.classList.add('selectable-mode');
+      });
+    });
+    
+    document.getElementById('exit-selection-mode').addEventListener('click', function() {
+      exitSelectionMode();
+      const modal = bootstrap.Modal.getInstance(document.getElementById('bulk-edit-modal'));
+      modal.hide();
+    });
+    
+    function exitSelectionMode() {
+      selectionMode = false;
+      selectedDates.clear();
+      updateSelectedDatesUI();
+      
+      document.querySelectorAll('.day-checkbox').forEach(checkbox => {
+        checkbox.style.display = 'none';
+        checkbox.checked = false;
+      });
+      
+      document.querySelectorAll('.selectable-day').forEach(day => {
+        day.classList.remove('selectable-mode');
+      });
+    }
+    
+    function toggleDateSelection(dayElement) {
+      const date = dayElement.dataset.date;
+      const checkbox = dayElement.querySelector('.day-checkbox');
+      
+      if (selectedDates.has(date)) {
+        selectedDates.delete(date);
+        checkbox.checked = false;
+      } else {
+        selectedDates.add(date);
+        checkbox.checked = true;
+      }
+      
+      updateSelectedDatesUI();
+    }
+    
+    function updateSelectedDatesUI() {
+      const count = selectedDates.size;
+      document.getElementById('selected-dates-count').textContent = count;
+      
+      const listContainer = document.getElementById('selected-dates-container');
+      listContainer.classList.toggle('hidden', count === 0);
+      
+      const applyButton = document.getElementById('apply-bulk-edit');
+      applyButton.disabled = count === 0;
+      
+      const datesList = document.getElementById('selected-dates-list');
+      datesList.innerHTML = '';
+      
+      Array.from(selectedDates).sort().forEach(date => {
+        const dateItem = document.createElement('div');
+        dateItem.textContent = new Date(date).toLocaleDateString();
+        datesList.appendChild(dateItem);
+      });
+    }
+    
+    // Apply bulk edit
+    document.getElementById('apply-bulk-edit').addEventListener('click', function() {
+      const worklogType = document.getElementById('bulk-worklog-type').value;
+      
+      if (!worklogType || selectedDates.size === 0) return;
+      
+      // Use individual requests for each date
+      const promises = Array.from(selectedDates).map(date => {
+        const dayElement = document.querySelector(`.selectable-day[data-date="${date}"]`);
+        const worklogId = dayElement.dataset.worklogId;
+        
+        if (worklogId && worklogId !== "") {
+          // Update existing worklog
+          return fetch(`/organizations/<%= @organization.id %>/member_worklogs/${worklogId}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+              member_worklog: { type: worklogType }
+            })
+          });
+        } else {
+          // Create new worklog
+          return fetch(`/organizations/<%= @organization.id %>/member_worklogs`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+              member_worklog: { date: date, type: worklogType }
+            })
+          });
+        }
+      });
+      
+      Promise.all(promises)
+      .then(responses => {
+        // Check if all responses were successful
+        const allSuccessful = responses.every(response => response.ok);
+        if (allSuccessful) {
+          window.location.reload();
+        } else {
+          alert('Some updates failed. Please refresh and try again.');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while updating worklogs.');
+      });
+      
+      exitSelectionMode();
+      const modal = bootstrap.Modal.getInstance(document.getElementById('bulk-edit-modal'));
+      modal.hide();
+    });
+  });
+</script>
+
+<style>
+  .selectable-day {
+    cursor: pointer;
+  }
+  
+  .selectable-mode {
+    border: 2px dashed #ccc;
+  }
+  
+  .selectable-mode.selected {
+    border: 2px solid #0d6efd;
+    background-color: rgba(13, 110, 253, 0.1);
+  }
+</style>

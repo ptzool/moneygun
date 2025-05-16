@@ -38,10 +38,11 @@ class Organization::BasePolicy
     membership.admin?
   end
 
-  class Scope
+  class Scope < ApplicationPolicy::Scope
     def initialize(membership, scope)
       raise Pundit::NotAuthorizedError, "must be logged in" unless membership
 
+      @user = membership
       @membership = membership
       @scope = scope
     end

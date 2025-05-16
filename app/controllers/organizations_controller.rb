@@ -1,9 +1,11 @@
 class OrganizationsController < ApplicationController
   before_action :set_organization, only: %i[show edit update destroy]
   before_action :set_default_breadcrumbs
+  after_action :verify_authorized, except: :index
+  after_action :verify_policy_scoped, only: :index
 
   def index
-    @organizations = current_user.organizations.includes(:users)
+    @organizations = policy_scope(current_user.organizations.includes(:users))
   end
 
   def show
@@ -13,15 +15,18 @@ class OrganizationsController < ApplicationController
   def new
     add_breadcrumb "New Organization", :new_organization_path, only: %i[new create]
     @organization = Organization.new
+    authorize @organization
   end
 
   def edit
+    authorize @organization
   end
 
   def create
     @organization = Organization.new(organization_params)
     @organization.owner = current_user
     @organization.memberships.build(user: current_user, role: Membership.roles[:admin])
+    authorize @organization
 
     if @organization.save
       redirect_to organization_url(@organization), notice: "Organization was successfully created."
@@ -31,6 +36,7 @@ class OrganizationsController < ApplicationController
   end
 
   def update
+    authorize @organization
     if @organization.update(organization_params)
       redirect_to organization_url(@organization), notice: "Organization was successfully updated."
     else
@@ -39,6 +45,7 @@ class OrganizationsController < ApplicationController
   end
 
   def destroy
+    authorize @organization
     @organization.destroy!
 
     redirect_to organizations_url, notice: "Organization was successfully destroyed."
@@ -47,16 +54,31 @@ class OrganizationsController < ApplicationController
   private
 
   def set_organization
-    @organization = Organization.find(params[:id])
+    @organization = Organization.find_by(id: params[:id])
+    
+    if @organization.nil?
+      redirect_to organizations_path, alert: "Organization not found."
+      return
+    end
+    
     @current_membership ||= current_user.memberships.find_by(organization: @organization)
     authorize @organization
-
   rescue ActiveRecord::RecordNotFound
-    redirect_to organizations_path()
+    redirect_to organizations_path, alert: "Organization not found."
   end
 
   def organization_params
-    params.require(:organization).permit(:name, :logo, :address, :email, :registration_number, :tax_number, :iban)
+    permitted_attributes = [:name, :address, :registration_number, :tax_number, :iban]
+    
+    # Only allow valid email formats
+    if params[:organization][:email].present? && params[:organization][:email].match?(/\A[^@\s]+@[^@\s]+\z/)
+      permitted_attributes << :email
+    end
+    
+    # Add logo if present
+    permitted_attributes << :logo if params[:organization][:logo].present?
+    
+    params.require(:organization).permit(permitted_attributes)
   end
 
   def set_default_breadcrumbs

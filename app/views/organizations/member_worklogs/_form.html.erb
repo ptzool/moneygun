@@ -1,15 +1,5 @@
-<%= form_with(model: member_worklog, class: "contents space-y-4") do |form| %>
+<%= form_with(model: [@organization, member_worklog], class: "contents space-y-4") do |form| %>
   <%= render "shared/errors", object: form.object %>
-
-  <div>
-    <%= form.label :organization_id, style: "display: block" %>
-    <%= form.text_field :organization_id, class: "form-input" %>
-  </div>
-
-  <div>
-    <%= form.label :membership_id, style: "display: block" %>
-    <%= form.text_field :membership_id, class: "form-input" %>
-  </div>
 
   <div>
     <%= form.label :date, style: "display: block" %>
@@ -17,8 +7,15 @@
   </div>
 
   <div>
-    <%= form.label :type, style: "display: block" %>
-    <%= form.text_field :type, class: "form-input" %>
+    <%= form.label :worklog_type, "Work Type", style: "display: block" %>
+    <%= form.select :worklog_type, 
+                  options_for_select([
+                    ["Work Day (8h)", MemberWorklog::WORKLOG_TYPES[:work]],
+                    ["Vacation Day (8h)", MemberWorklog::WORKLOG_TYPES[:vacation]],
+                    ["Sick Day (8h)", MemberWorklog::WORKLOG_TYPES[:sick]]
+                  ], member_worklog.worklog_type),
+                  { include_blank: "Select a work type" },
+                  class: "form-select" %>
   </div>
 
   <div class="inline">

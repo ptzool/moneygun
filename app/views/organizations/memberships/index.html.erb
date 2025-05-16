@@ -1,70 +1,154 @@
-<div class="container mx-auto px-6">
-  <!-- Users List Container -->
-  <div class="bg-white rounded-lg shadow">
-    <!-- Header with title and add button -->
-    <div class="flex items-center justify-between p-6 border-b border-gray-200">
-      <h2 class="text-lg font-medium">Memberships</h2>
-      <%= link_to "+ Add membership", new_organization_membership_path(@organization), class: "flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600" if policy(@organization.memberships.new).new? %>
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+  <div class="flex flex-col bg-white shadow-sm rounded-lg border border-gray-200">
+    <!-- Header section -->
+    <div class="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-gray-200">
+      <div class="flex items-center space-x-2">
+        <h1 class="text-xl font-semibold text-gray-900">Team Members</h1>
+        <span class="px-2.5 py-0.5 bg-blue-100 text-blue-800 text-xs font-medium">
+          <%= @memberships.count %>
+        </span>
+      </div>
+      <% if policy(@organization.memberships.new).new? %>
+        <%= link_to new_organization_membership_path(@organization), 
+            class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+          </svg>
+          Invite User
+        <% end %>
+      <% end %>
     </div>
-    <!-- Search and filters -->
-    <div class="p-4 border-b border-gray-200">
-      <div class="flex items-center justify-between gap-4">
-        <div class="flex-1">
-          <input type="text"
-                 placeholder="Search for name, email..."
-                 class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+    
+    <!-- Search and filter section -->
+    <div class="p-4 sm:p-6 border-b border-gray-200 bg-gray-50">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <!-- Search box -->
+        <div class="relative flex-1 max-w-lg">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <input type="text" name="search" placeholder="Search members..." class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
         </div>
-        <div class="flex items-center gap-4">
-          <select class="px-4 py-2 border text-blue-500 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <option>Placeholder</option>
-          </select>
+        
+        <!-- Filters -->
+        <div class="flex flex-wrap gap-3">
+          <div class="relative inline-block text-left">
+            <select class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md bg-white">
+              <option value="">All roles</option>
+              <% Membership.roles.keys.each do |role| %>
+                <option value="<%= role %>"><%= role.capitalize %></option>
+              <% end %>
+            </select>
+          </div>
         </div>
       </div>
     </div>
-    <!-- Table -->
+    
+    <!-- Table section -->
     <div class="overflow-x-auto">
-      <table class="w-full">
-        <thead class="bg-gray-50">
-          <tr>
-            <th class="w-4 p-4"><input type="checkbox" class="rounded"></th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">First Name</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Last Name</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead>
+          <tr class="bg-gray-50">
+            <th scope="col" class="w-10 pl-4 pr-1 py-3">
+              <div class="flex items-center justify-center">
+                <input type="checkbox" class="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
+              </div>
+            </th>
+            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
+            <th scope="col" class="px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-gray-200">
-          <% @memberships.each do |membership| %>
-            <!-- Table rows would be generated dynamically -->
-            <tr class="hover:bg-gray-50">
-              <td class="w-4 p-4"><input type="checkbox" class="rounded"></td>
-              <td class="px-6 py-4 text-sm text-blue-500"><%= membership.id %></td>
-              <td class="px-6 py-4"><%= membership.user.first_name %></td>
-              <td class="px-6 py-4 text-sm"><%= membership.user.last_name %></td>
-              <td class="px-6 py-4 text-sm"><%= membership.user.email %></td>
-              <td class="px-6 py-4 text-sm"><%= membership.role %></td>
-              <td class="px-6 py-4">
-                <div class="flex gap-2">
-                  <%= link_to edit_organization_membership_path(membership.organization, membership), class: "px-3 py-2 text-blue-500 border rounded-lg hover:bg-gray-50", data: { turbo_frame: "_top" } do %>
-                    <%= icon "pencil-square", class: "size-4" %>
-                  <% end if policy(membership).edit? %>
-                  <%= link_to organization_membership_path(membership.organization, membership), class: "px-3 py-2 text-red-500 border rounded-lg hover:bg-gray-50", data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } do %>
-                    <%= icon "trash", class: "size-4" %>
-                  <% end if policy(membership).destroy? %>
-                </div>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% if @memberships.any? %>
+            <% @memberships.each do |membership| %>
+              <tr class="hover:bg-gray-50 border-t border-gray-200">
+                <td class="w-10 pl-4 pr-1 py-3">
+                  <div class="flex items-center justify-center">
+                    <input type="checkbox" class="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
+                  </div>
+                </td>
+                <td class="px-3 py-3 whitespace-nowrap">
+                  <div class="flex items-center">
+                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                      <span class="text-sm font-medium text-gray-600"><%= membership.user.first_name.first.upcase %><%= membership.user.last_name.first.upcase %></span>
+                    </div>
+                    <div class="ml-4">
+                      <div class="text-sm font-medium text-gray-900"><%= membership.user.first_name %> <%= membership.user.last_name %></div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-3 py-3 whitespace-nowrap">
+                  <div class="text-sm text-gray-900"><%= membership.user.email %></div>
+                </td>
+                <td class="px-3 py-3 whitespace-nowrap">
+                  <% role_colors = {
+                    "admin" => "bg-purple-100 text-purple-800",
+                    "accountant" => "bg-yellow-100 text-yellow-800",
+                    "employee" => "bg-blue-100 text-blue-800"
+                  } %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 text-xs font-medium <%= role_colors[membership.role] %>">
+                    <%= membership.role.capitalize %>
+                  </span>
+                </td>
+                <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-500">
+                  <%= membership.created_at.strftime("%b %d, %Y") %>
+                </td>
+                <td class="px-3 py-3 text-right whitespace-nowrap">
+                  <div class="inline-flex items-center space-x-1">
+                    <% if policy(membership).edit? %>
+                      <%= link_to edit_organization_membership_path(membership.organization, membership), 
+                          data: { turbo_frame: "_top" },
+                          class: "p-1.5 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors", 
+                          title: "Edit membership" do %>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                        </svg>
+                      <% end %>
+                    <% end %>
+                    
+                    <% if policy(membership).destroy? %>
+                      <%= link_to organization_membership_path(membership.organization, membership), 
+                          method: :delete, 
+                          class: "p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors", 
+                          data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to remove this member from the organization?" },
+                          title: "Remove member" do %>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                      <% end %>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="6" class="px-6 py-10 text-center text-gray-500">
+                <svg class="mx-auto h-12 w-12 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">No members found</h3>
+                <p class="mt-1 text-sm text-gray-500">Get started by inviting team members to your organization.</p>
+                <% if policy(@organization.memberships.new).new? %>
+                  <div class="mt-6">
+                    <%= link_to new_organization_membership_path(@organization), class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+                      <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                      </svg>
+                      Invite User
+                    <% end %>
+                  </div>
+                <% end %>
               </td>
             </tr>
           <% end %>
         </tbody>
       </table>
     </div>
-    <!-- Pagination -->
-    <div class="flex items-center justify-between px-6 py-4 border-t border-gray-200">
-      <div class="text-sm text-gray-500">
-      </div>
-      <div class="flex items-center gap-2">
-      </div>
-    </div>
   </div>
+</div>

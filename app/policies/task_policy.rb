@@ -31,14 +31,7 @@ class TaskPolicy < Organization::BasePolicy
     membership.admin? || membership.employee?
   end
 
-  class Scope
-    def initialize(membership, scope)
-      raise Pundit::NotAuthorizedError, "must be logged in" unless membership
-
-      @membership = membership
-      @scope = scope
-    end
-
+  class Scope < Organization::BasePolicy::Scope
     def resolve
       if membership.admin?
         scope.all
@@ -46,9 +39,5 @@ class TaskPolicy < Organization::BasePolicy
         scope.where(reporter_id: membership.id).or(scope.where(assignee_id: membership.id))
       end
     end
-
-    private
-
-    attr_reader :membership, :scope
   end
 end

@@ -1,4 +1,4 @@
-<%= render PageComponent.new(title: "Editing member worklog", content_container: true, full_width: false) do |component| %>
+<%= render PageComponent.new(title: "Edit Work Day", content_container: true, full_width: false) do |component| %>
   <%= render "form", member_worklog: @member_worklog %>
-  <%= link_to "Cancel", @member_worklog, class: "btn btn-secondary" %>
+  <%= link_to "Cancel", organization_member_worklogs_path(@organization), class: "btn btn-secondary" %>
 <% end %>

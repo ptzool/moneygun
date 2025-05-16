@@ -1,22 +1,31 @@
-<div id="<%= dom_id member_worklog %>">
-  <p>
-    <strong>Organization:</strong>
-    <%= member_worklog.organization_id %>
-  </p>
+<div id="<%= dom_id member_worklog %>" class="bg-white shadow rounded-lg p-4">
+  <div class="flex items-center justify-between mb-2">
+    <h3 class="text-lg font-semibold">
+      <%= member_worklog.date.strftime("%B %d, %Y") %>
+    </h3>
+    <span class="px-2 py-1 rounded text-sm text-white
+      <%= member_worklog.worklog_type == 'work' ? 'bg-green-500' : 
+         (member_worklog.worklog_type == 'vacation' ? 'bg-blue-500' : 'bg-red-500') %>">
+      <%= member_worklog.worklog_type.titleize %>
+    </span>
+  </div>
 
-  <p>
-    <strong>Membership:</strong>
-    <%= member_worklog.membership_id %>
-  </p>
+  <div class="mt-2">
+    <p>
+      <strong>Duration:</strong>
+      8 hours
+    </p>
 
-  <p>
-    <strong>Date:</strong>
-    <%= member_worklog.date %>
-  </p>
+    <p>
+      <strong>Logged by:</strong>
+      <%= member_worklog.membership.user.first_name %> <%= member_worklog.membership.user.last_name %>
+    </p>
+  </div>
 
-  <p>
-    <strong>Type:</strong>
-    <%= member_worklog.type %>
-  </p>
-
+  <div class="mt-4 flex space-x-2">
+    <%= link_to "Edit", edit_organization_member_worklog_path(@organization, member_worklog), class: "btn btn-sm btn-secondary" %>
+    <%= link_to "Delete", organization_member_worklog_path(@organization, member_worklog), 
+                data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, 
+                class: "btn btn-sm btn-danger" %>
+  </div>
 </div>

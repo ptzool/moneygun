@@ -12,6 +12,42 @@
 
 */
 
+/* Calendar styles for worklog selection */
+.selectable-day {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.selectable-day:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.selectable-mode {
+  border: 2px dashed #ccc !important;
+  position: relative;
+}
+
+.selectable-mode.selected {
+  border: 2px solid #3b82f6 !important;
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.day-checkbox {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 10;
+}
+
+/* Modal styles */
+.modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-open .modal {
+  display: block;
+}
+
 .btn {
   @apply inline-flex px-4 py-2 rounded-md space-x-2 font-semibold text-sm transition-colors ease-in-out duration-300 cursor-pointer;
 }

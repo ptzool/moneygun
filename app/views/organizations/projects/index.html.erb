@@ -1,56 +1,128 @@
-<div class="container mx-auto px-6">
-  <!-- Users List Container -->
-  <div class="bg-white rounded-lg shadow">
-    <!-- Header with title and add button -->
-    <div class="flex items-center justify-between p-6 border-b border-gray-200">
-      <h2 class="text-lg font-medium">Projects</h2>
-      <%= button_to new_organization_project_path(@organization), method: :get, class: "flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600" do %>
-        <span class="mr-2">+</span>
-        Add Project
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+  <div class="flex flex-col bg-white shadow-sm rounded-lg border border-gray-200">
+    <!-- Header section -->
+    <div class="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-gray-200">
+      <div class="flex items-center space-x-2">
+        <h1 class="text-xl font-semibold text-gray-900">Projects</h1>
+        <span class="px-2.5 py-0.5 bg-blue-100 text-blue-800 text-xs font-medium">
+          <%= @projects.total_count rescue @projects.count %>
+        </span>
+      </div>
+      <%= link_to new_organization_project_path(@organization), 
+          class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+        </svg>
+        Create Project
       <% end %>
     </div>
-    <!-- Search and filters -->
-    <div class="p-4 border-b border-gray-200">
-      <div class="flex items-center justify-between gap-4">
-        <%= form_with method: :get, class: "flex gap-4" do |f| %>
-          <%= f.label :archived, "Archived", class: "text-sm text-gray-500" %>
-          <%= f.select :archived,
-                  options_for_select([ 'true', 'false' ], params[:archived]),
-                  { include_blank: 'Archived' },
-                  class: "px-10 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" %>
-          <%= f.submit "Filter", class: "flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600" %>
+    
+    <!-- Search and filter section -->
+    <div class="p-4 sm:p-6 border-b border-gray-200 bg-gray-50">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <!-- Search box -->
+        <div class="relative flex-1 max-w-lg">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <input type="text" name="search" placeholder="Search projects..." class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        
+        <!-- Filters -->
+        <%= form_with method: :get, class: "flex flex-wrap gap-3" do |f| %>
+          <div class="flex items-center space-x-2">
+            <div class="relative inline-block text-left">
+              <%= f.select :archived,
+                options_for_select([['All projects', ''], ['Active', 'false'], ['Archived', 'true']], params[:archived]),
+                {},
+                class: "block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md bg-white"
+              %>
+            </div>
+            
+            <button type="submit" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+              Apply filters
+            </button>
+            
+            <% if params[:archived].present? %>
+              <%= link_to organization_projects_path(@organization), class: "inline-flex items-center px-3 py-2 text-sm text-gray-500 hover:text-gray-700" do %>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+                Clear filters
+              <% end %>
+            <% end %>
+          </div>
         <% end %>
       </div>
     </div>
-    <!-- Table -->
+    
+    <!-- Table section -->
     <div class="overflow-x-auto">
-      <table class="w-full">
-        <thead class="bg-gray-50">
-          <tr>
-            <th class="w-4 p-4"><input type="checkbox" class="rounded"></th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Project Manager</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Archived</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created At</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead>
+          <tr class="bg-gray-50">
+            <th scope="col" class="w-10 pl-4 pr-1 py-3">
+              <div class="flex items-center justify-center">
+                <input type="checkbox" class="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
+              </div>
+            </th>
+            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Project</th>
+            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Project Manager</th>
+            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+            <th scope="col" class="px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-gray-200">
+        <tbody class="bg-white divide-y divide-gray-200">
           <% @projects.each do |project| %>
             <%= render project %>
+          <% end %>
+          
+          <% if @projects.empty? %>
+            <tr>
+              <td colspan="7" class="px-6 py-10 text-center text-gray-500">
+                <svg class="mx-auto h-12 w-12 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">No projects found</h3>
+                <p class="mt-1 text-sm text-gray-500">Get started by creating a new project.</p>
+                <div class="mt-6">
+                  <%= link_to new_organization_project_path(@organization), class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+                    <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                    </svg>
+                    Create Project
+                  <% end %>
+                </div>
+              </td>
+            </tr>
           <% end %>
         </tbody>
       </table>
     </div>
-    <!-- Pagination -->
-    <div class="flex items-center justify-between px-6 py-4 border-t border-gray-200">
-      <div class="text-sm text-gray-500">
-        ...
+    
+    <!-- Pagination section -->
+    <% if @projects.respond_to?(:total_pages) && @projects.total_pages > 1 %>
+      <div class="px-4 sm:px-6 py-4 flex items-center justify-between border-t border-gray-200 bg-gray-50">
+        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+          <div>
+            <p class="text-sm text-gray-700">
+              Showing <span class="font-medium"><%= @projects.offset_value + 1 %></span> to <span class="font-medium"><%= @projects.offset_value + @projects.length %></span> of <span class="font-medium"><%= @projects.total_count %></span> projects
+            </p>
+          </div>
+          <div class="flex-shrink-0">
+            <%= paginate @projects, theme: 'tailwind' %>
+          </div>
+        </div>
+        <div class="flex sm:hidden">
+          <p class="text-sm text-gray-700">
+            Showing <span class="font-medium"><%= @projects.offset_value + 1 %></span> to <span class="font-medium"><%= @projects.offset_value + @projects.length %></span> of <span class="font-medium"><%= @projects.total_count %></span>
+          </p>
+        </div>
       </div>
-      <div class="flex items-center gap-2">
-        <%= paginate @projects %>
-      </div>
-    </div>
+    <% end %>
   </div>
 </div>
