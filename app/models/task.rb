@@ -17,21 +17,77 @@ class Task < ApplicationRecord
 
   # Version control
   has_paper_trail
+  
+  # Callbacks a cache invalidációhoz
+  after_save :expire_organization_cache
+  after_destroy :expire_organization_cache
+  after_commit :invalidate_listing_cache, on: [:create]
 
   # Scopes
   scope :filter_by_priority, ->(priority) { where(priority: priority) if priority.present? }
   scope :filter_by_planned_start_date, ->(date) { where("planned_start_date >= ?", date) if date.present? }
   scope :filter_by_planned_end_date, ->(date) { where("planned_end_date >= ?", date) if date.present? }
   scope :filter_by_status, ->(status = nil) { status.present? ? where(status: status) : where(status: "open") }
-  scope :from_active_projects, -> { joins(:project).merge(Project.filter_by_active) }
+  scope :from_active_projects, -> { 
+    # Használunk includes-t a joins helyett, hogy elkerüljük az N+1 problémát
+    # Csak akkor használjuk az includes-t, ha valóban szükség van a project adataira
+    joins(:project).where(projects: { archived: false })
+  }
+  
+  scope :with_projects, -> {
+    # Ez a scope betölti a kapcsolódó projekteket (amikor a nézet megjeleníti a projekt adatait)
+    includes(:project)
+  }
   scope :newest_first, -> { order(created_at: :desc) }
+  
+  # Kombinált scope-ok a gyakori lekérdezésekre 
+  # - Csak a szükséges includes-okat használjuk, hogy elkerüljük a felesleges adatbetöltést
+  scope :active_tasks, -> { filter_by_status("open") }
+  scope :with_associations, -> { includes(:project, :assignee, :reporter) }
+  scope :recent_active_tasks, -> { active_tasks.newest_first.limit(50) }
+  
+  # Optimalizált scope a dashboard-hoz és API-hoz
+  scope :for_listing, -> { select(:id, :name, :status, :priority, :project_id, :assignee_id, :reporter_id, :planned_start_date, :planned_end_date) }
 
 
   def total_time_spent
-    task_timetrackings.sum(:duration)
+    # Használjuk a counter cache-t, ha az időtartam nem fontos
+    if task_timetrackings_count == 0
+      return 0
+    end
+    
+    # Cacheljük a lekérdezést, de egyszerű kulcsot használunk, ami nem okoz serializációs problémát
+    Rails.cache.fetch(["task", id, "total_time_spent", updated_at.to_i]) do
+      task_timetrackings.sum(:duration)
+    end
   end
 
   def total_time_spent_by_users
-    task_timetrackings.group(:membership_id).sum(:duration)
+    # Cacheljük a lekérdezést, de egyszerű kulcsot használunk, ami nem okoz serializációs problémát
+    Rails.cache.fetch(["task", id, "total_time_spent_by_users", updated_at.to_i]) do
+      task_timetrackings.group(:membership_id).sum(:duration)
+    end
+  end
+  
+  private
+  
+  def expire_organization_cache
+    # Cache invalidálás a státusz vagy prioritás változásakor
+    # Az új formátumú cache kulcsokat használjuk
+    Rails.cache.delete_matched("organization_tasks/#{organization_id}*")
+    
+    # Frissítjük az időtartam-számítás cache-ét is
+    Rails.cache.delete(["task", id, "total_time_spent", updated_at.to_i])
+    Rails.cache.delete(["task", id, "total_time_spent_by_users", updated_at.to_i])
+    
+    # Frissítjük a kapcsolódó projekt cache-ét is
+    Rails.cache.delete(["project", project_id, "tasks"])
+  end
+  
+  # Teljes cache törlés új task létrehozásakor
+  def invalidate_listing_cache
+    # Minden lehetséges cache kombinációt törlünk az összes lehetséges szűrési paraméterre
+    # Ez biztosítja, hogy az új task azonnal megjelenjen minden listázásnál
+    Rails.cache.delete_matched("organization_tasks/#{organization_id}*")
   end
 end

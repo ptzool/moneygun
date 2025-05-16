@@ -30,14 +30,23 @@ class Organizations::BaseController < ApplicationController
 
   def set_organization
     begin
-      @organization = current_user.organizations.find(params[:organization_id])
+      organization_id = params[:organization_id]
+      # Használjunk cache-elést az organization lekérdezéséhez
+      @organization = Rails.cache.fetch("user_#{current_user.id}/organization_#{organization_id}", expires_in: 2.minutes) do
+        current_user.organizations
+                 .includes(:memberships, :owner)
+                 .find(organization_id)
+      end
     rescue ActiveRecord::RecordNotFound
       redirect_to organizations_path, alert: "Organization not found."
     end
   end
 
   def set_current_membership
-    @current_membership ||= current_user.memberships.find_by(organization: @organization)
+    membership_cache_key = "user_#{current_user.id}/organization_#{@organization.id}/membership"
+    @current_membership ||= Rails.cache.fetch(membership_cache_key, expires_in: 5.minutes) do
+      current_user.memberships.find_by(organization: @organization)
+    end
   end
 
   def pundit_user

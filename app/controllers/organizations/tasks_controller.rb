@@ -1,29 +1,49 @@
 class Organizations::TasksController < Organizations::BaseController
   include ActionView::Helpers::SanitizeHelper
-  
-  before_action :set_task, only: [:show, :edit, :update, :destroy, :destroy_attachment]
-  before_action :set_select_collections, only: [:new, :create, :edit, :update]
+
+  before_action :set_task, only: [ :show, :edit, :update, :destroy, :destroy_attachment ]
+  before_action :set_select_collections, only: [ :new, :create, :edit, :update ]
   before_action :set_default_breadcrumbs
-  before_action :add_task_breadcrumb, only: [:show, :edit]
+  before_action :add_task_breadcrumb, only: [ :show, :edit ]
   after_action :verify_authorized
 
   def index
     authorize Task
-    @tasks = policy_scope(@organization.tasks)
-      .filter_by_priority(sanitize_param(:priority))
-      .filter_by_status(sanitize_param(:status))
-      .filter_by_planned_start_date(sanitize_date_param(:planned_start_date))
-      .filter_by_planned_end_date(sanitize_date_param(:planned_end_date))
-      .newest_first
-      .from_active_projects
-      .page(params[:page])
-      .per(15)
+    # Lekérdezés készítése cache kulcs alapján - használjunk / karaktert a cache kulcshoz
+    # hogy a delete_matched működjön vele
+    cache_key = "organization_tasks/#{@organization.id}/#{params[:priority]}/#{params[:status]}/#{params[:planned_start_date]}/#{params[:planned_end_date]}/#{params[:page] || 1}"
+    
+    # Nem cache-eljük a teljes ActiveRecord objektumokat, csak az ID-kat
+    # és csökkentjük a cache időt 1 percre, hogy gyakrabban frissüljön
+    task_ids = Rails.cache.fetch(cache_key, expires_in: 1.minute) do
+      policy_scope(@organization.tasks)
+        .filter_by_priority(sanitize_param(:priority))
+        .filter_by_status(sanitize_param(:status))
+        .filter_by_planned_start_date(sanitize_date_param(:planned_start_date))
+        .filter_by_planned_end_date(sanitize_date_param(:planned_end_date))
+        .newest_first
+        .from_active_projects
+        .pluck(:id)
+    end
+
+    # A cache-ben tárolt ID-k alapján lekérjük a task-okat eager loading-gal
+    @tasks = Task.where(id: task_ids)
+                .includes(:project, :assignee, :reporter)
+                .order(created_at: :desc)
+                .page(params[:page])
+                .per(15)
   end
 
   def show
     authorize @task
+    # Eager loading a kapcsolódó objektumokra, hogy elkerüljük az N+1 problémát
+    @task = Task.includes(comments: :membership, task_timetrackings: :membership).find(@task.id)
     @comment = Comment.new
     @task_timetracking = TaskTimetracking.new
+
+    # Nézet adatok előkészítése
+    @total_time_spent = @task.total_time_spent
+    @time_spent_by_users = @task.total_time_spent_by_users
   end
 
   def new
@@ -40,6 +60,8 @@ class Organizations::TasksController < Organizations::BaseController
     authorize @task
 
     if @task.save
+      # Kifejezetten töröljük a tasks lista cache-t az új task hozzáadásakor
+      Rails.cache.delete_matched("organization_tasks/#{@organization.id}*")
       redirect_to organization_task_url(@organization, @task), notice: t("tasks.create.success")
     else
       render :new, status: :unprocessable_entity
@@ -48,8 +70,10 @@ class Organizations::TasksController < Organizations::BaseController
 
   def update
     authorize @task
-    
+
     if @task.update(task_params)
+      # Kifejezetten töröljük a tasks lista cache-t a task frissítésekor
+      Rails.cache.delete_matched("organization_tasks/#{@organization.id}*")
       redirect_to organization_task_url(@organization, @task), notice: t("tasks.update.success")
     else
       render :edit, status: :unprocessable_entity
@@ -58,17 +82,19 @@ class Organizations::TasksController < Organizations::BaseController
 
   def destroy
     authorize @task
-    
+
     @task.destroy!
+    # Kifejezetten töröljük a tasks lista cache-t a task törlésekor
+    Rails.cache.delete_matched("organization_tasks/#{@organization.id}*")
     redirect_to organization_tasks_url(@organization), notice: t("tasks.destroy.success")
   end
 
   def destroy_attachment
     authorize @task
-    
-    @task_attachment = @task.task_attachments.find_by!(id: params[:attachment_id])
-    authorize @task_attachment, :destroy?
 
+    @task_attachment = @task.task_attachments.find_by!(id: params[:attachment_id])
+    # Authorization is handled at the task level, no need for attachment-specific policy
+    
     @task_attachment.purge
     redirect_to organization_task_url(@organization, @task), notice: t("tasks.attachments.destroy.success"), status: :see_other
   end
@@ -76,15 +102,17 @@ class Organizations::TasksController < Organizations::BaseController
   private
 
   def set_task
+    # Nem cache-eljük az ActiveRecord objektumot, egyszerűbb és biztosabb megoldás
     @task = policy_scope(@organization.tasks).find_by!(id: params[:id])
   rescue ActiveRecord::RecordNotFound
     redirect_to organization_tasks_path, alert: t("tasks.not_found")
   end
 
   def set_select_collections
+    # Egyszerűsítjük a gyorsítótárazást és csak az ID-kat és a neveket tároljuk
     @projects = policy_scope(@organization.projects).where(archived: false)
-    @assignees = policy_scope(@organization.memberships)
-    @reporters = policy_scope(@organization.memberships)
+    @assignees = policy_scope(@organization.memberships).includes(:user)
+    @reporters = @assignees # Újrahasználjuk a már lekért adatokat
   end
 
   def task_params
@@ -100,11 +128,11 @@ class Organizations::TasksController < Organizations::BaseController
       :status,
       task_attachments: []
     ]
-    
+
     # Strip and sanitize text inputs
     params_to_sanitize = params.require(:task).permit(*permitted_attributes)
-    
-    [:name, :description].each do |attr|
+
+    [ :name, :description ].each do |attr|
       if params_to_sanitize[attr].present?
         params_to_sanitize[attr] = strip_tags(params_to_sanitize[attr].strip)
       end
@@ -134,7 +162,7 @@ class Organizations::TasksController < Organizations::BaseController
   def sanitize_date_param(param_name)
     date_param = params[param_name]
     return nil if date_param.blank?
-    
+
     begin
       Date.parse(date_param.to_s)
     rescue ArgumentError

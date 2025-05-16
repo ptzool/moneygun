@@ -3,101 +3,186 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title><%= content_for(:title) || "AccountIO Dashboard" %></title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
-    <%= debugbar_head  if defined? Debugbar %>
+    <%= debugbar_head if defined? Debugbar %>
   </head>
   <body class="bg-gray-50">
     <%= debugbar_body if defined? Debugbar %>
     <div class="flex min-h-screen">
-      <!-- Sidebar -->
-      <aside class="w-64 border-r border-gray-200 bg-white">
-        <!-- Logo section -->
-        <div class="p-4 border-b border-gray-200">
-          <%= link_to root_path, class: "flex items-center" do %>
-            <span class="ml-2 text-xl font-semibold">AccountIO</span>
-          <% end %>
-        </div>
-        <!-- Menu section -->
-        <nav class="p-4">
-          <div class="text-xs font-semibold text-gray-400 uppercase mb-4">MENU</div>
-          <ul>
-            <li>
-              <%= link_to organizations_path(), class: "flex items-center py-2 text-gray-600" do %>
-                <i class="far fa-flag mr-3"></i>
-                <span>Organizations</span>
-              <% end %>
-            </li>
-            <% if current_organization %>
-              <div class="text-xs font-semibold text-gray-400 uppercase mt-6 mb-4"><%= @organization.name %></div>
-              <li>
-                <%= link_to organization_projects_path(@organization), class: "flex items-center py-2 text-gray-600" do %>
-                  <i class="fas fa-lock mr-3"></i>
-                  <span>Projects</span>
-                <% end %>
-              </li>
-              <li>
-                <%= link_to organization_tasks_path(@organization), class: "flex items-center py-2 text-gray-600" do %>
-                  <i class="fas fa-layer-group mr-3"></i>
-                  <span>Tasks</span>
-                <% end %>
-              </li>
-              <div class="text-xs font-semibold text-gray-400 uppercase mt-6 mb-4">Settings</div>
-              <li>
-                <%= link_to organization_memberships_path(@organization), class: "flex items-center py-2 text-gray-600" do %>
-                  <i class="fas fa-lock mr-3"></i>
-                  <span>Members</span>
-                <% end %>
-              </li>
-              <div class="text-xs font-semibold text-gray-400 uppercase mt-6 mb-4">User</div>
-              <li>
-                <%= link_to organization_member_worklogs_path(@organization), class: "flex items-center py-2 text-gray-600" do %>
-                  <i class="fas fa-lock mr-3"></i>
-                  <span>Attendance</span>
-                <% end %>
-              </li>
+      <% if user_signed_in? %>
+        <!-- Sidebar - hidden on mobile, visible on lg screens -->
+        <aside class="hidden lg:block w-64 border-r border-gray-200 bg-white fixed h-full z-20">
+          <!-- Logo section -->
+          <div class="p-4 border-b border-gray-200">
+            <%= link_to root_path, class: "flex items-center" do %>
+              <span class="ml-2 text-xl font-semibold">AccountIO</span>
             <% end %>
-          </ul>
-        </nav>
-      </aside>
+          </div>
+          <!-- Menu section -->
+          <nav class="p-4 overflow-y-auto h-[calc(100vh-5rem)]">
+            <div class="text-xs font-semibold text-gray-400 uppercase mb-4">MENU</div>
+            <ul>
+              <li>
+                <%= link_to organizations_path(), class: "flex items-center py-2 text-gray-600 hover:text-indigo-600" do %>
+                  <i class="far fa-flag mr-3"></i>
+                  <span>Organizations</span>
+                <% end %>
+              </li>
+              <% if current_organization %>
+                <div class="text-xs font-semibold text-gray-400 uppercase mt-6 mb-4"><%= @organization.name %></div>
+                <li>
+                  <%= link_to organization_projects_path(@organization), 
+                      class: "flex items-center py-2 text-gray-600 hover:text-indigo-600 #{current_page?(organization_projects_path(@organization)) ? 'text-indigo-600 font-medium' : ''}" do %>
+                    <i class="fas fa-lock mr-3"></i>
+                    <span>Projects</span>
+                  <% end %>
+                </li>
+                <li>
+                  <%= link_to organization_tasks_path(@organization), 
+                      class: "flex items-center py-2 text-gray-600 hover:text-indigo-600 #{current_page?(organization_tasks_path(@organization)) ? 'text-indigo-600 font-medium' : ''}" do %>
+                    <i class="fas fa-layer-group mr-3"></i>
+                    <span>Tasks</span>
+                  <% end %>
+                </li>
+                <div class="text-xs font-semibold text-gray-400 uppercase mt-6 mb-4">Settings</div>
+                <li>
+                  <%= link_to organization_memberships_path(@organization), 
+                      class: "flex items-center py-2 text-gray-600 hover:text-indigo-600 #{current_page?(organization_memberships_path(@organization)) ? 'text-indigo-600 font-medium' : ''}" do %>
+                    <i class="fas fa-users mr-3"></i>
+                    <span>Members</span>
+                  <% end %>
+                </li>
+                <div class="text-xs font-semibold text-gray-400 uppercase mt-6 mb-4">User</div>
+                <li>
+                  <%= link_to organization_member_worklogs_path(@organization), 
+                      class: "flex items-center py-2 text-gray-600 hover:text-indigo-600 #{current_page?(organization_member_worklogs_path(@organization)) ? 'text-indigo-600 font-medium' : ''}" do %>
+                    <i class="fas fa-calendar-check mr-3"></i>
+                    <span>Attendance</span>
+                  <% end %>
+                </li>
+              <% end %>
+            </ul>
+          </nav>
+        </aside>
+      <% end %>
       <!-- Main Content -->
-      <main class="flex-1">
+      <main class="flex-1 <%= user_signed_in? ? 'lg:ml-64' : '' %> w-full">
         <!-- Top Navigation -->
-        <header class="h-16 border-b border-gray-200 bg-white">
-          <div class="flex items-center justify-between px-6 h-full">
-            <!-- Left side -->
-            <div class="flex items-center">
-              <button class="mr-4">
-                <i class="fas fa-chevron-left text-gray-400"></i>
-              </button>
-              <div class="relative">
-                <input type="text" placeholder="Search for..."
-                     class="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm">
-                <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
+        <header class="h-16 border-b border-gray-200 bg-white sticky top-0 z-10">
+          <div class="flex items-center justify-between px-4 md:px-6 h-full">
+            <% if user_signed_in? %>
+              <!-- Left side - Mobile menu button and desktop search -->
+              <div class="flex items-center">
+                <button id="mobile-menu-button" class="mr-4 lg:hidden">
+                  <i class="fas fa-bars text-gray-600"></i>
+                </button>
+                <div class="hidden md:block relative">
+                  <input type="text" placeholder="Search for..."
+                       class="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm">
+                  <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
+                </div>
               </div>
-            </div>
-            <!-- Right side -->
-            <div class="flex items-center space-x-4">
-              <button class="p-2"><i class="fas fa-sun text-gray-600"></i></button>
-              <button class="p-2"><i class="fas fa-shopping-cart text-gray-600"></i></button>
-              <button class="p-2"><i class="fas fa-bell text-gray-600"></i></button>
-              <button class="p-2"><i class="fas fa-cog text-gray-600"></i></button>
-              <img src="avatar.jpg" class="w-8 h-8 rounded-full">
-            </div>
+              <!-- Right side -->
+              <div class="flex items-center space-x-2 md:space-x-4">
+                <button class="p-2 text-gray-600 hover:text-indigo-600"><i class="fas fa-bell"></i></button>
+                <div class="relative group">
+                  <button class="flex items-center focus:outline-none">
+                    <span class="hidden md:block mr-2 text-sm"><%= current_user.email %></span>
+                    <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
+                      <%= current_user.email.first.upcase %>
+                    </div>
+                  </button>
+                  <div class="absolute right-0 w-48 mt-2 bg-white border border-gray-200 rounded-md shadow-lg hidden group-hover:block">
+                    <%= link_to "Account Settings", edit_user_registration_path, class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" %>
+                    <%= button_to "Log out", destroy_user_session_path, method: :delete, class: "w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" %>
+                  </div>
+                </div>
+              </div>
+            <% else %>
+              <!-- Logo for unauthenticated users -->
+              <div class="flex items-center">
+                <span class="text-xl font-semibold">AccountIO</span>
+              </div>
+              <!-- Login link for unauthenticated users -->
+              <div>
+                <%= link_to "Login", new_user_session_path, class: "py-2 px-4 bg-indigo-600 text-white rounded hover:bg-indigo-700" %>
+              </div>
+            <% end %>
           </div>
         </header>
-        <!-- Page Content -->
-        <div class="p-6">
-          <!-- Breadcrumb -->
-          <div class="flex items-center text-sm mb-6">
-            <span class="text-gray-500"><%= render_breadcrumbs %></span>
+
+        <!-- Mobile Sidebar - Hidden by default, shown when toggled -->
+        <% if user_signed_in? %>
+          <div id="mobile-sidebar" class="fixed inset-0 z-40 hidden lg:hidden">
+            <div class="fixed inset-0 bg-gray-600 bg-opacity-75" id="mobile-sidebar-backdrop"></div>
+            <div class="relative flex flex-col w-72 max-w-xs bg-white h-full">
+              <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                <span class="text-xl font-semibold">AccountIO</span>
+                <button id="close-mobile-menu" class="text-gray-600">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+              <div class="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
+                <nav class="px-4">
+                  <div class="text-xs font-semibold text-gray-400 uppercase mb-4">MENU</div>
+                  <ul>
+                    <li>
+                      <%= link_to organizations_path(), class: "flex items-center py-2 text-gray-600" do %>
+                        <i class="far fa-flag mr-3"></i>
+                        <span>Organizations</span>
+                      <% end %>
+                    </li>
+                    <% if current_organization %>
+                      <div class="text-xs font-semibold text-gray-400 uppercase mt-6 mb-4"><%= @organization.name %></div>
+                      <li>
+                        <%= link_to organization_projects_path(@organization), class: "flex items-center py-2 text-gray-600" do %>
+                          <i class="fas fa-lock mr-3"></i>
+                          <span>Projects</span>
+                        <% end %>
+                      </li>
+                      <li>
+                        <%= link_to organization_tasks_path(@organization), class: "flex items-center py-2 text-gray-600" do %>
+                          <i class="fas fa-layer-group mr-3"></i>
+                          <span>Tasks</span>
+                        <% end %>
+                      </li>
+                      <div class="text-xs font-semibold text-gray-400 uppercase mt-6 mb-4">Settings</div>
+                      <li>
+                        <%= link_to organization_memberships_path(@organization), class: "flex items-center py-2 text-gray-600" do %>
+                          <i class="fas fa-users mr-3"></i>
+                          <span>Members</span>
+                        <% end %>
+                      </li>
+                      <div class="text-xs font-semibold text-gray-400 uppercase mt-6 mb-4">User</div>
+                      <li>
+                        <%= link_to organization_member_worklogs_path(@organization), class: "flex items-center py-2 text-gray-600" do %>
+                          <i class="fas fa-calendar-check mr-3"></i>
+                          <span>Attendance</span>
+                        <% end %>
+                      </li>
+                    <% end %>
+                  </ul>
+                </nav>
+              </div>
+            </div>
           </div>
+        <% end %>
+
+        <!-- Page Content -->
+        <div class="p-4 md:p-6 lg:p-8">
+          <% if user_signed_in? %>
+            <!-- Breadcrumb -->
+            <div class="flex items-center text-sm mb-6 overflow-x-auto whitespace-nowrap">
+              <span class="text-gray-500"><%= render_breadcrumbs %></span>
+            </div>
+          <% end %>
           <!-- Main Content Area -->
-          <div>
-            <div id="flash" class="absolute flex flex-col z-40 left-1/2 transform -translate-x-1/2">
+          <div class="w-full max-w-full">
+            <div id="flash" class="fixed flex flex-col z-50 left-1/2 transform -translate-x-1/2 top-4">
               <%= render "shared/flash" %>
             </div>
             <%= yield %>
@@ -105,5 +190,32 @@
         </div>
       </main>
     </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const closeMobileMenuButton = document.getElementById('close-mobile-menu');
+        const mobileSidebar = document.getElementById('mobile-sidebar');
+        const backdrop = document.getElementById('mobile-sidebar-backdrop');
+        
+        if (mobileMenuButton && mobileSidebar) {
+          mobileMenuButton.addEventListener('click', function() {
+            mobileSidebar.classList.remove('hidden');
+          });
+        }
+        
+        if (closeMobileMenuButton && mobileSidebar) {
+          closeMobileMenuButton.addEventListener('click', function() {
+            mobileSidebar.classList.add('hidden');
+          });
+        }
+        
+        if (backdrop && mobileSidebar) {
+          backdrop.addEventListener('click', function() {
+            mobileSidebar.classList.add('hidden');
+          });
+        }
+      });
+    </script>
   </body>
 </html>

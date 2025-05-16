@@ -1,68 +1,83 @@
 <% content_for :title, "My Worklog Calendar" %>
 
-<%= render PageComponent.new(title: "My Worklog Calendar") do |component| %>
-  <% component.with_action_list do %>
-    <%= link_to "&laquo; Previous month".html_safe, organization_member_worklogs_path(@organization, date: @date.prev_month), class: "btn btn-secondary" %>
-    <span class="mx-4 text-lg font-semibold"><%= @date.strftime("%B %Y") %></span>
-    <%= link_to "Next month &raquo;".html_safe, organization_member_worklogs_path(@organization, date: @date.next_month), class: "btn btn-secondary" %>
-    <button id="bulk-edit-btn" class="ml-4 btn btn-primary" data-bs-toggle="modal" data-bs-target="#bulk-edit-modal">Bulk Edit</button>
-  <% end %>
-
-  <div id="member_worklogs_calendar" class="mt-6">
-    <div class="grid grid-cols-7 gap-2 text-center font-semibold border-b pb-2 mb-2">
-      <div>Monday</div>
-      <div>Tuesday</div>
-      <div>Wednesday</div>
-      <div>Thursday</div>
-      <div>Friday</div>
-      <div>Saturday</div>
-      <div>Sunday</div>
+<div class="w-full">
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 mb-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6">
+      <h1 class="text-xl font-semibold text-gray-900 mb-4 sm:mb-0">My Worklog Calendar</h1>
+      
+      <div class="flex flex-wrap items-center gap-2">
+        <%= link_to "&laquo; Previous month".html_safe, organization_member_worklogs_path(@organization, date: @date.prev_month), class: "btn btn-secondary" %>
+        <span class="mx-2 md:mx-4 text-lg font-semibold"><%= @date.strftime("%B %Y") %></span>
+        <%= link_to "Next month &raquo;".html_safe, organization_member_worklogs_path(@organization, date: @date.next_month), class: "btn btn-secondary" %>
+        <button id="bulk-edit-btn" class="ml-0 sm:ml-4 mt-2 sm:mt-0 btn btn-primary" data-bs-toggle="modal" data-bs-target="#bulk-edit-modal">Bulk Edit</button>
+      </div>
     </div>
 
-    <div class="grid grid-cols-7 gap-2">
-      <% @calendar_dates.each do |date| %>
-        <% current_month = date.month == @date.month %>
-        <% worklog = @member_worklogs[date] %>
-        <div class="relative p-2 h-28 border rounded <%= current_month ? 'bg-white' : 'bg-gray-100' %> <%= date == Date.today ? 'border-blue-500 border-2' : '' %> <%= current_month && date.on_weekday? ? 'selectable-day' : '' %>"
-             <%= current_month && date.on_weekday? ? "data-date=\"#{date}\" data-worklog-id=\"#{worklog&.id}\" data-worklog-type=\"#{worklog&.worklog_type}\"" : "" %>
-             <%= current_month && date.on_weekday? ? 'data-bs-toggle="modal" data-bs-target="#worklog-modal"' : '' %>>
-          <div class="text-right <%= current_month ? '' : 'text-gray-400' %>">
-            <%= date.day %>
-            <% if current_month && date.on_weekday? %>
-              <input type="checkbox" class="day-checkbox ml-1" data-date="<%= date %>" style="display: none;">
-            <% end %>
-          </div>
-          
-          <% if worklog %>
-            <div class="mt-2 p-1 text-sm rounded text-white <%= worklog.worklog_type == 'work' ? 'bg-green-500' : (worklog.worklog_type == 'vacation' ? 'bg-blue-500' : 'bg-red-500') %>">
-              <%= worklog.worklog_type.titleize %> Day (8h)
-              <div class="mt-1">
-                <%= link_to edit_organization_member_worklog_path(@organization, worklog), class: "text-white hover:underline", data: { turbo: "false" } do %>
-                    <i class="fas fa-edit"></i>
-                  <% end %>
-                  <%= link_to organization_member_worklog_path(@organization, worklog), 
-                          data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' },
-                          class: "ml-2 text-white hover:underline" do %>
-                    <i class="fas fa-trash"></i>
-                  <% end %>
-              </div>
-            </div>
-          <% elsif current_month && date.on_weekday? %>
-            <div class="absolute bottom-2 right-2">
-              <%= link_to new_organization_member_worklog_path(@organization, date: date), class: "text-blue-500 hover:underline", data: { turbo: "false" } do %>
-                <i class="fas fa-plus-circle"></i>
+    <div id="member_worklogs_calendar" class="mt-6">
+      <div class="grid grid-cols-7 gap-2 text-center font-semibold border-b pb-2 mb-2">
+        <div class="hidden sm:block">Monday</div>
+        <div class="hidden sm:block">Tuesday</div>
+        <div class="hidden sm:block">Wednesday</div>
+        <div class="hidden sm:block">Thursday</div>
+        <div class="hidden sm:block">Friday</div>
+        <div class="hidden sm:block">Saturday</div>
+        <div class="hidden sm:block">Sunday</div>
+        
+        <!-- Mobile day abbreviations -->
+        <div class="sm:hidden">Mon</div>
+        <div class="sm:hidden">Tue</div>
+        <div class="sm:hidden">Wed</div>
+        <div class="sm:hidden">Thu</div>
+        <div class="sm:hidden">Fri</div>
+        <div class="sm:hidden">Sat</div>
+        <div class="sm:hidden">Sun</div>
+      </div>
+
+      <div class="grid grid-cols-7 gap-1 sm:gap-2">
+        <% @calendar_dates.each do |date| %>
+          <% current_month = date.month == @date.month %>
+          <% worklog = @member_worklogs[date] %>
+          <div class="relative p-1 sm:p-2 h-16 sm:h-28 border rounded <%= current_month ? 'bg-white' : 'bg-gray-100' %> <%= date == Date.today ? 'border-blue-500 border-2' : '' %> <%= current_month && date.on_weekday? ? 'selectable-day' : '' %>"
+               <%= current_month && date.on_weekday? ? "data-date=\"#{date}\" data-worklog-id=\"#{worklog&.id}\" data-worklog-type=\"#{worklog&.worklog_type}\"" : "" %>
+               <%= current_month && date.on_weekday? ? 'data-bs-toggle="modal" data-bs-target="#worklog-modal"' : '' %>>
+            <div class="text-right <%= current_month ? '' : 'text-gray-400' %> text-sm">
+              <%= date.day %>
+              <% if current_month && date.on_weekday? %>
+                <input type="checkbox" class="day-checkbox ml-1" data-date="<%= date %>" style="display: none;">
               <% end %>
             </div>
-          <% end %>
-        </div>
-      <% end %>
+            
+            <% if worklog %>
+              <div class="mt-1 p-1 text-xs sm:text-sm rounded text-white <%= worklog.worklog_type == 'work' ? 'bg-green-500' : (worklog.worklog_type == 'vacation' ? 'bg-blue-500' : 'bg-red-500') %>">
+                <div class="truncate"><%= worklog.worklog_type.titleize %></div>
+                <div class="hidden sm:block mt-1">
+                  <%= link_to edit_organization_member_worklog_path(@organization, worklog), class: "text-white hover:underline", data: { turbo: "false" } do %>
+                      <i class="fas fa-edit"></i>
+                    <% end %>
+                    <%= link_to organization_member_worklog_path(@organization, worklog), 
+                            data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' },
+                            class: "ml-2 text-white hover:underline" do %>
+                      <i class="fas fa-trash"></i>
+                    <% end %>
+                </div>
+              </div>
+            <% elsif current_month && date.on_weekday? %>
+              <div class="absolute bottom-1 right-1 sm:bottom-2 sm:right-2">
+                <%= link_to new_organization_member_worklog_path(@organization, date: date), class: "text-blue-500 hover:underline", data: { turbo: "false" } do %>
+                  <i class="fas fa-plus-circle"></i>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
     </div>
-  </div>
 
-  <div class="mt-6 flex gap-4">
-    <div class="p-2 rounded bg-green-500 text-white">Work Day</div>
-    <div class="p-2 rounded bg-blue-500 text-white">Vacation Day</div>
-    <div class="p-2 rounded bg-red-500 text-white">Sick Day</div>
+    <div class="mt-6 flex flex-wrap gap-2 sm:gap-4">
+      <div class="p-1 sm:p-2 rounded bg-green-500 text-white text-xs sm:text-sm">Work Day</div>
+      <div class="p-1 sm:p-2 rounded bg-blue-500 text-white text-xs sm:text-sm">Vacation Day</div>
+      <div class="p-1 sm:p-2 rounded bg-red-500 text-white text-xs sm:text-sm">Sick Day</div>
+    </div>
   </div>
 
   <!-- Single Day Modal -->
@@ -80,7 +95,7 @@
             
             <div>
               <label for="worklog_type">Work Type</label>
-              <select name="member_worklog[type]" id="worklog-type" class="form-select">
+              <select name="member_worklog[type]" id="worklog-type" class="form-select w-full">
                 <option value="">Select a work type</option>
                 <option value="<%= MemberWorklog::WORKLOG_TYPES[:work] %>">Work Day (8h)</option>
                 <option value="<%= MemberWorklog::WORKLOG_TYPES[:vacation] %>">Vacation Day (8h)</option>
@@ -116,7 +131,7 @@
           <%= form_with url: "#", id: "bulk-edit-form", class: "contents space-y-4" do |form| %>
             <div>
               <label for="bulk_worklog_type">Work Type</label>
-              <select name="member_worklog[type]" id="bulk-worklog-type" class="form-select">
+              <select name="member_worklog[type]" id="bulk-worklog-type" class="form-select w-full">
                 <option value="">Select a work type</option>
                 <option value="<%= MemberWorklog::WORKLOG_TYPES[:work] %>">Work Day (8h)</option>
                 <option value="<%= MemberWorklog::WORKLOG_TYPES[:vacation] %>">Vacation Day (8h)</option>
@@ -137,7 +152,7 @@
       </div>
     </div>
   </div>
-<% end %>
+</div>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {

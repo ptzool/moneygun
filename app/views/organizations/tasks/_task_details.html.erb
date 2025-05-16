@@ -1,0 +1,160 @@
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+  <!-- Task Header -->
+  <div class="px-6 py-5 border-b border-gray-100">
+    <div class="flex items-start">
+      <!-- Task Priority Icon -->
+      <% priority_classes = {
+        "high" => "bg-red-100 text-red-600",
+        "medium" => "bg-orange-100 text-orange-600",
+        "low" => "bg-green-100 text-green-600"
+      } %>
+      
+      <div class="flex-shrink-0 mt-1">
+        <span class="inline-flex items-center justify-center h-10 w-10 rounded-full <%= priority_classes[@task.priority] %>">
+          <% if @task.priority == "high" %>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+          <% elsif @task.priority == "medium" %>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+          <% else %>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+          <% end %>
+        </span>
+      </div>
+
+      <!-- Task Title and ID -->
+      <div class="ml-4 flex-1">
+        <div class="flex items-center justify-between">
+          <h1 class="text-xl font-semibold text-gray-900"><%= @task.name %></h1>
+          <span class="text-sm text-gray-500 font-mono">#<%= @task.id %></span>
+        </div>
+
+        <div class="mt-2 flex flex-wrap items-center gap-2">
+          <span class="inline-flex items-center px-2.5 py-0.5 text-xs font-medium <%= status_badge_color(@task.status) %>">
+            <%= @task.status.capitalize %>
+          </span>
+          <span class="inline-flex items-center px-2.5 py-0.5 text-xs font-medium <%= priority_badge_color(@task.priority) %>">
+            <%= @task.priority.capitalize %>
+          </span>
+          <%= link_to organization_project_path(@organization, @task.project),
+              class: "inline-flex items-center px-2.5 py-0.5 text-xs font-medium bg-#{@task.project.color}-50 text-#{@task.project.color}-700 hover:bg-#{@task.project.color}-100 transition-colors" do %>
+            <span class="w-2 h-2 mr-1.5 rounded-full bg-<%= @task.project.color %>-500"></span>
+            <%= @task.project.name %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Task Description -->
+  <div class="px-6 py-5 border-b border-gray-100">
+    <h2 class="text-base font-medium text-gray-900 mb-3">Description</h2>
+    <div class="text-gray-600 prose prose-sm max-w-none">
+      <% if @task.description.present? %>
+        <%= simple_format(@task.description) %>
+      <% else %>
+        <p class="text-gray-400 italic">No description provided</p>
+      <% end %>
+    </div>
+  </div>
+  
+  <!-- Task Details -->
+  <div class="px-6 py-5 border-b border-gray-100">
+    <h2 class="text-base font-medium text-gray-900 mb-4">Details</h2>
+    <div class="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6">
+      <div class="flex justify-between">
+        <dt class="text-sm font-medium text-gray-500">Status</dt>
+        <dd class="text-sm text-gray-900">
+          <span class="inline-flex items-center px-2.5 py-0.5 text-xs font-medium <%= status_badge_color(@task.status) %>">
+            <%= @task.status.capitalize %>
+          </span>
+        </dd>
+      </div>
+      
+      <div class="flex justify-between">
+        <dt class="text-sm font-medium text-gray-500">Priority</dt>
+        <dd class="text-sm text-gray-900">
+          <span class="inline-flex items-center px-2.5 py-0.5 text-xs font-medium <%= priority_badge_color(@task.priority) %>">
+            <%= @task.priority.capitalize %>
+          </span>
+        </dd>
+      </div>
+      
+      <div class="flex justify-between">
+        <dt class="text-sm font-medium text-gray-500">Start date</dt>
+        <dd class="text-sm text-gray-900">
+          <%= @task.planned_start_date&.strftime("%b %d, %Y") || "Not set" %>
+        </dd>
+      </div>
+      
+      <div class="flex justify-between">
+        <dt class="text-sm font-medium text-gray-500">Due date</dt>
+        <dd>
+          <% if @task.planned_end_date %>
+            <span class="text-sm <%= Date.parse(@task.planned_end_date.to_s) < Date.today ? 'text-red-600 font-medium' : 'text-gray-900' %>">
+              <%= @task.planned_end_date.strftime("%b %d, %Y") %>
+              <% if Date.parse(@task.planned_end_date.to_s) < Date.today %>
+                <span class="text-xs text-red-600 font-normal ml-1">(overdue)</span>
+              <% end %>
+            </span>
+          <% else %>
+            <span class="text-sm text-gray-900">Not set</span>
+          <% end %>
+        </dd>
+      </div>
+      
+      <div class="flex justify-between">
+        <dt class="text-sm font-medium text-gray-500">Created</dt>
+        <dd class="text-sm text-gray-900">
+          <%= @task.created_at.strftime("%b %d, %Y") %>
+        </dd>
+      </div>
+      
+      <div class="flex justify-between">
+        <dt class="text-sm font-medium text-gray-500">Updated</dt>
+        <dd class="text-sm text-gray-900">
+          <%= @task.updated_at.strftime("%b %d, %Y") %>
+        </dd>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Task People -->
+  <div class="px-6 py-5">
+    <h2 class="text-base font-medium text-gray-900 mb-4">People</h2>
+    <div class="space-y-4">
+      <div class="flex items-center justify-between">
+        <dt class="text-sm font-medium text-gray-500">Assignee</dt>
+        <dd class="text-sm text-gray-900">
+          <div class="flex items-center">
+            <div class="flex-shrink-0 h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-medium">
+              <%= @task.assignee.user.full_name.first %>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm font-medium text-gray-900"><%= @task.assignee.user.full_name %></p>
+            </div>
+          </div>
+        </dd>
+      </div>
+      
+      <div class="flex items-center justify-between">
+        <dt class="text-sm font-medium text-gray-500">Reporter</dt>
+        <dd class="text-sm text-gray-900">
+          <div class="flex items-center">
+            <div class="flex-shrink-0 h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-medium">
+              <%= @task.reporter.user.full_name.first %>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm font-medium text-gray-900"><%= @task.reporter.user.full_name %></p>
+            </div>
+          </div>
+        </dd>
+      </div>
+    </div>
+  </div>
+</div>

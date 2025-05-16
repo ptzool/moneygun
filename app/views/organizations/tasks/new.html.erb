@@ -1,1 +1,25 @@
-<%= render "form", task: @task %>
+<div class="container-fluid mx-auto px-4 sm:px-6 lg:px-8 py-6 max-w-full">
+  <div class="mb-6 flex items-center justify-between">
+    <nav class="flex" aria-label="Breadcrumb">
+      <ol class="flex items-center space-x-2">
+        <li>
+          <div class="flex items-center">
+            <%= link_to organization_projects_path(@organization), class: "text-sm font-medium text-gray-500 hover:text-gray-700" do %>
+              Projects
+            <% end %>
+            <svg class="h-4 w-4 flex-shrink-0 text-gray-400 mx-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+          </div>
+        </li>
+        <li>
+          <div class="flex items-center">
+            <span class="text-sm font-medium text-blue-600">New Task</span>
+          </div>
+        </li>
+      </ol>
+    </nav>
+  </div>
+
+  <%= render "form", task: @task %>
+</div>

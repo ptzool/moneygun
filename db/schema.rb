@@ -105,7 +105,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_20_094116) do
     t.string "registration_number"
     t.string "tax_number"
     t.string "iban"
+    t.integer "projects_count", default: 0, null: false
+    t.integer "memberships_count", default: 0, null: false
+    t.integer "tasks_count", default: 0, null: false
+    t.index ["email"], name: "index_organizations_on_email"
+    t.index ["name"], name: "index_organizations_on_name"
     t.index ["owner_id"], name: "index_organizations_on_owner_id"
+    t.index ["registration_number"], name: "index_organizations_on_registration_number"
+    t.index ["tax_number"], name: "index_organizations_on_tax_number"
   end
 
   create_table "projects", force: :cascade do |t|
@@ -117,6 +124,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_20_094116) do
     t.bigint "project_manager_id", null: false
     t.string "color"
     t.boolean "archived"
+    t.integer "tasks_count", default: 0, null: false
     t.index ["organization_id"], name: "index_projects_on_organization_id"
     t.index ["project_manager_id"], name: "index_projects_on_project_manager_id"
   end
@@ -147,10 +155,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_20_094116) do
     t.bigint "assignee_id", null: false
     t.bigint "reporter_id", null: false
     t.string "status", default: "open", null: false
+    t.integer "comments_count", default: 0, null: false
+    t.integer "task_timetrackings_count", default: 0, null: false
+    t.index ["assignee_id", "status"], name: "index_tasks_on_assignee_id_and_status"
     t.index ["assignee_id"], name: "index_tasks_on_assignee_id"
+    t.index ["organization_id", "priority"], name: "index_tasks_on_organization_id_and_priority"
+    t.index ["organization_id", "status"], name: "index_tasks_on_organization_id_and_status"
     t.index ["organization_id"], name: "index_tasks_on_organization_id"
+    t.index ["planned_end_date"], name: "index_tasks_on_planned_end_date"
+    t.index ["planned_start_date"], name: "index_tasks_on_planned_start_date"
+    t.index ["priority"], name: "index_tasks_on_priority"
+    t.index ["project_id", "status"], name: "index_tasks_on_project_id_and_status"
     t.index ["project_id"], name: "index_tasks_on_project_id"
     t.index ["reporter_id"], name: "index_tasks_on_reporter_id"
+    t.index ["status"], name: "index_tasks_on_status"
   end
 
   create_table "users", force: :cascade do |t|

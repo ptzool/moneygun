@@ -1,39 +1,50 @@
-<tr class="hover:bg-gray-50 border-t border-gray-200">
+<tr class="hover:bg-gray-50 border-t border-gray-200 transition-colors">
   <td class="w-10 pl-4 pr-1 py-3">
     <div class="flex items-center justify-center">
       <input type="checkbox" class="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
     </div>
   </td>
   <td class="px-3 py-3 whitespace-nowrap">
-    <span class="text-xs text-blue-600 font-medium hover:underline">
+    <span class="text-xs font-mono text-blue-600 font-medium hover:underline">
       <%= link_to "##{task.id}", [@organization, task] %>
     </span>
   </td>
   <td class="px-3 py-3">
     <div class="flex items-start">
       <!-- Priority icon -->
-      <% if task.priority == "high" %>
-        <svg class="h-4 w-4 text-red-500 mr-2 mt-0.5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-        </svg>
-      <% elsif task.priority == "medium" %>
-        <svg class="h-4 w-4 text-orange-500 mr-2 mt-0.5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 15l8.385 3.96-8.385-16.92-8.385 16.92 8.385-3.96z"></path>
-        </svg>
-      <% else %>
-        <svg class="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 11l8.385 3.96-8.385-16.92-8.385 16.92 8.385-3.96z"></path>
-        </svg>
-      <% end %>
+      <% priority_colors = {
+        "high" => "text-red-500",
+        "medium" => "text-orange-500",
+        "low" => "text-green-500"
+      } %>
+      
+      <div class="flex-shrink-0 mt-0.5 mr-2">
+        <span class="inline-flex items-center justify-center h-5 w-5 rounded-full bg-<%= task.priority %>-50">
+          <svg class="h-3.5 w-3.5 <%= priority_colors[task.priority] %>" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <% if task.priority == "high" %>
+              <path d="M10 3a1 1 0 01.707.293l4 4a1 1 0 01-1.414 1.414L11 6.414V16a1 1 0 11-2 0V6.414L6.707 8.707a1 1 0 01-1.414-1.414l4-4A1 1 0 0110 3z" />
+            <% elsif task.priority == "medium" %>
+              <path d="M9.707 7.293a1 1 0 00-1.414 1.414L10.586 11l-2.293 2.293a1 1 0 101.414 1.414L12 12.414l2.293 2.293a1 1 0 001.414-1.414L13.414 11l2.293-2.293a1 1 0 00-1.414-1.414L12 9.586l-2.293-2.293z" />
+            <% else %>
+              <path d="M10 17a1 1 0 01-.707-.293l-4-4a1 1 0 011.414-1.414L9 13.586V4a1 1 0 112 0v9.586l2.293-2.293a1 1 0 011.414 1.414l-4 4A1 1 0 0110 17z" />
+            <% end %>
+          </svg>
+        </span>
+      </div>
       
       <!-- Task name with truncation -->
       <div class="min-w-0 flex-1">
         <%= link_to [@organization, task], class: "text-sm font-medium text-gray-900 hover:text-blue-600 truncate block" do %>
           <%= task.name %>
         <% end %>
-        <div class="text-xs text-gray-500">
+        <div class="text-xs text-gray-500 mt-0.5">
           <% if task.planned_start_date && task.planned_end_date %>
-            <%= task.planned_start_date.strftime("%b %d") %> - <%= task.planned_end_date.strftime("%b %d") %>
+            <span class="inline-flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <%= task.planned_start_date.strftime("%b %d") %> - <%= task.planned_end_date.strftime("%b %d") %>
+            </span>
           <% end %>
         </div>
       </div>
@@ -41,29 +52,42 @@
   </td>
   <td class="px-3 py-3 whitespace-nowrap">
     <%= link_to organization_project_path(@organization, task.project),
-        class: "px-2 py-1 text-xs font-medium inline-flex items-center border whitespace-nowrap bg-#{task.project.color}-50 border-#{task.project.color}-200 text-#{task.project.color}-700" do %>
-      <span class="w-2 h-2 bg-<%= task.project.color %>-500 mr-1.5"></span>
+        class: "px-2.5 py-1 text-xs font-medium inline-flex items-center rounded-full whitespace-nowrap bg-#{task.project.color}-50 text-#{task.project.color}-700 hover:bg-#{task.project.color}-100 transition-colors" do %>
+      <span class="w-2 h-2 rounded-full bg-<%= task.project.color %>-500 mr-1.5"></span>
       <%= task.project.name %>
     <% end %>
   </td>
   <td class="px-3 py-3 whitespace-nowrap">
-    <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium <%= priority_badge_color(task.priority) %>">
+    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium <%= priority_badge_color(task.priority) %>">
       <%= task.priority.capitalize %>
     </span>
   </td>
   <td class="px-3 py-3 whitespace-nowrap">
-    <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium <%= status_badge_color(task.status) %>">
+    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium <%= status_badge_color(task.status) %>">
       <%= task.status.capitalize %>
     </span>
   </td>
   <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-500">
-    <%= task.planned_start_date&.strftime("%Y-%m-%d") %>
-  </td>
-  <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-500">
-    <% if task.planned_end_date %>
-      <span class="<%= Date.parse(task.planned_end_date.to_s) < Date.today ? 'text-red-600' : 'text-gray-500' %>">
-        <%= task.planned_end_date.strftime("%Y-%m-%d") %>
+    <% if task.planned_start_date %>
+      <span class="inline-flex items-center text-gray-500">
+        <%= task.planned_start_date.strftime("%Y-%m-%d") %>
       </span>
+    <% else %>
+      <span class="text-gray-400">—</span>
+    <% end %>
+  </td>
+  <td class="px-3 py-3 whitespace-nowrap text-sm">
+    <% if task.planned_end_date %>
+      <span class="<%= Date.parse(task.planned_end_date.to_s) < Date.today ? 'text-red-600 inline-flex items-center' : 'text-gray-500' %>">
+        <%= task.planned_end_date.strftime("%Y-%m-%d") %>
+        <% if Date.parse(task.planned_end_date.to_s) < Date.today %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+          </svg>
+        <% end %>
+      </span>
+    <% else %>
+      <span class="text-gray-400">—</span>
     <% end %>
   </td>
   <td class="px-3 py-3 text-right whitespace-nowrap">
@@ -85,10 +109,10 @@
         </svg>
       <% end %>
       
-      <%= link_to organization_task_path(@organization, task), 
+      <%= button_to organization_task_path(@organization, task), 
           method: :delete, 
+          form: { class: "inline", data: { turbo_confirm: "Are you sure you want to delete this task?" } },
           class: "p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors", 
-          data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this task?" },
           title: "Delete task" do %>
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
