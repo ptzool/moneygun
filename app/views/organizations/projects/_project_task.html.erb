@@ -51,20 +51,10 @@
     </div>
   </td>
   <td class="px-3 py-3 whitespace-nowrap">
-    <%= link_to organization_project_path(@organization, task.project),
-        class: "px-2.5 py-1 text-xs font-medium inline-flex items-center rounded-full whitespace-nowrap bg-#{task.project.color}-50 text-#{task.project.color}-700 hover:bg-#{task.project.color}-100 transition-colors" do %>
-      <span class="w-2 h-2 rounded-full bg-<%= task.project.color %>-500 mr-1.5"></span>
-      <%= task.project.name %>
-    <% end %>
+      <%= task.assignee.user.full_name %>
   </td>
   <td class="px-3 py-3 whitespace-nowrap">
-      <span class="w-2 h-2 rounded-full mr-1.5"></span>
-      <%= task.assignee.user.full_name%>
-  </td>
-  <td class="px-3 py-3 whitespace-nowrap">
-    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium <%= priority_badge_color(task.priority) %>">
-      <%= task.priority.capitalize %>
-    </span>
+      <%= task.total_time_spent %> hrs <span class="text-xs text-gray-500">(<%= (task.total_time_spent / 8.0).round(1) %> days)</span>
   </td>
   <td class="px-3 py-3 whitespace-nowrap">
     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium <%= status_badge_color(task.status) %>">

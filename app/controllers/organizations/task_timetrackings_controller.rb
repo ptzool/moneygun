@@ -3,8 +3,14 @@ class Organizations::TaskTimetrackingsController < Organizations::BaseController
   before_action :set_task_timetracking, only: [ :show, :edit, :update, :destroy ]
 
   def index
-    @task_timetrackings = policy_scope(TaskTimetracking).where(task: params[:task_id])
-    authorize @task_timetrackings
+    if params[:task_id].present?
+      @task = @organization.tasks.find_by!(id: params[:task_id])
+      @task_timetrackings = policy_scope(TaskTimetracking).where(task: @task)
+      authorize @task_timetrackings
+    else
+      redirect_to organization_tasks_path(@organization), alert: t("tasks.select_task")
+      return
+    end
   end
 
   def show
@@ -30,7 +36,7 @@ class Organizations::TaskTimetrackingsController < Organizations::BaseController
     authorize @task_timetracking
 
     if @task_timetracking.update(task_timetracking_params)
-      redirect_to organization_task_timetracking_url(@organization, @task_timetracking), notice: t("task_timetrackings.update.success")
+      redirect_to organization_task_task_timetracking_url(@organization, @task, @task_timetracking), notice: t("task_timetrackings.update.success")
     else
       render :edit, status: :unprocessable_entity
     end
@@ -53,7 +59,7 @@ class Organizations::TaskTimetrackingsController < Organizations::BaseController
     @task_timetracking.destroy!
 
     respond_to do |format|
-      format.html { redirect_to params[:redirect_to] || organization_task_timetrackings_url(@organization), notice: t("task_timetrackings.destroy.success"), status: :see_other }
+      format.html { redirect_to params[:redirect_to] || organization_task_task_timetrackings_url(@organization, task), notice: t("task_timetrackings.destroy.success"), status: :see_other }
       format.json { head :no_content }
     end
   end
@@ -71,7 +77,7 @@ class Organizations::TaskTimetrackingsController < Organizations::BaseController
     @task_timetracking = TaskTimetracking.joins(:task).find_by!(id: params[:id], tasks: { organization_id: @organization.id })
     @task = @task_timetracking.task
   rescue ActiveRecord::RecordNotFound
-    redirect_to organization_task_timetrackings_path(@organization), alert: t("task_timetrackings.not_found")
+    redirect_to organization_tasks_path(@organization), alert: t("task_timetrackings.not_found")
   end
 
   def task_timetracking_params

@@ -1,4 +1,4 @@
-<div class="container-fluid mx-auto px-4 sm:px-6 lg:px-8 max-w-full">
+<div class="w-full">
   <div class="bg-white rounded-lg shadow-sm border border-gray-200 max-w-7xl mx-auto">
     <div class="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
       <h2 class="text-lg font-medium text-gray-900 flex items-center">
@@ -15,7 +15,6 @@
         <% end %>
       </h2>
     </div>
-    
     <% if project.errors.any? %>
       <div id="error_explanation" class="mx-4 sm:mx-6 mt-4 bg-red-50 text-red-600 px-4 py-3 font-medium rounded-md border border-red-100">
         <h3 class="text-sm font-semibold"><%= pluralize(project.errors.count, "error") %> prohibited this project from being saved:</h3>
@@ -26,7 +25,6 @@
         </ul>
       </div>
     <% end %>
-    
     <div class="p-4 sm:p-6">
       <%= form_with(model: [ @organization, project ], class: "space-y-6 max-w-full") do |form| %>
         <!-- Main info section -->
@@ -35,13 +33,11 @@
             <%= form.label :name, class: "block text-sm font-medium text-gray-700 mb-1" %>
             <%= form.text_field :name, class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm", placeholder: "Project name" %>
           </div>
-          
           <div class="md:col-span-2">
             <%= form.label :description, class: "block text-sm font-medium text-gray-700 mb-1" %>
             <%= form.text_area :description, rows: 4, class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm", placeholder: "Add a description..." %>
           </div>
         </div>
-        
         <!-- Project details section -->
         <div class="bg-gray-50 p-5 rounded-md border border-gray-200">
           <h3 class="text-sm font-medium text-gray-700 mb-4 flex items-center">
@@ -53,13 +49,12 @@
           <div class="grid gap-4 md:grid-cols-2">
             <div>
               <%= form.label :project_manager_id, class: "block text-sm font-medium text-gray-700 mb-1" %>
-              <%= form.select :project_manager_id, 
-                @project_managers.map { |c| [ c.user.full_name, c.id ] }, 
-                { prompt: "Select project manager" }, 
-                { class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white" } 
+              <%= form.select :project_manager_id,
+                @project_managers.map { |c| [ c.user.full_name, c.id ] },
+                { prompt: "Select project manager" },
+                { class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white" }
               %>
             </div>
-            
             <div class="flex items-start pt-5">
               <div class="flex items-center h-5">
                 <%= form.check_box :archived, class: "h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" %>
@@ -71,7 +66,6 @@
             </div>
           </div>
         </div>
-        
         <!-- Project assets section -->
         <div class="bg-gray-50 p-5 rounded-md border border-gray-200">
           <h3 class="text-sm font-medium text-gray-700 mb-4 flex items-center">
@@ -80,7 +74,6 @@
             </svg>
             Project assets
           </h3>
-          
           <div class="mb-4">
             <%= form.label :project_logo, class: "block text-sm font-medium text-gray-700 mb-1" %>
             <div class="flex items-center mt-1">
@@ -94,11 +87,9 @@
             </div>
             <p class="mt-1 text-xs text-gray-500">PNG, JPG or SVG (max. 1MB)</p>
           </div>
-          
           <!-- Attachments section -->
           <div class="mt-4">
             <%= form.label :project_attachments, class: "block text-sm font-medium text-gray-700 mb-1" %>
-            
             <% if @project.project_attachments.any? %>
               <div class="mb-4 space-y-2">
                 <% @project.project_attachments.each do |attachment| %>
@@ -112,7 +103,6 @@
                 <% end %>
               </div>
             <% end %>
-            
             <div class="flex items-center mt-1">
               <label class="w-full flex flex-col items-center px-4 py-4 bg-white text-blue-500 rounded-lg border-2 border-dashed border-blue-200 cursor-pointer hover:bg-blue-50 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -126,14 +116,12 @@
             <p class="mt-1 text-xs text-gray-500">Upload project documentation and resources</p>
           </div>
         </div>
-        
         <!-- Action buttons -->
         <div class="flex justify-between sm:justify-end space-x-4 pt-5 border-t border-gray-200">
-          <%= link_to project.new_record? ? organization_projects_path(@organization) : organization_project_path(@organization, project), 
+          <%= link_to project.new_record? ? organization_projects_path(@organization) : organization_project_path(@organization, project),
             class: "px-5 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 min-w-[100px] text-center transition-colors" do %>
             Cancel
           <% end %>
-          
           <%= form.button type: "submit", class: "px-5 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 min-w-[100px] transition-colors" do %>
             <div class="flex items-center">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
