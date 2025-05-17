@@ -11,7 +11,8 @@ class Organizations::TasksController < Organizations::BaseController
     authorize Task
     # Lekérdezés készítése cache kulcs alapján - használjunk / karaktert a cache kulcshoz
     # hogy a delete_matched működjön vele
-    cache_key = "organization_tasks/#{@organization.id}/#{params[:priority]}/#{params[:status]}/#{params[:planned_start_date]}/#{params[:planned_end_date]}/#{params[:page] || 1}"
+    search_term = sanitize_param(:search)
+    cache_key = "organization_tasks/#{@organization.id}/#{params[:priority]}/#{params[:status]}/#{params[:planned_start_date]}/#{params[:planned_end_date]}/#{search_term}/#{params[:page] || 1}"
     
     # Nem cache-eljük a teljes ActiveRecord objektumokat, csak az ID-kat
     # és csökkentjük a cache időt 1 percre, hogy gyakrabban frissüljön
@@ -21,6 +22,7 @@ class Organizations::TasksController < Organizations::BaseController
         .filter_by_status(sanitize_param(:status))
         .filter_by_planned_start_date(sanitize_date_param(:planned_start_date))
         .filter_by_planned_end_date(sanitize_date_param(:planned_end_date))
+        .search_by_name(search_term)
         .newest_first
         .from_active_projects
         .pluck(:id)

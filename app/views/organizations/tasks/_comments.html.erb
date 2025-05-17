@@ -7,25 +7,23 @@
       Comments
       <span class="ml-2 px-2 py-0.5 rounded-full bg-gray-100 text-xs text-gray-600 font-medium"><%= @task.comments.count %></span>
     </h2>
-    
     <!-- Comment Form -->
-    <%= form_with(model: [@organization, @task, @task.comments.build], 
-      local: true, 
-      class: "mt-4 space-y-3", 
+    <%= form_with(model: [ @organization, @task, @task.comments.build ],
+      local: true,
+      class: "mt-4 space-y-3",
       data: { controller: "form", action: "turbo:submit-end->form#reset" }) do |form| %>
       <div>
-        <%= form.text_area :body, 
-          rows: 3, 
-          class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm", 
+        <%= form.text_area :body,
+          rows: 3,
+          class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm",
           placeholder: "Write your comment...",
           data: { form_target: "textarea" } %>
       </div>
       <div class="flex justify-end">
-        <%= form.submit "Post Comment", 
+        <%= form.submit "Post Comment",
           class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors" %>
       </div>
     <% end %>
-    
     <!-- Comment List -->
     <div class="mt-8">
       <% if @task.comments.any? %>
@@ -45,20 +43,20 @@
                       <span class="text-xs text-gray-500"><%= time_ago_in_words(comment.created_at) %> ago</span>
                     </div>
                     <% if defined?(current_user) && current_user && comment.membership.user_id == current_user.id %>
-                    <div class="dropdown relative" data-controller="dropdown">
-                      <button data-action="dropdown#toggle click@window->dropdown#hide" 
-                        class="text-gray-400 hover:text-gray-600 focus:outline-none">
-                        <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                          <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                        </svg>
-                      </button>
-                      <div data-dropdown-target="menu" 
+                      <div class="dropdown relative" data-controller="dropdown">
+                        <button data-action="dropdown#toggle click@window->dropdown#hide"
+                          class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                          <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                          </svg>
+                        </button>
+                        <div data-dropdown-target="menu"
                         class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none z-10">
-                        <div class="py-1" role="none">
+                          <div class="py-1" role="none">
                             <%= link_to "Edit", "#", class: "text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100" %>
+                          </div>
                         </div>
                       </div>
-                    </div>
                     <% end %>
                   </div>
                   <div class="mt-1 text-gray-800 text-sm prose prose-sm max-w-none">
@@ -69,14 +67,6 @@
             </li>
           <% end %>
         </ul>
-        
-        <% if @task.comments.count > 5 %>
-          <div class="mt-4 text-center">
-            <button class="text-sm text-blue-600 hover:text-blue-700 font-medium">
-              Load more comments
-            </button>
-          </div>
-        <% end %>
       <% else %>
         <div class="text-center py-8 border border-dashed border-gray-200 rounded-lg bg-gray-50">
           <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">

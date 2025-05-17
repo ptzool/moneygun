@@ -8,7 +8,6 @@
         "medium" => "bg-orange-100 text-orange-600",
         "low" => "bg-green-100 text-green-600"
       } %>
-      
       <div class="flex-shrink-0 mt-1">
         <span class="inline-flex items-center justify-center h-10 w-10 rounded-full <%= priority_classes[@task.priority] %>">
           <% if @task.priority == "high" %>
@@ -26,17 +25,15 @@
           <% end %>
         </span>
       </div>
-
       <!-- Task Title and ID -->
       <div class="ml-4 flex-1">
         <div class="flex items-center justify-between">
           <h1 class="text-xl font-semibold text-gray-900"><%= @task.name %></h1>
           <span class="text-sm text-gray-500 font-mono">#<%= @task.id %></span>
         </div>
-
         <div class="mt-2 flex flex-wrap items-center gap-2">
           <span class="inline-flex items-center px-2.5 py-0.5 text-xs font-medium <%= status_badge_color(@task.status) %>">
-            <%= @task.status.capitalize %>
+            <%= @task.status.capitalize.humanize %>
           </span>
           <span class="inline-flex items-center px-2.5 py-0.5 text-xs font-medium <%= priority_badge_color(@task.priority) %>">
             <%= @task.priority.capitalize %>
@@ -50,7 +47,6 @@
       </div>
     </div>
   </div>
-  
   <!-- Task Description -->
   <div class="px-6 py-5 border-b border-gray-100">
     <h2 class="text-base font-medium text-gray-900 mb-3">Description</h2>
@@ -62,20 +58,20 @@
       <% end %>
     </div>
   </div>
-  
   <!-- Task Details -->
   <div class="px-6 py-5 border-b border-gray-100">
-    <h2 class="text-base font-medium text-gray-900 mb-4">Details</h2>
+    <h2 class="text-base font-medium text-gray-900 mb-4">
+      Details
+    </h2>
     <div class="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6">
       <div class="flex justify-between">
         <dt class="text-sm font-medium text-gray-500">Status</dt>
         <dd class="text-sm text-gray-900">
           <span class="inline-flex items-center px-2.5 py-0.5 text-xs font-medium <%= status_badge_color(@task.status) %>">
-            <%= @task.status.capitalize %>
+            <%= @task.status.capitalize.humanize %>
           </span>
         </dd>
       </div>
-      
       <div class="flex justify-between">
         <dt class="text-sm font-medium text-gray-500">Priority</dt>
         <dd class="text-sm text-gray-900">
@@ -84,14 +80,12 @@
           </span>
         </dd>
       </div>
-      
       <div class="flex justify-between">
         <dt class="text-sm font-medium text-gray-500">Start date</dt>
         <dd class="text-sm text-gray-900">
           <%= @task.planned_start_date&.strftime("%b %d, %Y") || "Not set" %>
         </dd>
       </div>
-      
       <div class="flex justify-between">
         <dt class="text-sm font-medium text-gray-500">Due date</dt>
         <dd>
@@ -107,14 +101,12 @@
           <% end %>
         </dd>
       </div>
-      
       <div class="flex justify-between">
         <dt class="text-sm font-medium text-gray-500">Created</dt>
         <dd class="text-sm text-gray-900">
           <%= @task.created_at.strftime("%b %d, %Y") %>
         </dd>
       </div>
-      
       <div class="flex justify-between">
         <dt class="text-sm font-medium text-gray-500">Updated</dt>
         <dd class="text-sm text-gray-900">
@@ -123,7 +115,6 @@
       </div>
     </div>
   </div>
-  
   <!-- Task People -->
   <div class="px-6 py-5">
     <h2 class="text-base font-medium text-gray-900 mb-4">People</h2>
@@ -141,7 +132,6 @@
           </div>
         </dd>
       </div>
-      
       <div class="flex items-center justify-between">
         <dt class="text-sm font-medium text-gray-500">Reporter</dt>
         <dd class="text-sm text-gray-900">

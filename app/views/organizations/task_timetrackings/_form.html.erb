@@ -1,0 +1,56 @@
+<%= form_with(model: [@organization, @task, @task_timetracking].compact, class: "space-y-6") do |form| %>
+  <%= render "shared/errors", object: form.object %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <%= form.label :date, class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= form.date_field :date, class: "mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm", required: true %>
+    </div>
+
+    <div>
+      <%= form.label :duration, "Duration (minutes)", class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= form.number_field :duration, class: "mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm", min: 1 %>
+      <p class="mt-1 text-xs text-gray-500">Will be calculated automatically if start and end times are provided</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <%= form.label :start, "Start Time", class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= form.time_field :start, class: "mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
+      <p class="mt-1 text-xs text-gray-500">Leave blank if you want to record duration only</p>
+    </div>
+
+    <div>
+      <%= form.label :end, "End Time", class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= form.time_field :end, class: "mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
+      <p class="mt-1 text-xs text-gray-500">Leave blank if you want to record duration only</p>
+    </div>
+  </div>
+
+  <% if @task %>
+    <div class="bg-gray-50 px-4 py-3 rounded-md border border-gray-200">
+      <div class="flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+          <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd" />
+        </svg>
+        <div>
+          <span class="text-sm font-medium text-gray-700">Task:</span>
+          <span class="ml-1 text-sm text-gray-900"><%= @task.name %></span>
+        </div>
+      </div>
+      <%= form.hidden_field :task_id, value: @task.id %>
+    </div>
+  <% end %>
+
+  <div class="flex items-center justify-end space-x-3 pt-5 border-t border-gray-200">
+    <% if @task_timetracking.persisted? %>
+      <%= link_to "Cancel", organization_task_timetracking_path(@organization, @task_timetracking), class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+    <% else %>
+      <%= link_to "Cancel", organization_task_path(@organization, @task), class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+    <% end %>
+    <%= form.submit "Save Time Entry", class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+    <%= form.hidden_field :task_id if @task && !@task_timetracking.persisted? %>
+  </div>
+<% end %>

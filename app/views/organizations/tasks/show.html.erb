@@ -1,20 +1,16 @@
-<div class="container-fluid mx-auto px-4 sm:px-6 lg:px-8 py-6 max-w-full">
+<div class="w-full">
   <%= render 'header', show_page: true %>
-
   <!-- Main Content Grid -->
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <!-- Left Column - Task Details -->
     <div class="lg:col-span-2 space-y-6">
       <!-- Task Details -->
       <%= render 'task_details' %>
-
       <!-- Attachments -->
       <%= render 'task_attachments' %>
-
       <!-- Comments -->
       <%= render 'comments' %>
     </div>
-
     <!-- Right Column - Meta Info -->
     <div class="space-y-6">
       <!-- Time Tracking -->

@@ -9,7 +9,7 @@ Rails.application.routes.draw do
     resources :member_worklogs, module: :organizations do
       collection do
         post :bulk_update
-        post 'bulk_update', to: 'member_worklogs#bulk_update'
+        post "bulk_update", to: "member_worklogs#bulk_update"
       end
     end
     resources :tasks, module: :organizations do
@@ -17,7 +17,7 @@ Rails.application.routes.draw do
         delete "destroy_attachment/:attachment_id", action: :destroy_attachment, as: :destroy_attachment
       end
       resources :comments, only: %i[create]
-      resources :task_timetrackings, only: %i[create update destroy]
+      resources :task_timetrackings
     end
   end
 

@@ -2,15 +2,15 @@
   <div class="flex flex-col bg-white shadow-sm rounded-lg border border-gray-200">
     <!-- Header section -->
     <div class="flex flex-col md:flex-row md:items-center justify-between p-4 sm:p-6 border-b border-gray-200">
-      <div class="flex items-center space-x-2 mb-4 md:mb-0">
+      <div class="flex items-center space-x-3 mb-4 md:mb-0">
         <h1 class="text-xl font-semibold text-gray-900">Projects</h1>
-        <span class="px-2.5 py-0.5 bg-blue-100 text-blue-800 text-xs font-medium">
+        <span class="px-2.5 py-0.5 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
           <%= @projects.total_count rescue @projects.count %>
         </span>
       </div>
       <%= link_to new_organization_project_path(@organization), 
-          class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+          class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-100" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
         </svg>
         Create Project
@@ -27,7 +27,7 @@
               <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
             </svg>
           </div>
-          <input type="text" name="search" placeholder="Search projects..." class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+          <input type="text" name="search" placeholder="Search projects..." class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 shadow-sm">
         </div>
         
         <!-- Filters -->
@@ -37,16 +37,19 @@
               <%= f.select :archived,
                 options_for_select([['All projects', ''], ['Active', 'false'], ['Archived', 'true']], params[:archived]),
                 {},
-                class: "block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md bg-white"
+                class: "block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md bg-white shadow-sm"
               %>
             </div>
             
-            <button type="submit" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <button type="submit" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V19a1 1 0 01-1.414.707l-4-4A1 1 0 016 15v-3.586L1.293 6.707A1 1 0 011 6V3a1 1 0 011-1zm1 .5a.5.5 0 00-.5.5v2.793l4.853 4.853A.5.5 0 019 12.5v2.793l3 3V12.5a.5.5 0 01.146-.354L16.793 4H4.5a.5.5 0 01-.5-.5z" clip-rule="evenodd" />
+              </svg>
               Apply filters
             </button>
             
             <% if params[:archived].present? %>
-              <%= link_to organization_projects_path(@organization), class: "inline-flex items-center px-3 py-2 text-sm text-gray-500 hover:text-gray-700" do %>
+              <%= link_to organization_projects_path(@organization), class: "inline-flex items-center px-3 py-2 text-sm text-gray-500 hover:text-blue-600 transition-colors" do %>
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
                 </svg>
@@ -84,13 +87,13 @@
           <% if @projects.empty? %>
             <tr>
               <td colspan="7" class="px-6 py-10 text-center text-gray-500">
-                <svg class="mx-auto h-12 w-12 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                <svg class="mx-auto h-16 w-16 text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
-                <h3 class="mt-2 text-sm font-medium text-gray-900">No projects found</h3>
+                <h3 class="mt-3 text-sm font-medium text-gray-900">No projects found</h3>
                 <p class="mt-1 text-sm text-gray-500">Get started by creating a new project.</p>
                 <div class="mt-6">
-                  <%= link_to new_organization_project_path(@organization), class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+                  <%= link_to new_organization_project_path(@organization), class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors" do %>
                     <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                       <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
                     </svg>
@@ -110,7 +113,7 @@
         <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
           <div>
             <p class="text-sm text-gray-700">
-              Showing <span class="font-medium"><%= @projects.offset_value + 1 %></span> to <span class="font-medium"><%= @projects.offset_value + @projects.length %></span> of <span class="font-medium"><%= @projects.total_count %></span> projects
+              Showing <span class="font-medium text-blue-600"><%= @projects.offset_value + 1 %></span> to <span class="font-medium text-blue-600"><%= @projects.offset_value + @projects.length %></span> of <span class="font-medium text-blue-600"><%= @projects.total_count %></span> projects
             </p>
           </div>
           <div class="flex-shrink-0">
@@ -119,7 +122,7 @@
         </div>
         <div class="flex sm:hidden">
           <p class="text-sm text-gray-700">
-            Showing <span class="font-medium"><%= @projects.offset_value + 1 %></span> to <span class="font-medium"><%= @projects.offset_value + @projects.length %></span> of <span class="font-medium"><%= @projects.total_count %></span>
+            Showing <span class="font-medium text-blue-600"><%= @projects.offset_value + 1 %></span> to <span class="font-medium text-blue-600"><%= @projects.offset_value + @projects.length %></span> of <span class="font-medium text-blue-600"><%= @projects.total_count %></span>
           </p>
         </div>
       </div>

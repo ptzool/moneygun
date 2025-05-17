@@ -1,4 +1,4 @@
-<tr class="hover:bg-gray-50 border-t border-gray-200">
+<tr class="hover:bg-gray-50 border-t border-gray-200 transition-colors">
   <td class="w-10 pl-4 pr-1 py-3">
     <div class="flex items-center justify-center">
       <input type="checkbox" class="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
@@ -44,11 +44,13 @@
   </td>
   <td class="px-3 py-3 whitespace-nowrap">
     <% if project.archived %>
-      <span class="inline-flex items-center px-2.5 py-0.5 text-xs font-medium bg-gray-100 text-gray-800">
+      <span class="inline-flex items-center px-2.5 py-0.5 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
+        <span class="h-1.5 w-1.5 rounded-full bg-gray-500 mr-1.5"></span>
         Archived
       </span>
     <% else %>
-      <span class="inline-flex items-center px-2.5 py-0.5 text-xs font-medium bg-green-100 text-green-800">
+      <span class="inline-flex items-center px-2.5 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+        <span class="h-1.5 w-1.5 rounded-full bg-green-500 mr-1.5"></span>
         Active
       </span>
     <% end %>
@@ -68,7 +70,7 @@
       <% end %>
       
       <%= link_to edit_organization_project_path(@organization, project), 
-          class: "p-1.5 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors", 
+          class: "p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors", 
           title: "Edit project" do %>
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
           <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />

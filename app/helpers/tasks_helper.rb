@@ -18,6 +18,8 @@ module TasksHelper
       "text-green-600 bg-green-100"
     when "open"
       "text-red-600 bg-red-100"
+    when "in_progress"
+      "text-yellow-600 bg-yellow-100"
     else
       "text-blue-600 bg-blue-100"
     end
