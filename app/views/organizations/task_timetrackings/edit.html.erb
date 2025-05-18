@@ -1,9 +1,68 @@
-<%= render PageComponent.new(title: "Editing Time Entry", content_container: true, full_width: false) do |component| %>
-  <%= render "form", task_timetracking: @task_timetracking %>
-  
-  <div class="flex space-x-2 mt-4">
-    <%= link_to "Back to Details", organization_task_task_timetracking_path(@organization, @task, @task_timetracking), class: "btn btn-secondary" %>
-    <%= link_to "Calendar View", calendar_organization_task_task_timetrackings_path(@organization, @task), class: "btn btn-secondary" %>
-    <%= link_to "List View", organization_task_task_timetrackings_path(@organization, @task), class: "btn btn-secondary" %>
+<% content_for :title, "Edit Time Entry" %>
+
+<div class="w-full">
+  <div class="flex flex-col w-full bg-white shadow-sm rounded-lg border border-gray-200">
+    <!-- Header section -->
+    <div class="flex items-center justify-between px-6 py-5 border-b border-gray-200">
+      <div>
+        <h1 class="text-xl font-semibold text-gray-900">Edit Time Entry</h1>
+        <p class="mt-1 text-sm text-gray-500">
+          For task: <%= link_to @task.name, organization_task_path(@organization, @task), class: "text-blue-600 hover:text-blue-800" %>
+        </p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <%= link_to organization_task_task_timetracking_path(@organization, @task, @task_timetracking), 
+            class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          </svg>
+          View Details
+        <% end %>
+        <%= link_to organization_task_task_timetrackings_path(@organization, @task),
+            class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+          </svg>
+          List View
+        <% end %>
+        <%= link_to calendar_organization_task_task_timetrackings_path(@organization, @task),
+            class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          Calendar View
+        <% end %>
+      </div>
+    </div>
+    
+    <!-- Form section -->
+    <div class="p-6">
+      <%= render "form", task_timetracking: @task_timetracking %>
+    </div>
+    
+    <!-- Footer section with shortcuts -->
+    <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between items-center rounded-b-lg">
+      <%= link_to organization_task_path(@organization, @task), class: "inline-flex items-center text-sm text-gray-500 hover:text-gray-700" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        </svg>
+        Return to task
+      <% end %>
+      
+      <div class="flex items-center space-x-4">
+        <% if @task_timetracking.persisted? %>
+          <%= button_to organization_task_task_timetracking_path(@organization, @task, @task_timetracking),
+              method: :delete,
+              form: { data: { turbo_confirm: "Are you sure you want to delete this time entry?" } },
+              class: "inline-flex items-center text-sm text-red-600 hover:text-red-800 bg-transparent border-0" do %>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            Delete this time entry
+          <% end %>
+        <% end %>
+      </div>
+    </div>
   </div>
-<% end %>
+</div>

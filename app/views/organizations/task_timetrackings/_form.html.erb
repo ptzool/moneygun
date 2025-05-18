@@ -1,57 +1,150 @@
-<%= form_with(model: [ @organization, @task, @task_timetracking ], class: "contents space-y-4", data: { controller: "time-entry-form", turbo: false }) do |form| %>
+<%= form_with(model: [ @organization, @task, @task_timetracking ], class: "w-full", data: { controller: "time-entry-form", turbo: false }) do |form| %>
   <%= render "shared/errors", object: form.object %>
   
-  <div class="card shadow mb-4">
-    <div class="card-body">
-      <h3 class="text-lg font-medium mb-4">Time Entry Details</h3>
-      
-      <%= form.hidden_field :task_id, value: @task.id %>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <%= form.label :date, class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= form.date_field :date, class: "form-input w-full", value: form.object.date || Date.today %>
-        </div>
+  <div class="bg-white rounded-lg border border-gray-200 shadow-sm mb-6">
+    <div class="p-6">
+      <div class="space-y-6 max-w-full">
+        <%= form.hidden_field :task_id, value: @task.id %>
         
-        <div class="md:col-span-2 border-t border-gray-200 pt-4 mt-2"></div>
-        
+        <!-- Date Selection -->
         <div>
-          <%= form.label :start, "Start Time", class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= form.time_field :start, class: "form-input w-full", data: { action: "change->time-entry-form#updateDuration" } %>
-        </div>
-        
-        <div>
-          <%= form.label :end, "End Time", class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= form.time_field :end, class: "form-input w-full", data: { action: "change->time-entry-form#updateDuration" } %>
-        </div>
-        
-        <div>
-          <%= form.label :duration_in_hours, "Duration (hours)", class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <div class="flex items-center">
-            <%= form.number_field :duration_in_hours, class: "form-input w-full", step: 0.25, min: 0.25, value: form.object.duration ? (form.object.duration / 60.0).round(2) : 1.0 %>
-            <span class="ml-2 text-sm text-gray-600">hours</span>
+          <%= form.label :date, class: "block text-sm font-medium text-gray-700 mb-1" do %>
+            Date <span class="text-red-500">*</span>
+          <% end %>
+          <div class="relative">
+            <%= form.date_field :date, 
+                class: "block w-full pr-10 sm:text-sm rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500", 
+                placeholder: "Select date", 
+                value: form.object.date || Date.today %>
+            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
           </div>
-          <p class="text-sm text-gray-500 mt-1">Enter time directly or use start/end times</p>
+          <p class="mt-1 text-xs text-gray-500">Select the date for this time entry</p>
+        </div>
+        
+        <div class="border-t border-gray-200 pt-4">
+          <h3 class="text-sm font-medium text-gray-700 mb-3">Time Information</h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Start Time -->
+            <div>
+              <%= form.label :start, class: "block text-sm font-medium text-gray-700 mb-1" do %>
+                Start Time <span class="text-gray-400 text-xs font-normal">(optional if duration entered)</span>
+              <% end %>
+              <div class="relative">
+                <%= form.time_field :start, 
+                    class: "block w-full pr-10 sm:text-sm rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500", 
+                    placeholder: "HH:MM", 
+                    data: { action: "change->time-entry-form#updateDuration" } %>
+                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            
+            <!-- End Time -->
+            <div>
+              <%= form.label :end, class: "block text-sm font-medium text-gray-700 mb-1" do %>
+                End Time <span class="text-gray-400 text-xs font-normal">(optional if duration entered)</span>
+              <% end %>
+              <div class="relative">
+                <%= form.time_field :end, 
+                    class: "block w-full pr-10 sm:text-sm rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500", 
+                    placeholder: "HH:MM", 
+                    data: { action: "change->time-entry-form#updateDuration" } %>
+                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-4 p-4 bg-blue-50 rounded-md border border-blue-100 md:w-2/3">
+            <!-- Duration in hours -->
+            <div class="w-full">
+              <%= form.label :duration_in_hours, class: "block text-sm font-medium text-gray-700 mb-1" do %>
+                Duration <span class="text-red-500">*</span>
+              <% end %>
+              <div class="flex items-center">
+                <div class="relative flex-grow">
+                  <%= form.number_field :duration_in_hours, 
+                      class: "block w-full pr-16 sm:text-sm rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500", 
+                      step: 0.25, 
+                      min: 0.25, 
+                      value: form.object.duration ? (form.object.duration / 60.0).round(2) : 1.0 %>
+                  <div class="absolute inset-y-0 right-0 flex items-center">
+                    <span class="h-full inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
+                      hours
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-2 text-sm text-gray-600 bg-white p-2 rounded border border-gray-200">
+                <div class="flex items-center text-blue-600 font-medium">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Time Entry Options:
+                </div>
+                <ul class="list-disc pl-5 mt-1 text-xs space-y-1">
+                  <li>Enter the duration directly in hours, or</li>
+                  <li>Set both start and end times to calculate duration automatically</li>
+                  <li>Common durations: 0.25 (15min), 0.5 (30min), 1.0 (1hr), etc.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
   
-  <div id="form-errors" class="text-red-500 bg-red-100 p-3 rounded hidden mb-4"></div>
+  <!-- Error message box -->
+  <div id="form-errors" class="mb-6 p-4 rounded-md bg-red-50 border border-red-200 text-red-700 hidden max-w-4xl">
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <div class="ml-3">
+        <p class="text-sm font-medium" id="form-error-message"></p>
+      </div>
+    </div>
+  </div>
 
+  <!-- Form actions -->
   <div class="flex justify-between items-center">
+    <div class="text-sm text-gray-500">
+      <p>Fields marked with <span class="text-red-500">*</span> are required. You must provide either a duration directly or both start and end times.</p>
+    </div>
+    <div class="flex space-x-3">
     <% if form.object.persisted? %>
-      <%= link_to "Cancel", organization_task_task_timetracking_path(@organization, @task, @task_timetracking), class: "btn btn-secondary" %>
+      <%= link_to "Cancel", organization_task_task_timetracking_path(@organization, @task, @task_timetracking), 
+          class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors" %>
     <% else %>
-      <%= link_to "Cancel", organization_task_task_timetrackings_path(@organization, @task), class: "btn btn-secondary" %>
+      <%= link_to "Cancel", organization_task_task_timetrackings_path(@organization, @task), 
+          class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors" %>
     <% end %>
-    <%= form.submit form.object.new_record? ? "Add Time Entry" : "Update Time Entry", class: "btn btn-primary", data: { disable_with: "Saving..." } %>
+    
+    <%= form.submit form.object.new_record? ? "Add Time Entry" : "Update Time Entry", 
+        class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors", 
+        data: { disable_with: "Saving..." } %>
+    </div>
   </div>
   
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const form = document.querySelector('form[data-controller="time-entry-form"]');
       const errorDiv = document.getElementById('form-errors');
+      const errorMessage = document.getElementById('form-error-message');
       
       if (form) {
         form.addEventListener('submit', function(event) {
@@ -62,7 +155,7 @@
           // Validate that we have either a duration or start/end times
           if (durationField && !durationField.value && (!startField?.value || !endField?.value)) {
             event.preventDefault();
-            errorDiv.textContent = "Please enter either a duration or both start and end times.";
+            errorMessage.textContent = "Please enter either a duration or both start and end times.";
             errorDiv.classList.remove('hidden');
             return false;
           }
@@ -70,9 +163,22 @@
           // Validate duration is positive
           if (durationField && parseFloat(durationField.value) <= 0) {
             event.preventDefault();
-            errorDiv.textContent = "Duration must be greater than zero.";
+            errorMessage.textContent = "Duration must be greater than zero.";
             errorDiv.classList.remove('hidden');
             return false;
+          }
+          
+          // Validate that end time is after start time
+          if (startField?.value && endField?.value) {
+            const startDate = new Date(`2000-01-01T${startField.value}`);
+            const endDate = new Date(`2000-01-01T${endField.value}`);
+            
+            if (endDate <= startDate) {
+              event.preventDefault();
+              errorMessage.textContent = "End time must be after start time.";
+              errorDiv.classList.remove('hidden');
+              return false;
+            }
           }
           
           // Hide any previous errors

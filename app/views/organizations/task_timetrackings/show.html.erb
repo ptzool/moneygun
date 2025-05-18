@@ -1,61 +1,178 @@
-<%= render PageComponent.new(title: "Time Entry Details") do |component| %>
-  <% component.with_action_list do %>
-    <%= link_to "Calendar View", calendar_organization_task_task_timetrackings_path(@organization, @task), class: "btn btn-secondary" %>
-    <%= link_to "List View", organization_task_task_timetrackings_path(@organization, @task), class: "btn btn-secondary" %>
-    <%= link_to "Edit", edit_organization_task_task_timetracking_path(@organization, @task, @task_timetracking), class: "btn btn-secondary" if policy(@task_timetracking).edit? %>
-    <div class="inline-block">
-      <%= button_to "Delete", organization_task_task_timetracking_path(@organization, @task, @task_timetracking), method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "btn btn-danger" if policy(@task_timetracking).destroy? %>
-    </div>
-  <% end %>
-<% end %>
-<div class="card shadow">
-  <div class="card-body">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<% content_for :title, "Time Entry Details" %>
+
+<div class="w-full">
+  <div class="flex flex-col w-full bg-white shadow-sm rounded-lg border border-gray-200">
+    <!-- Header section -->
+    <div class="flex items-center justify-between px-6 py-5 border-b border-gray-200">
       <div>
-        <h3 class="text-lg font-semibold mb-4">Time Entry Information</h3>
-        <div class="space-y-4">
-          <div>
-            <span class="text-gray-600 font-medium">Task:</span>
-            <div class="mt-1"><%= @task_timetracking.task.name %></div>
+        <h1 class="text-xl font-semibold text-gray-900">Time Entry Details</h1>
+        <p class="mt-1 text-sm text-gray-500">
+          For task: <%= link_to @task.name, organization_task_path(@organization, @task), class: "text-blue-600 hover:text-blue-800" %>
+        </p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <%= link_to organization_task_task_timetrackings_path(@organization, @task),
+            class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+          </svg>
+          List View
+        <% end %>
+        <%= link_to calendar_organization_task_task_timetrackings_path(@organization, @task),
+            class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          Calendar View
+        <% end %>
+        <% if policy(@task_timetracking).edit? %>
+          <%= link_to edit_organization_task_task_timetracking_path(@organization, @task, @task_timetracking),
+              class: "inline-flex items-center px-4 py-2 border border-blue-300 shadow-sm text-sm font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors" do %>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            Edit
+          <% end %>
+        <% end %>
+        <% if policy(@task_timetracking).destroy? %>
+          <%= button_to organization_task_task_timetracking_path(@organization, @task, @task_timetracking),
+              method: :delete,
+              form: { data: { turbo_confirm: "Are you sure you want to delete this time entry?" } },
+              class: "inline-flex items-center px-4 py-2 border border-red-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors" do %>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            Delete
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Time Entry Summary -->
+    <div class="p-6 bg-blue-50 border-b border-gray-200">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+        <div class="flex items-start space-x-4">
+          <div class="p-3 bg-blue-100 rounded-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8
+text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
           </div>
           <div>
-            <span class="text-gray-600 font-medium">Tracked by:</span>
-            <div class="mt-1"><%= @task_timetracking.membership.user.full_name %></div>
+            <p class="text-sm font-medium text-blue-700">Time Tracked</p>
+            <h2 class="text-2xl font-bold text-blue-900"><%= number_with_precision(@task_timetracking.duration_in_hours, precision: 2) %> hours</h2>
+            <p class="text-sm text-blue-700 mt-1">
+              on <%= @task_timetracking.date.strftime('%B %d, %Y') %>
+              <% if @task_timetracking.start && @task_timetracking.end %>
+                · <%= @task_timetracking.start.strftime('%H:%M') %> to <%= @task_timetracking.end.strftime('%H:%M') %>
+              <% end %>
+            </p>
           </div>
-          <div>
-            <span class="text-gray-600 font-medium">Date:</span>
-            <div class="mt-1"><%= @task_timetracking.date.strftime('%B %d, %Y') %></div>
+        </div>
+        <div class="mt-4 md:mt-0 px-3 py-1.5 bg-white rounded-lg border border-blue-200 shadow-sm">
+          <p class="text-sm font-medium text-gray-600">Tracked by</p>
+          <p class="text-base font-semibold text-gray-900"><%= @task_timetracking.membership.user.full_name %></p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Content section -->
+    <div class="p-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Time Details -->
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-5">
+          <h3 class="text-base font-semibold text-gray-900 mb-4">Time Details</h3>
+          <dl class="grid grid-cols-3 gap-4">
+            <div class="col-span-1">
+              <dt class="text-sm font-medium text-gray-500">Date</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @task_timetracking.date.strftime('%b %d, %Y') %></dd>
+            </div>
+            <div class="col-span-1">
+              <dt class="text-sm font-medium text-gray-500">Start Time</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @task_timetracking.start&.strftime('%H:%M') || '—' %></dd>
+            </div>
+            <div class="col-span-1">
+              <dt class="text-sm font-medium text-gray-500">End Time</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @task_timetracking.end&.strftime('%H:%M') || '—' %></dd>
+            </div>
+            <div class="col-span-1">
+              <dt class="text-sm font-medium text-gray-500">Hours</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= number_with_precision(@task_timetracking.duration_in_hours, precision: 2) %></dd>
+            </div>
+            <div class="col-span-1">
+              <dt class="text-sm font-medium text-gray-500">Minutes</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @task_timetracking.duration %></dd>
+            </div>
+          </dl>
+        </div>
+        
+        <!-- Task Information -->
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-5">
+          <h3 class="text-base font-semibold text-gray-900 mb-4">Task Information</h3>
+          <dl class="space-y-3">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Task Name</dt>
+              <dd class="mt-1 text-sm text-gray-900 flex items-center">
+                <%= link_to @task.name, organization_task_path(@organization, @task), class: "text-blue-600 hover:text-blue-800" %>
+              </dd>
+            </div>
+            <% if @task.project.present? %>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Project</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                <%= link_to @task.project.name, organization_project_path(@organization, @task.project), class: "text-blue-600 hover:text-blue-800" %>
+              </dd>
+            </div>
+            <% end %>
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Status</dt>
+              <dd class="mt-1">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-<%= @task.status == 'open' ? 'green' : (@task.status == 'in_progress' ? 'yellow' : 'gray') %>-100 text-<%= @task.status == 'open' ? 'green' : (@task.status == 'in_progress' ? 'yellow' : 'gray') %>-800">
+                  <%= @task.status.humanize %>
+                </span>
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+      
+      <!-- Metadata -->
+      <div class="mt-6 pt-4 border-t border-gray-200">
+        <h3 class="text-sm font-medium text-gray-500 mb-2">Time Entry History</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span class="text-sm text-gray-500">Created: <%= @task_timetracking.created_at.strftime('%b %d, %Y at %H:%M') %></span>
+          </div>
+          <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span class="text-sm text-gray-500">Updated: <%= @task_timetracking.updated_at.strftime('%b %d, %Y at %H:%M') %></span>
           </div>
         </div>
       </div>
-      <div>
-        <h3 class="text-lg font-semibold mb-4">Time Details</h3>
-        <div class="space-y-4">
-          <div>
-            <span class="text-gray-600 font-medium">Start Time:</span>
-            <div class="mt-1"><%= @task_timetracking.start&.strftime('%H:%M') || 'Not specified' %></div>
-          </div>
-          <div>
-            <span class="text-gray-600 font-medium">End Time:</span>
-            <div class="mt-1"><%= @task_timetracking.end&.strftime('%H:%M') || 'Not specified' %></div>
-          </div>
-          <div>
-            <span class="text-gray-600 font-medium">Duration:</span>
-            <div class="mt-1"><%= number_with_precision(@task_timetracking.duration_in_hours, precision: 2) %> hours (<%= @task_timetracking.duration %> minutes)</div>
-          </div>
-        </div>
-      </div>
     </div>
-    <div class="mt-6 pt-4 border-t border-gray-200">
-      <h3 class="text-lg font-semibold mb-2">Time Entry History</h3>
-      <div>
-        <span class="text-gray-600 font-medium">Created:</span>
-        <span class="ml-2"><%= @task_timetracking.created_at.strftime('%B %d, %Y at %H:%M') %></span>
-      </div>
-      <div>
-        <span class="text-gray-600 font-medium">Last Updated:</span>
-        <span class="ml-2"><%= @task_timetracking.updated_at.strftime('%B %d, %Y at %H:%M') %></span>
-      </div>
+    
+    <!-- Footer section with actions -->
+    <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between items-center rounded-b-lg">
+      <%= link_to organization_task_task_timetrackings_path(@organization, @task), class: "inline-flex items-center text-sm text-gray-500 hover:text-gray-700" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Back to time entries
+      <% end %>
+      
+      <% if policy(@task_timetracking).edit? %>
+        <%= link_to edit_organization_task_task_timetracking_path(@organization, @task, @task_timetracking), class: "inline-flex items-center text-sm text-blue-600 hover:text-blue-800" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+          Edit this time entry
+        <% end %>
+      <% end %>
     </div>
   </div>
 </div>
