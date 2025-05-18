@@ -14,6 +14,10 @@ class TaskTimetrackingPolicy < Organization::BasePolicy
   def destroy?
     membership.admin? || is_own_timetracking?
   end
+  
+  def calendar?
+    membership.admin? || membership.employee?
+  end
 
   private
 
@@ -29,7 +33,14 @@ class TaskTimetrackingPolicy < Organization::BasePolicy
 
   class Scope < Scope
     def resolve
-      scope.all
+      if membership.admin?
+        scope.all
+      else
+        # Only return time tracking entries for tasks the user is assigned to or reported
+        scope.joins(:task).where(tasks: { assignee_id: membership.id })
+          .or(scope.joins(:task).where(tasks: { reporter_id: membership.id }))
+          .or(scope.where(membership_id: membership.id)) # Include own time entries
+      end
     end
   end
 end

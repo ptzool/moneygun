@@ -1,56 +1,84 @@
-<%= form_with(model: [@organization, @task, @task_timetracking].compact, class: "space-y-6") do |form| %>
+<%= form_with(model: [ @organization, @task, @task_timetracking ], class: "contents space-y-4", data: { controller: "time-entry-form", turbo: false }) do |form| %>
   <%= render "shared/errors", object: form.object %>
-
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div>
-      <%= form.label :date, class: "block text-sm font-medium text-gray-700 mb-1" %>
-      <%= form.date_field :date, class: "mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm", required: true %>
-    </div>
-
-    <div>
-      <%= form.label :duration, "Duration (minutes)", class: "block text-sm font-medium text-gray-700 mb-1" %>
-      <%= form.number_field :duration, class: "mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm", min: 1 %>
-      <p class="mt-1 text-xs text-gray-500">Will be calculated automatically if start and end times are provided</p>
-    </div>
-  </div>
-
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div>
-      <%= form.label :start, "Start Time", class: "block text-sm font-medium text-gray-700 mb-1" %>
-      <%= form.time_field :start, class: "mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
-      <p class="mt-1 text-xs text-gray-500">Leave blank if you want to record duration only</p>
-    </div>
-
-    <div>
-      <%= form.label :end, "End Time", class: "block text-sm font-medium text-gray-700 mb-1" %>
-      <%= form.time_field :end, class: "mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
-      <p class="mt-1 text-xs text-gray-500">Leave blank if you want to record duration only</p>
-    </div>
-  </div>
-
-  <% if @task %>
-    <div class="bg-gray-50 px-4 py-3 rounded-md border border-gray-200">
-      <div class="flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
-          <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-          <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd" />
-        </svg>
+  
+  <div class="card shadow mb-4">
+    <div class="card-body">
+      <h3 class="text-lg font-medium mb-4">Time Entry Details</h3>
+      
+      <%= form.hidden_field :task_id, value: @task.id %>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <span class="text-sm font-medium text-gray-700">Task:</span>
-          <span class="ml-1 text-sm text-gray-900"><%= @task.name %></span>
+          <%= form.label :date, class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.date_field :date, class: "form-input w-full", value: form.object.date || Date.today %>
+        </div>
+        
+        <div class="md:col-span-2 border-t border-gray-200 pt-4 mt-2"></div>
+        
+        <div>
+          <%= form.label :start, "Start Time", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.time_field :start, class: "form-input w-full", data: { action: "change->time-entry-form#updateDuration" } %>
+        </div>
+        
+        <div>
+          <%= form.label :end, "End Time", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.time_field :end, class: "form-input w-full", data: { action: "change->time-entry-form#updateDuration" } %>
+        </div>
+        
+        <div>
+          <%= form.label :duration_in_hours, "Duration (hours)", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <div class="flex items-center">
+            <%= form.number_field :duration_in_hours, class: "form-input w-full", step: 0.25, min: 0.25, value: form.object.duration ? (form.object.duration / 60.0).round(2) : 1.0 %>
+            <span class="ml-2 text-sm text-gray-600">hours</span>
+          </div>
+          <p class="text-sm text-gray-500 mt-1">Enter time directly or use start/end times</p>
         </div>
       </div>
-      <%= form.hidden_field :task_id, value: @task.id %>
     </div>
-  <% end %>
-
-  <div class="flex items-center justify-end space-x-3 pt-5 border-t border-gray-200">
-    <% if @task_timetracking.persisted? %>
-      <%= link_to "Cancel", organization_task_timetracking_path(@organization, @task_timetracking), class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
-    <% else %>
-      <%= link_to "Cancel", organization_task_path(@organization, @task), class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
-    <% end %>
-    <%= form.submit "Save Time Entry", class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
-    <%= form.hidden_field :task_id if @task && !@task_timetracking.persisted? %>
   </div>
+  
+  <div id="form-errors" class="text-red-500 bg-red-100 p-3 rounded hidden mb-4"></div>
+
+  <div class="flex justify-between items-center">
+    <% if form.object.persisted? %>
+      <%= link_to "Cancel", organization_task_task_timetracking_path(@organization, @task, @task_timetracking), class: "btn btn-secondary" %>
+    <% else %>
+      <%= link_to "Cancel", organization_task_task_timetrackings_path(@organization, @task), class: "btn btn-secondary" %>
+    <% end %>
+    <%= form.submit form.object.new_record? ? "Add Time Entry" : "Update Time Entry", class: "btn btn-primary", data: { disable_with: "Saving..." } %>
+  </div>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.querySelector('form[data-controller="time-entry-form"]');
+      const errorDiv = document.getElementById('form-errors');
+      
+      if (form) {
+        form.addEventListener('submit', function(event) {
+          const startField = form.querySelector('input[name*="[start]"]');
+          const endField = form.querySelector('input[name*="[end]"]');
+          const durationField = form.querySelector('input[name*="[duration_in_hours]"]');
+          
+          // Validate that we have either a duration or start/end times
+          if (durationField && !durationField.value && (!startField?.value || !endField?.value)) {
+            event.preventDefault();
+            errorDiv.textContent = "Please enter either a duration or both start and end times.";
+            errorDiv.classList.remove('hidden');
+            return false;
+          }
+          
+          // Validate duration is positive
+          if (durationField && parseFloat(durationField.value) <= 0) {
+            event.preventDefault();
+            errorDiv.textContent = "Duration must be greater than zero.";
+            errorDiv.classList.remove('hidden');
+            return false;
+          }
+          
+          // Hide any previous errors
+          errorDiv.classList.add('hidden');
+        });
+      }
+    });
+  </script>
 <% end %>

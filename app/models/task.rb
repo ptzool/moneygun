@@ -65,12 +65,22 @@ class Task < ApplicationRecord
       task_timetrackings.sum(:duration)
     end
   end
+  
+  # Returns total time spent in hours
+  def total_time_spent_in_hours
+    (total_time_spent.to_f / 60.0).round(1)
+  end
 
   def total_time_spent_by_users
     # Cacheljük a lekérdezést, de egyszerű kulcsot használunk, ami nem okoz serializációs problémát
     Rails.cache.fetch([ "task", id, "total_time_spent_by_users", updated_at.to_i ]) do
       task_timetrackings.group(:membership_id).sum(:duration)
     end
+  end
+  
+  # Returns total time spent by users in hours
+  def total_time_spent_by_users_in_hours
+    total_time_spent_by_users.transform_values { |minutes| (minutes.to_f / 60.0).round(1) }
   end
 
   private

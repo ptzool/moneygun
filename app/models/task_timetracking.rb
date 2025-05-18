@@ -7,6 +7,15 @@ class TaskTimetracking < ApplicationRecord
   after_save :expire_task_cache
   after_destroy :expire_task_cache
   
+  # Methods for hour-based duration
+  def duration_in_hours
+    (duration.to_f / 60.0).round(1) if duration
+  end
+  
+  def duration_in_hours=(hours)
+    self.duration = (hours.to_f * 60).to_i if hours.present?
+  end
+  
   private
   
   def expire_task_cache

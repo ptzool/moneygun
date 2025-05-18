@@ -17,7 +17,13 @@ Rails.application.routes.draw do
         delete "destroy_attachment/:attachment_id", action: :destroy_attachment, as: :destroy_attachment
       end
       resources :comments, only: %i[create]
-      resources :task_timetrackings
+      resources :task_timetrackings do
+        collection do
+          get :calendar, as: :calendar
+          get 'calendar.json', to: 'task_timetrackings#calendar', as: :calendar_json
+          post :bulk_update, as: :bulk_update
+        end
+      end
     end
   end
 
