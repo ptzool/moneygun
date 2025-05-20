@@ -1,14 +1,14 @@
 <div class="w-full">
-  <div class="flex flex-col bg-white shadow-sm rounded-lg border border-gray-200">
+  <div class="flex flex-col w-full bg-white shadow-sm rounded-lg border border-gray-200">
     <!-- Header section -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between p-4 sm:p-6 border-b border-gray-200">
-      <div class="flex items-center space-x-3 mb-4 md:mb-0">
+    <div class="flex items-center justify-between px-6 py-5 border-b border-gray-200">
+      <div class="flex items-center space-x-3">
         <h1 class="text-xl font-semibold text-gray-900">Projects</h1>
         <span class="px-2.5 py-0.5 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
           <%= @projects.total_count rescue @projects.count %>
         </span>
       </div>
-      <%= link_to new_organization_project_path(@organization), 
+      <%= link_to new_organization_project_path(@organization),
           class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors" do %>
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-100" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
@@ -16,7 +16,6 @@
         Create Project
       <% end %>
     </div>
-    
     <!-- Search and filter section -->
     <div class="p-4 sm:p-6 border-b border-gray-200 bg-gray-50">
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -29,25 +28,22 @@
           </div>
           <input type="text" name="search" placeholder="Search projects..." class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 shadow-sm">
         </div>
-        
         <!-- Filters -->
         <%= form_with method: :get, class: "flex flex-wrap gap-3 w-full sm:w-auto" do |f| %>
           <div class="flex items-center space-x-2 w-full sm:w-auto">
             <div class="relative inline-block text-left w-full sm:w-auto">
               <%= f.select :archived,
-                options_for_select([['All projects', ''], ['Active', 'false'], ['Archived', 'true']], params[:archived]),
+                options_for_select([ [ 'All projects', '' ], [ 'Active', 'false' ], [ 'Archived', 'true' ] ], params[:archived]),
                 {},
                 class: "block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md bg-white shadow-sm"
               %>
             </div>
-            
             <button type="submit" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V19a1 1 0 01-1.414.707l-4-4A1 1 0 016 15v-3.586L1.293 6.707A1 1 0 011 6V3a1 1 0 011-1zm1 .5a.5.5 0 00-.5.5v2.793l4.853 4.853A.5.5 0 019 12.5v2.793l3 3V12.5a.5.5 0 01.146-.354L16.793 4H4.5a.5.5 0 01-.5-.5z" clip-rule="evenodd" />
               </svg>
               Apply filters
             </button>
-            
             <% if params[:archived].present? %>
               <%= link_to organization_projects_path(@organization), class: "inline-flex items-center px-3 py-2 text-sm text-gray-500 hover:text-blue-600 transition-colors" do %>
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
@@ -60,7 +56,6 @@
         <% end %>
       </div>
     </div>
-    
     <!-- Table section -->
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-200">
@@ -83,7 +78,6 @@
           <% @projects.each do |project| %>
             <%= render project %>
           <% end %>
-          
           <% if @projects.empty? %>
             <tr>
               <td colspan="7" class="px-6 py-10 text-center text-gray-500">
@@ -106,7 +100,6 @@
         </tbody>
       </table>
     </div>
-    
     <!-- Pagination section -->
     <% if @projects.respond_to?(:total_pages) && @projects.total_pages > 1 %>
       <div class="px-4 sm:px-6 py-4 flex items-center justify-between border-t border-gray-200 bg-gray-50">

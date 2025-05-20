@@ -16,6 +16,19 @@ class Organization < ApplicationRecord
   # Attachments
   has_one_attached :logo
 
+  # Safe variant access methods to avoid processing errors
+  def logo_thumb
+    logo.representation(resize_to_limit: [150, 150]) if logo.attached?
+  end
+  
+  def logo_icon
+    logo.representation(resize_to_limit: [40, 40]) if logo.attached?
+  end
+  
+  def logo_medium
+    logo.representation(resize_to_limit: [300, 300]) if logo.attached?
+  end
+
   # Callbacks
   after_save :expire_organization_cache
   after_destroy :expire_organization_cache

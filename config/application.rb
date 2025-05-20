@@ -24,5 +24,39 @@ module Moneygun
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+    
+    # ActiveStorage configuration
+    config.active_storage.variant_processor = :mini_magick
+    config.active_storage.resolve_model_to_route = :rails_storage_redirect
+    config.active_storage.routes_prefix = '/storage'
+    
+    # Fix for 'body' method issue in DiskController and RedirectController
+    config.to_prepare do
+      ActiveStorage::BaseController.class_eval do
+        private
+        def verified_key_with_expiration
+          if key = decode_verified_key
+            key
+          else
+            nil
+          end
+        end
+      end
+      
+      if defined?(ActiveStorage::DiskController)
+        ActiveStorage::DiskController.class_eval do
+          def show
+            if key = decode_verified_key
+              send_data(disk_service.download(key[:key]),
+                      type: key[:content_type],
+                      disposition: key[:disposition],
+                      filename: key[:filename])
+            else
+              head :not_found
+            end
+          end
+        end
+      end
+    end
   end
 end

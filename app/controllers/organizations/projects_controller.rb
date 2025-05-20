@@ -121,11 +121,11 @@ class Organizations::ProjectsController < Organizations::BaseController
 
   # Fájl feltöltés validáció
   def validate_file_uploads
-    if params.dig(:project, :project_logo).present?
+    if params.dig(:project, :project_logo)
       validate_file(params[:project][:project_logo])
     end
 
-    if params.dig(:project, :project_attachments).present?
+    if params.dig(:project, :project_attachments)
       Array(params[:project][:project_attachments]).each do |attachment|
         validate_file(attachment)
       end

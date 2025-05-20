@@ -6,7 +6,7 @@ class OrganizationsController < ApplicationController
 
   def index
     scoped_organizations = policy_scope(current_user.organizations)
-    
+
     # Cache-elés a szervezetek listájához
     @organizations = Rails.cache.fetch("organizations/user_#{current_user.id}/all", expires_in: 2.minutes) do
       scoped_organizations
@@ -18,16 +18,16 @@ class OrganizationsController < ApplicationController
 
   def show
     add_breadcrumb @organization.name, organization_path(@organization), only: %i[show]
-    
+
     # Cache-eljük a szervezet adatait és kapcsolódó elemeit
     @active_projects = Rails.cache.fetch("organizations/#{@organization.id}/active_projects", expires_in: 5.minutes) do
       @organization.projects.where(archived: false).includes(:project_manager).limit(4).to_a
     end
-    
+
     @recent_members = Rails.cache.fetch("organizations/#{@organization.id}/recent_members", expires_in: 5.minutes) do
       @organization.memberships.includes(:user).limit(5).to_a
     end
-    
+
     @projects_count = @organization.projects_count || @organization.projects.count
     @members_count = @organization.memberships_count || @organization.memberships.count
   end
@@ -71,11 +71,11 @@ class OrganizationsController < ApplicationController
 
   def destroy
     authorize @organization
-    
+
     # Cache törlése a tényleges törlés előtt
     organization_id = @organization.id
     @organization.destroy!
-    
+
     # Töröljük a szervezetek listázásának cache-ét és a specifikus szervezet cache-eit
     Rails.cache.delete_matched("organizations/#{organization_id}/*")
     Rails.cache.delete_matched("organizations/user_*/all")
@@ -89,18 +89,18 @@ class OrganizationsController < ApplicationController
     # Gyorsítótárazott lekérdezés egy szervezet adataihoz és kapcsolódó objektumaihoz
     @organization = Rails.cache.fetch("organizations/#{params[:id]}/details", expires_in: 5.minutes) do
       Organization.includes(
-        :users, 
-        :owner, 
-        memberships: :user, 
-        projects: [:project_manager, { tasks: [:assignee, :reporter] }]
+        :users,
+        :owner,
+        memberships: :user,
+        projects: [ :project_manager, { tasks: [ :assignee, :reporter ] } ]
       ).find_by(id: params[:id])
     end
-    
+
     if @organization.nil?
       redirect_to organizations_path, alert: "Organization not found."
       return
     end
-    
+
     @current_membership ||= current_user.memberships.find_by(organization: @organization)
     authorize @organization
   rescue ActiveRecord::RecordNotFound
@@ -108,16 +108,16 @@ class OrganizationsController < ApplicationController
   end
 
   def organization_params
-    permitted_attributes = [:name, :address, :registration_number, :tax_number, :iban]
-    
+    permitted_attributes = [ :name, :address, :registration_number, :tax_number, :iban ]
+
     # Only allow valid email formats
     if params[:organization][:email].present? && params[:organization][:email].match?(/\A[^@\s]+@[^@\s]+\z/)
       permitted_attributes << :email
     end
-    
-    # Add logo if present
-    permitted_attributes << :logo if params[:organization][:logo].present?
-    
+
+    # Add logo if included in the params
+    permitted_attributes << :logo if params[:organization].key?(:logo)
+
     params.require(:organization).permit(permitted_attributes)
   end
 

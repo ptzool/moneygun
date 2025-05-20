@@ -4,6 +4,19 @@ class Project < ApplicationRecord
   belongs_to :project_manager, class_name: "Membership", optional: true
   has_many :tasks, dependent: :destroy
   has_one_attached :project_logo
+
+  # Safe variant access methods to avoid processing errors
+  def project_logo_thumb
+    project_logo.representation(resize_to_limit: [40, 40]) if project_logo.attached?
+  end
+  
+  def project_logo_icon
+    project_logo.representation(resize_to_limit: [24, 24]) if project_logo.attached?
+  end
+  
+  def project_logo_medium
+    project_logo.representation(resize_to_limit: [64, 64]) if project_logo.attached?
+  end
   has_many_attached :project_attachments
 
   # Validations
