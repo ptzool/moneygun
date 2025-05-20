@@ -14,6 +14,13 @@
           </svg>
           Edit
       <% end %>
+      <%= link_to organization_project_project_members_path(@organization, @project),
+          class: "inline-flex items-center px-3 py-2 border border-blue-300 shadow-sm text-sm font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+          </svg>
+          Members
+      <% end %>
       <%= link_to organization_project_path(@organization, @project),
           method: :delete,
           data: { turbo_confirm: "Are you sure you want to delete this project This action cannot be undone." },
@@ -87,6 +94,46 @@
               <div class="w-full"><%= simple_format(@project.description, class: "mb-0 w-full") %></div>
             <% else %>
               <p class="text-gray-400 italic w-full">No description provided</p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Team Members -->
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div class="border-b border-gray-200 bg-gray-50 px-6 py-4 flex justify-between items-center">
+          <h2 class="text-base font-medium text-gray-900 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+            </svg>
+            Team Members
+          </h2>
+          <%= link_to organization_project_project_members_path(@organization, @project), class: "text-sm text-blue-600 hover:text-blue-800" do %>
+            Manage Members
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          <% end %>
+        </div>
+        <div class="px-6 py-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <% @project.project_members.includes(:user).each do |member| %>
+              <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                <div class="flex-shrink-0">
+                  <span class="inline-flex items-center justify-center h-10 w-10 rounded-full bg-blue-100">
+                    <span class="text-sm font-medium leading-none text-blue-700"><%= member.user.full_name[0..1].upcase %></span>
+                  </span>
+                </div>
+                <div>
+                  <p class="text-sm font-medium text-gray-900"><%= member.user.full_name %></p>
+                  <p class="text-xs text-gray-500"><%= member.user.email %></p>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium 
+                    <%= member.role == 'owner' ? 'bg-green-100 text-green-800' : 
+                       (member.role == 'member' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800') %>">
+                    <%= member.role.capitalize %>
+                  </span>
+                </div>
+              </div>
             <% end %>
           </div>
         </div>

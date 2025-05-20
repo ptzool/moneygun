@@ -4,7 +4,7 @@ class ProjectPolicy < Organization::BasePolicy
   end
 
   def show?
-    membership.admin? || membership.employee?
+    membership.admin? || membership.employee? && record.project_members.exists?(user: user)
   end
 
   def new?
@@ -12,7 +12,7 @@ class ProjectPolicy < Organization::BasePolicy
   end
 
   def create?
-    membership.admin?
+    membership.admin? || membership.employee?
   end
 
   def edit?
@@ -20,10 +20,24 @@ class ProjectPolicy < Organization::BasePolicy
   end
 
   def update?
-    membership.admin?
+    membership.admin? || record.project_members.owners.exists?(user: user)
   end
 
   def destroy?
-    membership.admin?
+    membership.admin? || record.project_members.owners.exists?(user: user)
+  end
+
+  def manage_members?
+    membership.admin? || record.project_members.owners.exists?(user: user)
+  end
+
+  class Scope < Scope
+    def resolve
+      if membership.admin?
+        scope.all
+      else
+        scope.joins(:project_members).where(project_members: { user_id: user.id })
+      end
+    end
   end
 end

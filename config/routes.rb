@@ -1,11 +1,14 @@
 Rails.application.routes.draw do
+
   devise_for :users, controllers: { registrations: "users/registrations", sessions: "users/sessions" }
 
   resources :organizations do
     resources :memberships, module: :organizations, except: %i[show]
     resource :transfer, module: :organizations, only: %i[show update]
     resources :inboxes, module: :organizations
-    resources :projects, module: :organizations
+    resources :projects, module: :organizations do
+      resources :project_members, only: [:index, :create, :destroy]
+    end
     resources :member_worklogs, module: :organizations do
       collection do
         post :bulk_update

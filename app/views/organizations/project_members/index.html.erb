@@ -1,0 +1,99 @@
+<h1 class="font-bold text-xl mb-4">Project Members</h1>
+
+<div class="bg-white shadow rounded-lg overflow-hidden mb-6">
+  <div class="p-4">
+    <h2 class="font-semibold text-lg mb-3">Current Members</h2>
+    
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Member</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% @project_members.each do |member| %>
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0 h-10 w-10">
+                    <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-gray-200">
+                      <span class="text-sm font-medium leading-none text-gray-500"><%= member.user.full_name[0..1].upcase %></span>
+                    </span>
+                  </div>
+                  <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-900"><%= member.user.full_name %></div>
+                    <div class="text-sm text-gray-500"><%= member.user.email %></div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                  <%= member.role == 'owner' ? 'bg-green-100 text-green-800' : 
+                     (member.role == 'member' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800') %>">
+                  <%= member.role.capitalize %>
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <% unless member.role == 'owner' && @project.project_members.owners.count == 1 %>
+                  <%= button_to "Remove", organization_project_project_member_path(@organization, @project, member), 
+                      method: :delete, 
+                      data: { confirm: "Are you sure you want to remove this member?" },
+                      class: "text-red-600 hover:text-red-900 bg-transparent border-0" %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<% if @project.project_members.owners.exists?(user: current_user) %>
+  <div class="bg-white shadow rounded-lg overflow-hidden">
+    <div class="p-4">
+      <h2 class="font-semibold text-lg mb-3">Add Members</h2>
+      
+      <% if @available_users.any? %>
+        <%= form_with(model: [@organization, @project, ProjectMember.new], local: true, class: "mt-4") do |f| %>
+          <div class="flex flex-col md:flex-row gap-4">
+            <div class="flex-grow">
+              <%= f.select :user_id, 
+                @available_users.map { |u| ["#{u.full_name} (#{u.email})", u.id] }, 
+                { include_blank: "Select a user..." }, 
+                { class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" } %>
+            </div>
+            
+            <div class="md:w-1/4">
+              <%= f.select :role, 
+                [["Member", "member"], ["Viewer", "viewer"]], 
+                { include_blank: false }, 
+                { class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" } %>
+            </div>
+            
+            <div>
+              <%= f.submit "Add Member", class: "inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+            </div>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+          <div class="flex">
+            <div class="ml-3">
+              <p class="text-sm text-yellow-700">
+                There are no more users available to add to this project.
+              </p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<div class="mt-6">
+  <%= link_to "Back to Project", organization_project_path(@organization, @project), class: "text-indigo-600 hover:text-indigo-900" %>
+</div>

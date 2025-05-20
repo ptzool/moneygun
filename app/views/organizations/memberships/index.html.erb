@@ -72,7 +72,13 @@
                 <td class="px-3 py-3 whitespace-nowrap">
                   <div class="flex items-center">
                     <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                      <span class="text-sm font-medium text-gray-600"><%= membership.user.first_name.first.upcase %><%= membership.user.last_name.first.upcase %></span>
+                      <span class="text-sm font-medium text-gray-600">
+                        <% if membership.user.first_name.present? && membership.user.last_name.present? %>
+                          <%= membership.user.first_name.first.upcase %><%= membership.user.last_name.first.upcase %>
+                        <% else %>
+                          N/A
+                        <% end %>
+                      </span>
                     </div>
                     <div class="ml-4">
                       <div class="text-sm font-medium text-gray-900"><%= membership.user.first_name %> <%= membership.user.last_name %></div>
@@ -80,12 +86,12 @@
                   </div>
                 </td>
                 <td class="px-3 py-3 whitespace-nowrap">
-                  <div class="text-sm text-gray-900 truncate max-w-[200px]"><%= membership.user.email %></div>
+                  <div class="text-sm text-gray-900"><%= membership.user.email %></div>
                 </td>
                 <td class="px-3 py-3 whitespace-nowrap">
                   <% role_colors = {
                     "admin" => "bg-purple-100 text-purple-800",
-                    "accountant" => "bg-yellow-100 text-yellow-800",
+                    "accountant" => "bg-red-100 text-red-800",
                     "employee" => "bg-blue-100 text-blue-800"
                   } %>
                   <span class="inline-flex items-center px-2.5 py-0.5 text-xs font-medium <%= role_colors[membership.role] %>">

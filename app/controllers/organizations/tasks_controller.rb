@@ -9,15 +9,9 @@ class Organizations::TasksController < Organizations::BaseController
 
   def index
     authorize Task
-    # Lekérdezés készítése cache kulcs alapján - használjunk / karaktert a cache kulcshoz
-    # hogy a delete_matched működjön vele
     search_term = sanitize_param(:search)
-    cache_key = "organization_tasks/#{@organization.id}/#{params[:priority]}/#{params[:status]}/#{params[:planned_start_date]}/#{params[:planned_end_date]}/#{search_term}/#{params[:page] || 1}"
-    
-    # Nem cache-eljük a teljes ActiveRecord objektumokat, csak az ID-kat
-    # és csökkentjük a cache időt 1 percre, hogy gyakrabban frissüljön
-    task_ids = Rails.cache.fetch(cache_key, expires_in: 1.minute) do
-      policy_scope(@organization.tasks)
+
+    task_ids = policy_scope(@organization.tasks)
         .filter_by_priority(sanitize_param(:priority))
         .filter_by_status(sanitize_param(:status))
         .filter_by_planned_start_date(sanitize_date_param(:planned_start_date))
@@ -26,9 +20,7 @@ class Organizations::TasksController < Organizations::BaseController
         .newest_first
         .from_active_projects
         .pluck(:id)
-    end
 
-    # A cache-ben tárolt ID-k alapján lekérjük a task-okat eager loading-gal
     @tasks = Task.where(id: task_ids)
                 .includes(:project, :assignee, :reporter)
                 .order(created_at: :desc)
@@ -74,8 +66,6 @@ class Organizations::TasksController < Organizations::BaseController
     authorize @task
 
     if @task.update(task_params)
-      # Kifejezetten töröljük a tasks lista cache-t a task frissítésekor
-      Rails.cache.delete_matched("organization_tasks/#{@organization.id}*")
       redirect_to organization_task_url(@organization, @task), notice: t("tasks.update.success")
     else
       render :edit, status: :unprocessable_entity
@@ -86,8 +76,6 @@ class Organizations::TasksController < Organizations::BaseController
     authorize @task
 
     @task.destroy!
-    # Kifejezetten töröljük a tasks lista cache-t a task törlésekor
-    Rails.cache.delete_matched("organization_tasks/#{@organization.id}*")
     redirect_to organization_tasks_url(@organization), notice: t("tasks.destroy.success")
   end
 
@@ -96,7 +84,7 @@ class Organizations::TasksController < Organizations::BaseController
 
     @task_attachment = @task.task_attachments.find_by!(id: params[:attachment_id])
     # Authorization is handled at the task level, no need for attachment-specific policy
-    
+
     @task_attachment.purge
     redirect_to organization_task_url(@organization, @task), notice: t("tasks.attachments.destroy.success"), status: :see_other
   end

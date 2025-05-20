@@ -5,31 +5,17 @@ class OrganizationsController < ApplicationController
   after_action :verify_policy_scoped, only: :index
 
   def index
-    scoped_organizations = policy_scope(current_user.organizations)
-
-    # Cache-elés a szervezetek listájához
-    @organizations = Rails.cache.fetch("organizations/user_#{current_user.id}/all", expires_in: 2.minutes) do
-      scoped_organizations
-        .includes(:users, :memberships, :projects)
-        .newest_first
-        .to_a
-    end
+    @organizations = policy_scope(current_user.organizations).includes(:users, :memberships, :projects).newest_first.to_a
   end
 
   def show
     add_breadcrumb @organization.name, organization_path(@organization), only: %i[show]
 
-    # Cache-eljük a szervezet adatait és kapcsolódó elemeit
-    @active_projects = Rails.cache.fetch("organizations/#{@organization.id}/active_projects", expires_in: 5.minutes) do
-      @organization.projects.where(archived: false).includes(:project_manager).limit(4).to_a
-    end
+    @active_projects = @organization.projects.where(archived: false).includes(:project_manager).limit(1).to_a
+    @recent_members = @organization.memberships.includes(:user).limit(5).to_a
 
-    @recent_members = Rails.cache.fetch("organizations/#{@organization.id}/recent_members", expires_in: 5.minutes) do
-      @organization.memberships.includes(:user).limit(5).to_a
-    end
-
-    @projects_count = @organization.projects_count || @organization.projects.count
-    @members_count = @organization.memberships_count || @organization.memberships.count
+    @projects_count = @organization.projects.count
+    @members_count = @organization.memberships.count
   end
 
   def new
@@ -49,8 +35,6 @@ class OrganizationsController < ApplicationController
     authorize @organization
 
     if @organization.save
-      # Töröljük a szervezetek listázásának cache-ét
-      Rails.cache.delete_matched("organizations/user_*/all")
       redirect_to organization_url(@organization), notice: "Organization was successfully created."
     else
       render :new, status: :unprocessable_entity
@@ -60,9 +44,6 @@ class OrganizationsController < ApplicationController
   def update
     authorize @organization
     if @organization.update(organization_params)
-      # Töröljük az ehhez a szervezethez tartozó cache-eket
-      Rails.cache.delete_matched("organizations/#{@organization.id}/*")
-      Rails.cache.delete_matched("organizations/user_*/all")
       redirect_to organization_url(@organization), notice: "Organization was successfully updated."
     else
       render :edit, status: :unprocessable_entity
@@ -71,14 +52,7 @@ class OrganizationsController < ApplicationController
 
   def destroy
     authorize @organization
-
-    # Cache törlése a tényleges törlés előtt
-    organization_id = @organization.id
     @organization.destroy!
-
-    # Töröljük a szervezetek listázásának cache-ét és a specifikus szervezet cache-eit
-    Rails.cache.delete_matched("organizations/#{organization_id}/*")
-    Rails.cache.delete_matched("organizations/user_*/all")
 
     redirect_to organizations_url, notice: "Organization was successfully destroyed."
   end
@@ -87,14 +61,12 @@ class OrganizationsController < ApplicationController
 
   def set_organization
     # Gyorsítótárazott lekérdezés egy szervezet adataihoz és kapcsolódó objektumaihoz
-    @organization = Rails.cache.fetch("organizations/#{params[:id]}/details", expires_in: 5.minutes) do
-      Organization.includes(
+    @organization =Organization.includes(
         :users,
         :owner,
         memberships: :user,
         projects: [ :project_manager, { tasks: [ :assignee, :reporter ] } ]
       ).find_by(id: params[:id])
-    end
 
     if @organization.nil?
       redirect_to organizations_path, alert: "Organization not found."

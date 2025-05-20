@@ -14,6 +14,8 @@ class Organizations::ProjectsController < Organizations::BaseController
   def index
     authorize Project
     @projects = policy_scope(@organization.projects)
+      .joins(:project_members)
+      .where(project_members: { user_id: current_user.id })
       .filter_by_archived(sanitize_boolean_param(params[:archived]))
       .newest_first
       .page(params[:page])
@@ -46,6 +48,8 @@ class Organizations::ProjectsController < Organizations::BaseController
     authorize @project
 
     if @project.save
+      # Add the creator as an owner of the project
+      @project.project_members.create(user: current_user, role: 'owner')
       redirect_to organization_project_url(@organization, @project), notice: t("projects.create.success")
     else
       render :new, status: :unprocessable_entity
@@ -87,7 +91,10 @@ class Organizations::ProjectsController < Organizations::BaseController
   end
 
   def set_project
-    @project = @organization.projects.find_by!(id: params[:id])
+    @project = @organization.projects
+      .joins(:project_members)
+      .where(project_members: { user_id: current_user.id })
+      .find_by!(id: params[:id])
   rescue ActiveRecord::RecordNotFound
     redirect_to organization_projects_path(@organization), alert: t("projects.not_found")
   end

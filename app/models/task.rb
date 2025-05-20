@@ -18,11 +18,6 @@ class Task < ApplicationRecord
   # Version control
   has_paper_trail
 
-  # Callbacks a cache invalidációhoz
-  after_save :expire_organization_cache
-  after_destroy :expire_organization_cache
-  after_commit :invalidate_listing_cache, on: [ :create ]
-
   # Scopes
   scope :filter_by_priority, ->(priority) { where(priority: priority) if priority.present? }
   scope :filter_by_planned_start_date, ->(date) { where("planned_start_date >= ?", date) if date.present? }
@@ -33,7 +28,7 @@ class Task < ApplicationRecord
     # Csak akkor használjuk az includes-t, ha valóban szükség van a project adataira
     joins(:project).where(projects: { archived: false })
   }
-  
+
   scope :search_by_name, ->(query) {
     where("tasks.name ILIKE ?", "%#{query}%") if query.present?
   }
@@ -60,48 +55,20 @@ class Task < ApplicationRecord
       return 0
     end
 
-    # Cacheljük a lekérdezést, de egyszerű kulcsot használunk, ami nem okoz serializációs problémát
-    Rails.cache.fetch([ "task", id, "total_time_spent", updated_at.to_i ]) do
-      task_timetrackings.sum(:duration)
-    end
+    task_timetrackings.sum(:duration)
   end
-  
+
   # Returns total time spent in hours
   def total_time_spent_in_hours
     (total_time_spent.to_f / 60.0).round(1)
   end
 
   def total_time_spent_by_users
-    # Cacheljük a lekérdezést, de egyszerű kulcsot használunk, ami nem okoz serializációs problémát
-    Rails.cache.fetch([ "task", id, "total_time_spent_by_users", updated_at.to_i ]) do
-      task_timetrackings.group(:membership_id).sum(:duration)
-    end
+    task_timetrackings.group(:membership_id).sum(:duration)
   end
-  
+
   # Returns total time spent by users in hours
   def total_time_spent_by_users_in_hours
     total_time_spent_by_users.transform_values { |minutes| (minutes.to_f / 60.0).round(1) }
-  end
-
-  private
-
-  def expire_organization_cache
-    # Cache invalidálás a státusz vagy prioritás változásakor
-    # Az új formátumú cache kulcsokat használjuk
-    Rails.cache.delete_matched("organization_tasks/#{organization_id}*")
-
-    # Frissítjük az időtartam-számítás cache-ét is
-    Rails.cache.delete([ "task", id, "total_time_spent", updated_at.to_i ])
-    Rails.cache.delete([ "task", id, "total_time_spent_by_users", updated_at.to_i ])
-
-    # Frissítjük a kapcsolódó projekt cache-ét is
-    Rails.cache.delete([ "project", project_id, "tasks" ])
-  end
-
-  # Teljes cache törlés új task létrehozásakor
-  def invalidate_listing_cache
-    # Minden lehetséges cache kombinációt törlünk az összes lehetséges szűrési paraméterre
-    # Ez biztosítja, hogy az új task azonnal megjelenjen minden listázásnál
-    Rails.cache.delete_matched("organization_tasks/#{organization_id}*")
   end
 end

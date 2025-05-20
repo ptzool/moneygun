@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_20_094116) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_20_210916) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -115,6 +115,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_20_094116) do
     t.index ["tax_number"], name: "index_organizations_on_tax_number"
   end
 
+  create_table "project_members", force: :cascade do |t|
+    t.bigint "project_id", null: false
+    t.bigint "user_id", null: false
+    t.string "role"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id", "user_id"], name: "index_project_members_on_project_id_and_user_id", unique: true
+    t.index ["project_id"], name: "index_project_members_on_project_id"
+    t.index ["user_id"], name: "index_project_members_on_user_id"
+  end
+
   create_table "projects", force: :cascade do |t|
     t.bigint "organization_id", null: false
     t.string "name"
@@ -189,6 +200,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_20_094116) do
     t.integer "invitations_count", default: 0
     t.string "first_name"
     t.string "last_name"
+    t.boolean "admin", default: false, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
     t.index ["invited_by_id"], name: "index_users_on_invited_by_id"
@@ -218,6 +230,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_20_094116) do
   add_foreign_key "memberships", "organizations"
   add_foreign_key "memberships", "users"
   add_foreign_key "organizations", "users", column: "owner_id"
+  add_foreign_key "project_members", "projects"
+  add_foreign_key "project_members", "users"
   add_foreign_key "projects", "memberships", column: "project_manager_id"
   add_foreign_key "projects", "organizations"
   add_foreign_key "task_timetrackings", "memberships"
