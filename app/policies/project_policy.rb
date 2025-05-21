@@ -4,7 +4,7 @@ class ProjectPolicy < Organization::BasePolicy
   end
 
   def show?
-    membership.admin? || membership.employee? && record.project_members.exists?(user: user)
+    membership.admin? || membership.employee? && record.project_members.exists?
   end
 
   def new?

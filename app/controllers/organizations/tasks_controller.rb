@@ -54,8 +54,6 @@ class Organizations::TasksController < Organizations::BaseController
     authorize @task
 
     if @task.save
-      # Kifejezetten töröljük a tasks lista cache-t az új task hozzáadásakor
-      Rails.cache.delete_matched("organization_tasks/#{@organization.id}*")
       redirect_to organization_task_url(@organization, @task), notice: t("tasks.create.success")
     else
       render :new, status: :unprocessable_entity
@@ -114,13 +112,12 @@ class Organizations::TasksController < Organizations::BaseController
       :planned_end_date,
       :priority,
       :assignee_id,
-      :reporter_id,
       :status,
       task_attachments: []
     ]
 
     # Strip and sanitize text inputs
-    params_to_sanitize = params.require(:task).permit(*permitted_attributes)
+    params_to_sanitize = params.require(:task).permit(*permitted_attributes).merge(reporter_id: current_user.id)
 
     [ :name, :description ].each do |attr|
       if params_to_sanitize[attr].present?

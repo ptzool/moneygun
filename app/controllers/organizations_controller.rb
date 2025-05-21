@@ -5,14 +5,22 @@ class OrganizationsController < ApplicationController
   after_action :verify_policy_scoped, only: :index
 
   def index
-    @organizations = policy_scope(current_user.organizations).includes(:users, :memberships, :projects).newest_first.to_a
+    @organizations = policy_scope(current_user.organizations)
+      .includes(:users, :memberships, :projects)
+      .newest_first
+      .to_a
   end
 
   def show
+    authorize @organization
     add_breadcrumb @organization.name, organization_path(@organization), only: %i[show]
 
-    @active_projects = @organization.projects.where(archived: false).includes(:project_manager).limit(1).to_a
     @recent_members = @organization.memberships.includes(:user).limit(5).to_a
+
+    @projects = policy_scope(@organization.projects)
+      .joins(:project_members)
+      .where(project_members: { user_id: current_user.id })
+      .newest_first
 
     @projects_count = @organization.projects.count
     @members_count = @organization.memberships.count

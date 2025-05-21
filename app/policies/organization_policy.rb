@@ -27,7 +27,7 @@ class OrganizationPolicy < ApplicationPolicy
   def destroy?
     record.owner == user
   end
-  
+
   class Scope < Scope
     def resolve
       user.organizations

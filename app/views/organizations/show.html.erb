@@ -201,8 +201,8 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <% if @organization.projects.any? %>
-                <% @organization.projects.each do |project| %>
+              <% if @projects.any? %>
+                <% @projects.each do |project| %>
                   <tr class="hover:bg-gray-50 transition-colors">
                     <td class="pl-4 pr-1 py-4 whitespace-nowrap">
                       <div class="flex items-center justify-center">
