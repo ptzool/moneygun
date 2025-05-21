@@ -54,7 +54,7 @@
       <%= task.assignee.user.full_name %>
   </td>
   <td class="px-3 py-3 whitespace-nowrap">
-      <%= task.total_time_spent %> hrs <span class="text-xs text-gray-500">(<%= (task.total_time_spent / 8.0).round(1) %> days)</span>
+      <%= task.total_time_spent_in_hours  %> hrs <span class="text-xs text-gray-500">(<%= (task.total_time_spent_in_hours / 8.0).round(1) %> days)</span>
   </td>
   <td class="px-3 py-3 whitespace-nowrap">
     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium <%= status_badge_color(task.status) %>">

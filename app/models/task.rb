@@ -50,7 +50,6 @@ class Task < ApplicationRecord
 
 
   def total_time_spent
-    # Használjuk a counter cache-t, ha az időtartam nem fontos
     if task_timetrackings_count == 0
       return 0
     end
