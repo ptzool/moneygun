@@ -5,7 +5,6 @@ Rails.application.routes.draw do
   resources :organizations do
     resources :memberships, module: :organizations, except: %i[show]
     resource :transfer, module: :organizations, only: %i[show update]
-    resources :inboxes, module: :organizations
     resources :projects, module: :organizations do
       resources :project_members, only: [:index, :create, :destroy]
     end
