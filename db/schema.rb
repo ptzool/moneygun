@@ -52,19 +52,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_20_210916) do
     t.index ["task_id"], name: "index_comments_on_task_id"
   end
 
-  create_table "documents", force: :cascade do |t|
+  create_table "inboxes", force: :cascade do |t|
     t.string "name", null: false
-    t.text "description"
-    t.string "category"
-    t.string "version"
     t.bigint "organization_id", null: false
-    t.bigint "uploader_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["category"], name: "index_documents_on_category"
-    t.index ["organization_id", "name"], name: "index_documents_on_organization_id_and_name"
-    t.index ["organization_id"], name: "index_documents_on_organization_id"
-    t.index ["uploader_id"], name: "index_documents_on_uploader_id"
+    t.index ["name", "organization_id"], name: "index_inboxes_on_name_and_organization_id", unique: true
+    t.index ["organization_id"], name: "index_inboxes_on_organization_id"
   end
 
   create_table "member_worklogs", force: :cascade do |t|
@@ -228,8 +222,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_20_210916) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "comments", "memberships"
   add_foreign_key "comments", "tasks"
-  add_foreign_key "documents", "organizations"
-  add_foreign_key "documents", "users", column: "uploader_id"
+  add_foreign_key "inboxes", "organizations"
   add_foreign_key "member_worklogs", "memberships"
   add_foreign_key "member_worklogs", "organizations"
   add_foreign_key "membership_worklogs", "memberships"

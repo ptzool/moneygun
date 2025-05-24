@@ -6,6 +6,7 @@ class Organization < ApplicationRecord
 
   include Transfer
 
+  has_many :inboxes, dependent: :destroy
   has_many :projects, dependent: :destroy, counter_cache: true
   has_many :tasks, dependent: :destroy, counter_cache: true
 
