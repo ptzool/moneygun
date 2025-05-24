@@ -38,6 +38,12 @@
           <span class="inline-flex items-center px-2.5 py-0.5 text-xs font-medium <%= priority_badge_color(@task.priority) %>">
             <%= @task.priority.capitalize %>
           </span>
+          <% if @task.task_category %>
+            <span class="inline-flex items-center px-2.5 py-0.5 text-xs font-medium bg-gray-100 text-gray-800">
+              <span class="w-2 h-2 mr-1.5 rounded-full" style="background-color: <%= @task.task_category.color %>"></span>
+              <%= @task.task_category.name %>
+            </span>
+          <% end %>
           <%= link_to organization_project_path(@organization, @task.project),
               class: "inline-flex items-center px-2.5 py-0.5 text-xs font-medium bg-#{@task.project.color}-50 text-#{@task.project.color}-700 hover:bg-#{@task.project.color}-100 transition-colors" do %>
             <span class="w-2 h-2 mr-1.5 rounded-full bg-<%= @task.project.color %>-500"></span>
@@ -78,6 +84,19 @@
           <span class="inline-flex items-center px-2.5 py-0.5 text-xs font-medium <%= priority_badge_color(@task.priority) %>">
             <%= @task.priority.capitalize %>
           </span>
+        </dd>
+      </div>
+      <div class="flex justify-between">
+        <dt class="text-sm font-medium text-gray-500">Category</dt>
+        <dd class="text-sm text-gray-900">
+          <% if @task.task_category %>
+            <div class="flex items-center">
+              <div class="w-3 h-3 rounded-full mr-2 flex-shrink-0" style="background-color: <%= @task.task_category.color %>"></div>
+              <span><%= @task.task_category.name %></span>
+            </div>
+          <% else %>
+            <span class="text-gray-400">No category</span>
+          <% end %>
         </dd>
       </div>
       <div class="flex justify-between">

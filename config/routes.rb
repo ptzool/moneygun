@@ -15,6 +15,7 @@ Rails.application.routes.draw do
         post "bulk_update", to: "member_worklogs#bulk_update"
       end
     end
+    resources :task_categories, module: :organizations
     resources :tasks, module: :organizations do
       member do
         delete "destroy_attachment/:attachment_id", action: :destroy_attachment, as: :destroy_attachment

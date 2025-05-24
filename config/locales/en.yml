@@ -4,6 +4,7 @@ en:
     organizations: "Organizations"
     tasks: "Tasks"
     projects: "Projects"
+    task_categories: "Task Categories"
   hello: "Hello world"
   task_timetrackings:
     index:
@@ -27,3 +28,34 @@ en:
   tasks:
     select_task: "Please select a task to add time tracking."
     not_found: "The requested task could not be found."
+    create:
+      success: "Task was successfully created."
+      failure: "Failed to create task."
+    update:
+      success: "Task was successfully updated."
+      failure: "Failed to update task."
+    destroy:
+      success: "Task was successfully deleted."
+      confirm: "Are you sure you want to delete this task?"
+    attachments:
+      destroy:
+        success: "Attachment was successfully removed."
+  task_categories:
+    index:
+      title: "Task Categories"
+    show:
+      title: "Task Category Details"
+    new:
+      title: "New Task Category"
+    edit:
+      title: "Edit Task Category"
+    create:
+      success: "Task category was successfully created."
+      failure: "Failed to create task category."
+    update:
+      success: "Task category was successfully updated."
+      failure: "Failed to update task category."
+    destroy:
+      success: "Task category was successfully deleted."
+      confirm: "Are you sure you want to delete this category? Tasks assigned to this category will be unassigned."
+    not_found: "The requested task category could not be found."

@@ -9,6 +9,7 @@ class Organization < ApplicationRecord
   has_many :inboxes, dependent: :destroy
   has_many :projects, dependent: :destroy, counter_cache: true
   has_many :tasks, dependent: :destroy, counter_cache: true
+  has_many :task_categories, dependent: :destroy
 
   # Validations
   validates :name, presence: true
@@ -36,7 +37,8 @@ class Organization < ApplicationRecord
   scope :with_associations, -> {
     includes(projects: { project_manager: :user },
             memberships: :user,
-            tasks: [ :project, :assignee, :reporter ])
+            tasks: [ :project, :assignee, :reporter, :task_category ],
+            task_categories: [])
   }
 
   scope :newest_first, -> { order(created_at: :desc) }

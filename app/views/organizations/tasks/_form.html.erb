@@ -61,20 +61,14 @@
             </svg>
             Project details
           </h3>
-          <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-5">
             <div>
               <%= form.label :project_id, class: "block text-sm font-medium text-gray-700 mb-1" %>
               <%= form.select :project_id,
-                              options_for_select(
-                                @projects.map { |c| [ c.name, c.id ] },
-                                selected: params[:project_id]
-                              ),
-                              { prompt: "Select a project" },
-                              {
-                                class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white"
-
-                              }
-              %>
+                @projects.map { |p| [ p.name, p.id ] },
+                { prompt: "Select project" },
+                { class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white", required: true }
+            %>
             </div>
             <div>
               <%= form.label :assignee_id, class: "block text-sm font-medium text-gray-700 mb-1" %>
@@ -82,6 +76,14 @@
                 @assignees.map { |a| [ a.user.full_name, a.id ] },
                 { prompt: "Select assignee" },
                 { class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white", required: true }
+              %>
+            </div>
+            <div>
+              <%= form.label :task_category_id, "Category", class: "block text-sm font-medium text-gray-700 mb-1" %>
+              <%= form.select :task_category_id,
+                @task_categories.map { |c| [ c.name, c.id ] },
+                { prompt: "Select category" },
+                { class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white" }
               %>
             </div>
             <div>
@@ -107,21 +109,21 @@
               <%= form.label :planned_start_date, class: "block text-sm font-medium text-gray-700 mb-1" %>
               <%= form.date_field :planned_start_date,
                   class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white",
-                  value: @task.planned_start_date || Date.today %>
+                  value: task.planned_start_date || Date.today %>
               <p class="mt-1 text-xs text-gray-500">When work will begin</p>
             </div>
             <div>
               <%= form.label :planned_end_date, class: "block text-sm font-medium text-gray-700 mb-1" %>
               <%= form.date_field :planned_end_date,
                   class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white",
-                  value: @task.planned_end_date || (Date.today + 7.days) %>
+                  value: task.planned_end_date || (Date.today + 7.days) %>
               <p class="mt-1 text-xs text-gray-500">Deadline for completion</p>
             </div>
             <div>
               <%= form.label :status, class: "block text-sm font-medium text-gray-700 mb-1" %>
               <%= form.select :status,
                 Task.statuses.keys.map { |status| [ status.humanize, status ] },
-                { prompt: "Select status", selected: @task.status || 'open' },
+                { prompt: "Select status", selected: task.status || 'open' },
                 { class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white", required: true }
               %>
               <p class="mt-1 text-xs text-gray-500">Current progress state</p>
