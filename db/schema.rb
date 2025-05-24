@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_20_210916) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_23_183523) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -146,6 +146,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_20_210916) do
     t.index ["project_manager_id"], name: "index_projects_on_project_manager_id"
   end
 
+  create_table "task_categories", force: :cascade do |t|
+    t.bigint "organization_id", null: false
+    t.string "name", null: false
+    t.text "description"
+    t.string "color"
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_task_categories_on_active"
+    t.index ["organization_id", "name"], name: "index_task_categories_on_organization_id_and_name", unique: true
+    t.index ["organization_id"], name: "index_task_categories_on_organization_id"
+  end
+
   create_table "task_timetrackings", force: :cascade do |t|
     t.bigint "task_id", null: false
     t.bigint "membership_id", null: false
@@ -174,10 +187,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_20_210916) do
     t.string "status", default: "open", null: false
     t.integer "comments_count", default: 0, null: false
     t.integer "task_timetrackings_count", default: 0, null: false
+    t.bigint "task_category_id"
     t.index ["assignee_id", "status"], name: "index_tasks_on_assignee_id_and_status"
     t.index ["assignee_id"], name: "index_tasks_on_assignee_id"
     t.index ["organization_id", "priority"], name: "index_tasks_on_organization_id_and_priority"
     t.index ["organization_id", "status"], name: "index_tasks_on_organization_id_and_status"
+    t.index ["organization_id", "task_category_id"], name: "index_tasks_on_organization_id_and_task_category_id"
     t.index ["organization_id"], name: "index_tasks_on_organization_id"
     t.index ["planned_end_date"], name: "index_tasks_on_planned_end_date"
     t.index ["planned_start_date"], name: "index_tasks_on_planned_start_date"
@@ -186,6 +201,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_20_210916) do
     t.index ["project_id"], name: "index_tasks_on_project_id"
     t.index ["reporter_id"], name: "index_tasks_on_reporter_id"
     t.index ["status"], name: "index_tasks_on_status"
+    t.index ["task_category_id"], name: "index_tasks_on_task_category_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -241,10 +257,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_20_210916) do
   add_foreign_key "project_members", "users"
   add_foreign_key "projects", "memberships", column: "project_manager_id"
   add_foreign_key "projects", "organizations"
+  add_foreign_key "task_categories", "organizations"
   add_foreign_key "task_timetrackings", "memberships"
   add_foreign_key "task_timetrackings", "tasks"
   add_foreign_key "tasks", "memberships", column: "assignee_id"
   add_foreign_key "tasks", "memberships", column: "reporter_id"
   add_foreign_key "tasks", "organizations"
   add_foreign_key "tasks", "projects"
+  add_foreign_key "tasks", "task_categories"
 end

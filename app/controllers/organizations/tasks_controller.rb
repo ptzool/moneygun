@@ -14,6 +14,7 @@ class Organizations::TasksController < Organizations::BaseController
     task_ids = policy_scope(@organization.tasks)
         .filter_by_priority(sanitize_param(:priority))
         .filter_by_status(sanitize_param(:status))
+        .filter_by_category(sanitize_param(:category))
         .filter_by_planned_start_date(sanitize_date_param(:planned_start_date))
         .filter_by_planned_end_date(sanitize_date_param(:planned_end_date))
         .search_by_name(search_term)
@@ -22,7 +23,7 @@ class Organizations::TasksController < Organizations::BaseController
         .pluck(:id)
 
     @tasks = Task.where(id: task_ids)
-                .includes(:project, :assignee, :reporter)
+                .includes(:project, :assignee, :reporter, :task_category)
                 .order(created_at: :desc)
                 .page(params[:page])
                 .per(15)
@@ -101,11 +102,13 @@ class Organizations::TasksController < Organizations::BaseController
     @projects = policy_scope(@organization.projects).where(archived: false)
     @assignees = policy_scope(@organization.memberships).includes(:user)
     @reporters = @assignees # Újrahasználjuk a már lekért adatokat
+    @task_categories = policy_scope(@organization.task_categories).active.ordered_by_name
   end
 
   def task_params
     permitted_attributes = [
       :project_id,
+      :task_category_id,
       :name,
       :description,
       :planned_start_date,
